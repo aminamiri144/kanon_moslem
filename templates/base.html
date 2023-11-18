@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="fa">
+  {% include "base/header.html" %}
+  <body class="vertical  light rtl">
+    <div class="wrapper">
+      {% block content %}
+      
+      {% endblock content %}
+      
+    </div> <!-- .wrapper -->
+    {% include "base/scripts.html" %}
+    {% block moreScript %}
+    {% endblock moreScript %}
+  </body>
+</html>

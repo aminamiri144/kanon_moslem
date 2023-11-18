@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% load static %}
+{% comment %} {% load jformat %} {% endcomment %}
+{% block content %}
+    {% include 'base/navigator.html' %}
+    {% include 'base/aside.html' %}
+    <main role="main" class="main-content">
+        <div class="container-fluid">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show"
+                         role="alert">
+                        {{ message|safe }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">x</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <h2 class="mb-2 page-title">{{ groupe }}</h2>
+                    <p class="card-text">بانک جوانه متربیان کانون تربیتی حضرت مسلم ابن عقیل</p>
+                    <div class="row my-4">
+                        <!-- Small table -->
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <table class="table table-bordered table-hover mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>نام ونام خانوادگی</th>
+                                                <th>موجودی جوانه</th>
+                                                <th>عملیات</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for student in studens %}
+                                                <tr>
+                                                    <td>{{ student.fullname }}</td>
+                                                    <td>{{ student.balance }}</td>
+                                                    <td>
+                                                        <button type="button"
+                                                                onclick="modal_url('/bank/trc/create/{{ student.id }}', 'create');"
+                                                                data-toggle="modal"
+                                                                data-target="#create_modal"
+                                                                class="btn mb-2 btn-success btn-sm">
+                                                            ثبت تراکنش
+                                                        </button>
+                                                        <a href="/bank/student/trs/{{ student.id }}"
+                                                           class="btn mb-2 btn-info btn-sm">مشاهده تراکنش ها</a>
+                                                        {% comment %} <button type="button"
+                                                                onclick="modal_url('/bank/student/edit/{{ student.id }}', 'create');"
+                                                                data-toggle="modal"
+                                                                data-target="#create_modal"
+                                                                class="btn mb-2 btn-warning btn-sm">
+                                                            ویرایش متربی
+                                                        </button> {% endcomment %}
+                                                        
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- simple table -->
+                </div>
+                <!-- end section -->
+            </div>
+            <!-- .col-12 -->
+        </div>
+        <!-- .row -->
+    </main>
+    {% include 'base/createModal.html' %}
+    {% include 'base/updateModal.html' %}
+    {% include 'base/detailModal.html' %}
+    <footer class="fixed-bottom bg-light">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-12">
+              <a class="btn btn-info d-block d-md-none mx-auto my-3 text-white" href="">بروزرسانی موجودی ها</a>
+            </div>
+          </div>
+        </div>
+      </footer>
+{% endblock content %}
+{% block moreScript %}
+    {% comment %} <script src="{% static 'customers/js/datatablescripts.js'%}"></script> {% endcomment %}
+    {% comment %} <script src="{% static 'customers/plugins/jalaliDatepicker/kamadatepicker.min.js'%}"></script>
+    <script>kamaDatepicker('id_register_date', {buttonsColor: "green", forceFarsiDigits: true});</script> {% endcomment %}
+    <script>
+function modal_url(url, type) {
+    $.ajax({
+        url: url,
+        type: 'GET',
+        success: function (data) {
+            $("#"+ type +"_modal_body").html(data);
+        }
+    })
+}
+    </script>
+{% endblock moreScript %}

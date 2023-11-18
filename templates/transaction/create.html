@@ -1,0 +1,23 @@
+<div class="row">
+    <div class="col-md-12">
+        <form action="{{ request.path }}"
+              method="post"
+              autocomplete="off"
+              id="user-form">
+            {% csrf_token %}
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ error|escape }}</strong>
+                    </div>
+                {% endfor %}
+                <div class="form-group row">
+                    <label class="col-form-label col-lg-3 col-sm-12">{{ field.label_tag }}</label>
+                    <div class="col-lg-9 col-md-9 col-sm-12">{{ field }}</div>
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-success">ثبت تراکنش</button>
+            <button class="btn btn-danger" data-dismiss="modal">بستن</button>
+        </form>
+    </div>
+</div>

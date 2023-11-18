@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+    <main role="main" class="main-content">
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <div class="row align-items-center mb-2">
+                        <div class="col">
+                            <h1 class="h5 d-none d-sm-block">سامانه رسیدگی به درخواست های مردمی خانه ملت کاشان</h1>
+                            <h1 class="h5 d-block d-sm-none">پیشخوان</h1>
+                        </div>
+                        <div class="col-auto">
+                            {% comment %} <div class="form-group d-none d-lg-inline">
+                            <label for="reportrange" class="sr-only">Date Ranges</label>
+                            <div id="reportrange" class="px-2 py-2 text-muted">
+                            <span class="small"></span>
+                            </div>
+                            </div> {% endcomment %}
+                            <div class="form-group">
+                                <span class="small">امروز یکشنبه 30 مرداد 1401</span>
+                                <button type="button" class="btn btn-sm">
+                                    <span class="fe fe-refresh-ccw fe-16 text-muted"></span>
+                                </button>
+                                <button type="button" class="btn btn-sm mr-2">
+                                    <span class="fe fe-filter fe-16 text-muted"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- .col-12 -->
+            </div>
+            <!-- .row -->
+        </div>
+        <!-- .container-fluid -->
+    </main>
+    <!-- main -->
+{% endblock content %}

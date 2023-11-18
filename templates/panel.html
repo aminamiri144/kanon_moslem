@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load static %}
+{% comment %} {% load jformat %} {% endcomment %}
+{% block content %}
+    {% include 'base/navigator.html' %}
+    {% include 'base/aside.html' %}
+    <main role="main" class="main-content">
+        <div class="container-fluid">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show"
+                         role="alert">
+                        {{ message|safe }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">x</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <h2 class="mb-2 page-title">گروه ها</h2>
+                    <p class="card-text">بانک جوانه متربیان کانون تربیتی حضرت مسلم ابن عقیل</p>
+                    <div class="row my-4">
+                        <!-- Small table -->
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    {% for g in groups %}
+                                        <a href="{% url 'group-students-list' g.id %}"
+                                           type="button"
+                                           class="btn mb-2 btn-success btn-lg btn-block">{{ g.name }}</a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- simple table -->
+                </div>
+                <div class="col-12">
+                    <h2 class="mb-2 page-title">عملیات</h2>
+                    <div class="row my-4">
+                        <!-- Small table -->
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <button type="button"
+                                            class="btn mb-2 btn-info btn-lg btn-block"
+                                            onclick="modal_url('bank/student/create', 'create');"
+                                            data-toggle="modal"
+                                            data-target="#create_modal">
+                                        ثبت متربی
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- simple table -->
+                </div>
+                <!-- end section -->
+            </div>
+            <!-- .col-12 -->
+        </div>
+        <!-- .row -->
+    </main>
+    {% include 'base/updateModal.html' %}
+    {% include 'base/createModal.html' %}
+    {% include 'base/detailModal.html' %}
+{% endblock content %}
+{% block moreScript %}
+    {% comment %} <script src="{% static 'customers/js/datatablescripts.js'%}"></script> {% endcomment %}
+    <script src="{% static 'customers/plugins/jalaliDatepicker/kamadatepicker.min.js'%}"></script>
+    <script>kamaDatepicker('id_register_date', {buttonsColor: "green", forceFarsiDigits: true});</script>
+    <script>
+function modal_url(url, type) {
+    $.ajax({
+        url: url,
+        type: 'GET',
+        success: function (data) {
+            $("#"+ type +"_modal_body").html(data);
+        }
+    })
+}
+    </script>
+{% endblock moreScript %}
