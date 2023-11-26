@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    {% include 'base/navigator.html' %}
+    {% include 'base/aside.html' %}
+    <main role="main" class="main-content">
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <h2 class="mb-2 page-title">ثبت نامه</h2>
+                    <p class="card-text">لیست نامه های خانه ملت</p>
+                    <div class="row my-4">
+                        <!-- Small table -->
+                        <div class="col-md-12">
+                            <div class="card shadow">
+                                <div class="card-body">
+                                    <div class="col-md-6">
+                                        <form class="needs-validation"
+                                              action="{% url 'member-create' %}"
+                                              method="post"
+                                              autocomplete="off"
+                                              id="customer-form"
+                                              enctype="multipart/form-data"
+                                              novalidate>
+                                            {% csrf_token %}
+                                            {% for field in form %}
+                                                <div class="form-group row">
+                                                    <label class="col-form-label col-lg-3 col-sm-12">{{ field.label_tag }}</label>
+                                                    <div class="col-lg-9 col-md-9 col-sm-12">
+                                                        {{ field }}
+                                                        {% if form.errors.field %}<span class="text-danger">{{ form.errors.field.0 }}</span>{% endif %}
+                                                        <div class="invalid-feedback">مقدار مناسب را وارد کنید.</div>
+                                                        {% for error in field.errors %}<div class="feedbackinvalid">{{ error|escape }}</div>{% endfor %}
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                            <button type="submit" class="btn btn-success">ایجاد کاربر</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- simple table -->
+                </div>
+                <!-- end section -->
+            </div>
+            <!-- .col-12 -->
+        </div>
+        <!-- .row -->
+    </main>
+    {% include 'base/createModal.html' %}
+{% endblock content %}
+{% block moreScript %}
+    <script>
+    kamaDatepicker('id_register_date', {buttonsColor: "green", forceFarsiDigits: true});
+    function modal_url(url, type) {
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function (data) {
+                $("#"+ type +"_modal_body").html(data);
+            }
+        })
+    }
+    </script>
+    <script src="/static/customers/js/django_select2.js"></script>
+{% endblock moreScript %}
