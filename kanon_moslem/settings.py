@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'members.apps.MembersConfig',
     'inventory.apps.InventoryConfig',
     'tuition.apps.TuitionConfig',
+    'education_management.apps.EducationManagementConfig',
 ]
 
 MIDDLEWARE = [

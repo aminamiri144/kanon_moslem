@@ -13,6 +13,6 @@ class TeacherCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     template_name = 'create_member.html'
     form_class = TeacherCreateForm
     success_message = 'کاربر جدید با موفقیت افزوده شد !'
-
+    
     def get_success_url(self):
         return reverse('member-detail', kwargs={'pk': self.object.pk,})

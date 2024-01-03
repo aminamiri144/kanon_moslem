@@ -3,7 +3,7 @@ from .models import *
 
 
 class MemberAdmin(admin.ModelAdmin):
-    list_display = ('username', 'mobile', 'first_name', 'last_name')
+    list_display = ('get_full_name', 'username', 'mobile')
 
 admin.site.register(Member, MemberAdmin)
 
@@ -30,3 +30,9 @@ class ClassAdmin(admin.ModelAdmin):
     list_display = ('name', 'created_year')
 
 admin.site.register(Class, ClassAdmin)
+
+
+class StudentAdmin(admin.ModelAdmin):
+    list_display = ('get_full_name', 'clas')
+
+admin.site.register(Student, StudentAdmin)

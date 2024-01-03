@@ -13,6 +13,9 @@ class Class(models.Model):
     name = models.CharField(max_length=100, verbose_name="نام گروه")
     created_year = models.CharField(max_length=4, verbose_name="سال تشکیل") 
 
+    def __str__(self):
+        return self.name
+
 
 
 class Experience(models.Model):
@@ -22,6 +25,9 @@ class Experience(models.Model):
     title = models.CharField(max_length=100, verbose_name="عنوان تخصص")
     description = models.TextField(verbose_name="توضیحات", blank=True, null=True)
 
+    def __str__(self):
+        return self.title
+
 
 class StudyField(models.Model):
     class Meta:
@@ -29,6 +35,9 @@ class StudyField(models.Model):
         verbose_name_plural = "رشته های تحصیلی"
     title = models.CharField(max_length=100, verbose_name="عنوان رشته")
     description = models.TextField(verbose_name="توضیحات", blank=True, null=True)
+
+    def __str__(self):
+        return self.title
 
 class Member(AbstractUser):
 
@@ -48,7 +57,7 @@ class Member(AbstractUser):
         verbose_name="موبایل",
         validators=[mobile_validator],
         )
-        
+
     address = models.CharField(max_length=250, blank=True, verbose_name="آدرس")
 
     birth_date = models.DateField(verbose_name="تاریخ تولد", blank=True, null=True)
@@ -61,6 +70,9 @@ class Member(AbstractUser):
     def save(self, *args, **kwargs):
         self.full_clean()  # اعتبارسنجی قبل از ذخیره
         super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.get_full_name()
 
 
 
@@ -86,7 +98,20 @@ class Teacher(Member):
     experiences = models.ManyToManyField('Experience' , verbose_name="تخصص ها", blank=True, null=True)
     study_field = models.ForeignKey(StudyField, on_delete=models.DO_NOTHING, verbose_name="رشته تحصیلی", blank=True, null=True)
 
+
+    
+class Student(Member):
+    class Meta:
+        verbose_name = "متربی"
+        verbose_name_plural = "متربیان"
+
+    clas = models.ForeignKey(Class, on_delete=models.DO_NOTHING, verbose_name="گروه")
+    father_name = models.CharField(max_length=30, verbose_name="نام پدر")
+    mather_name = models.CharField(max_length=30, verbose_name="نام و نام خانوادگی مادر")
+    register_date = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ثبت نام")
+
     
 
+    
 
 
