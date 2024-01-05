@@ -110,6 +110,11 @@ class Student(Member):
     mather_name = models.CharField(max_length=30, verbose_name="نام و نام خانوادگی مادر")
     register_date = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ثبت نام")
 
+    def __str__(self):
+        return self.get_full_name()
+
+
+
     
 
     

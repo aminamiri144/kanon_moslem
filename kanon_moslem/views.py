@@ -6,6 +6,8 @@ from django.views.generic import TemplateView
 from django.views import View
 from django.contrib.auth import logout
 from django.shortcuts import redirect
+from . import titles
+
 
 
 
@@ -81,13 +83,11 @@ class UserLoginView(LoginView):
 class PanelView(LoginRequiredMixin, TemplateView):
     template_name = "panel.html"
 
-    # def get_context_data(self, **kwargs):
-    #     # Call the base implementation first to get a context
-    #     context = super().get_context_data(**kwargs)
-    #     # Add in a QuerySet of all the books
-    #     groups = Group.objects.all()
-    #     context['groups'] = groups
-    #     return context
+    def get_context_data(self, **kwargs):
+        context = {}
+        context['page_title'] = titles.KANON_NAME
+        context['page_description'] = 'سامانه مدیریت کانون تربیتی'
+        return context
 
 
 
@@ -110,4 +110,4 @@ class UserLogoutView(LoginRequiredMixin, View):
         # log_save(request.user, 1, 2, True)
         logout(request)
 
-        return redirect('/accounts/login')
+        return redirect('/login')

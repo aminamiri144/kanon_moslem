@@ -50,6 +50,8 @@ class Lesson(models.Model):
     description = models.TextField(max_length=300, verbose_name="توضیحات درس", null=True, blank=True)
     ratio = models.IntegerField(default=1, verbose_name="ضریب درس")
 
+    
+
     def __str__(self):
         return self.title
 
@@ -59,25 +61,30 @@ class SelectedLesson(models.Model):
         verbose_name = "درس گرفته‌شده"
         verbose_name_plural = "درس‌های گرفته‌شده"
 
+        constraints = [
+            models.UniqueConstraint(fields=['student', 'lesson', 'term'], name='unique_student_term_lesson')
+        ]
+
     GradeChoice = [
-        ( 1 , 'عالی' ),
-        ( 2 , 'بسیار خوب'),
-        ( 3 , 'خوب'),
-        ( 4 , 'متوسط'),
-        ( 5 , 'ضعیف'),
-        ( 6 , 'بسیارضعیف'),
-        ( 7 , 'غایب'),
-        ( 8 , 'ثبت نشده'),
+        ( '1' , 'عالی' ),
+        ( '2' , 'بسیارخوب'),
+        ( '3' , 'خوب'),
+        ( '4' , 'متوسط'),
+        ( '5' , 'ضعیف'),
+        ( '6' , 'بسیارضعیف'),
+        ( '7' , 'غایب'),
+        ( '8' , 'ثبت‌نشده'),
     ]
 
     student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name="متربی")
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, verbose_name="درس")
     term = models.ForeignKey(Term, on_delete=models.CASCADE, verbose_name="ترم‌تحصیلی")
-    grade = models.CharField(choices=GradeChoice, default=8 ,max_length=2, blank=True, null=True, verbose_name="نمره‌")
+    grade = models.CharField(choices=GradeChoice, default='8' ,max_length=10, blank=True, null=True, verbose_name="نمره‌")
 
+    unique_together = ('student', 'lesson','term',)
 
     def __str__(self):
-        return self.student
+        return self.student.get_full_name()
 
 
 class Discipline(models.Model):
