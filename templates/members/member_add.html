@@ -6,17 +6,17 @@
     <main role="main" class="main-content">
         <div class="container-fluid">
             <div class="row justify-content-center">
-                <div class="col-12">
+                <div class="col-md-12">
                     <h2 class="mb-2 page-title">{{ page_title }}</h2>
                     <p class="card-text">{{ page_description }}</p>
                     <div class="row my-4">
                         <!-- Small table -->
-                        <div class="col-md-12">
+                        <div class="col-xl-8">
                             <div class="card shadow">
                                 <div class="card-body">
-                                    <div class="col-md-6">
+                                    <div class="col">
                                         <form class="needs-validation"
-                                              action="{% url 'teacher-add' %}"
+                                              action="{{ action_url }}"
                                               method="post"
                                               autocomplete="off"
                                               id="customer-form"
@@ -34,7 +34,7 @@
                                                     </div>
                                                 </div>
                                             {% endfor %}
-                                            <button type="submit" class="btn btn-success">ایجاد کاربر</button>
+                                            <button type="submit" class="btn mb-2 btn-success btn-lg btn-block">{{ button_title }}</button>
                                         </form>
                                     </div>
                                 </div>
@@ -49,7 +49,7 @@
         </div>
         <!-- .row -->
     </main>
-{% include 'base/createModal.html' %}
+    {% include 'base/createModal.html' %}
 {% endblock content %}
 {% block moreScript %}
     <script>

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'inventory.apps.InventoryConfig',
     'tuition.apps.TuitionConfig',
     'education_management.apps.EducationManagementConfig',
+    'django_jalali',
 ]
 
 MIDDLEWARE = [
