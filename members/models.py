@@ -63,6 +63,15 @@ class Member(AbstractUser):
 
     birth_date = jmodels.jDateField(verbose_name="تاریخ تولد", blank=True, null=True)
 
+    @property
+    def jd_birth_date(self):
+        birth_date = str(self.birth_date).replace('-','/')
+        try:
+            return birth_date
+        except:
+            return 'ثبت نشده!'
+
+
     def clean(self):
         #super().clean()
         if not is_valid_codemeli(self.username):
@@ -113,6 +122,14 @@ class Student(Member):
     mather_name = models.CharField(max_length=30, verbose_name="نام و نام خانوادگی مادر")
     register_date = jmodels.jDateTimeField(auto_now_add=True, verbose_name="تاریخ ثبت نام")
     school_name = models.CharField(max_length=50, verbose_name="نام مدرسه ", default='نامشخص')
+
+    @property
+    def jd_register_date(self):
+        jd_reg_date = str(self.register_date).replace('-','/')
+        try:
+            return jd_reg_date
+        except:
+            return 'ثبت نشده!'
 
     def __str__(self):
         return self.get_full_name()

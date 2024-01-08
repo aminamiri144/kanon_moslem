@@ -1,13 +1,23 @@
 @charset "UTF-8";
 
 @font-face {
-    font-family: "Shabnam";
-    src: url("../fonts/shabnam/Shabnam.eot?29jl7i");
-    src: url("../fonts/shabnam/Shabnam.eot?29jl7i#iefix") format("embedded-opentype"), url("../fonts/shabnam/Shabnam.ttf?29jl7i") format("truetype"), url("../fonts/shabnam/Shabnam.woff?29jl7i") format("woff");
+    font-family: "IRANSansX";
+    src: url("../fonts/IRANsans/IRANSansXFaNum-Regular.ttf?29jl7i") format("truetype"),
+         url("../fonts/IRANsans/IRANSansXFaNum-Regular.woff?29jl7i") format("woff");
     font-weight: normal;
     font-style: normal;
     font-display: block;
 }
+
+@font-face {
+    font-family: "IRANSansX_b";
+    src: url("../fonts/IRANsans/IRANSansXFaNum-Bold.ttf?29jl7i") format("truetype"),
+         url("../fonts/IRANsans/IRANSansXFaNum-Bold.woff?29jl7i") format("woff");
+    font-weight: bold;
+    font-style: normal;
+    font-display: block;
+}
+
 
 
 @font-face {

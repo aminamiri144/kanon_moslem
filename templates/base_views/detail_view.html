@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    {% include 'base/navigator.html' %}
+    {% include 'base/aside.html' %}
+    <main role="main" class="main-content">
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                <div class="col-md-12">
+                    <h2 class="mb-2 page-title">{{ page_title }}</h2>
+                    <p class="card-text">{{ page_description }}</p>
+                    <div class="row my-4">
+                        <!-- Small table -->
+                        <div class="col-xl-8">
+                            <div class="card shadow">
+                                <div class="card-body">
+                                    <div class="card mb-4">
+                                        <table class="table table-bordered table-hover mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>عنوان</th>
+                                                    <th>مشخصات</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for field_info in fields_info %}
+                                                    <tr>
+                                                        <td class="text-muted">{{ field_info.verbosename }}</td>
+                                                        <td>{{ field_info.value }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- simple table -->
+                </div>
+                <!-- end section -->
+            </div>
+            <!-- .col-12 -->
+        </div>
+        <!-- .row -->
+    </main>
+    {% include 'base/createModal.html' %}
+{% endblock content %}
+{% block moreScript %}
+    <script>
+    kamaDatepicker('id_birth_date', {buttonsColor: "green", forceFarsiDigits: true});
+    function modal_url(url, type) {
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function (data) {
+                $("#"+ type +"_modal_body").html(data);
+            }
+        })
+    }
+    </script>
+{% endblock moreScript %}
