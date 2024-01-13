@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% load static %}
+{% load jformat %}
+{% block content %}
+    {% include 'base/navigator.html' %}
+    {% include 'base/aside.html' %}
+    <main role="main" class="main-content">
+        <div class="container-fluid">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show"
+                         role="alert">
+                        {{ message|safe }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">x</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <h2 class="mb-2 page-title">موارد انضباطی</h2>
+                    <p class="card-text">لیست موارد انضباطی : {{ student_fullname }}</p>
+                    <a href="{% url 'sdg-add' student_id %}" class="btn btn-success btn ml-auto">ثبت مورد انضباطی</a>
+                    <div class="row my-4">
+                        <!-- Small table -->
+                        <div class="col-md-12">
+                            
+                            <div class="card">
+                                <div class="card-body">
+
+                                    {% if dgs %}
+                                        <div class="table-responsive">
+                                            <table class="table table-hover text-nowrap">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">نام و نام خانوادگی</th>
+                                                        <th scope="col">گروه</th>
+                                                        <th scope="col">شماره تماس</th>
+                                                        <th scope="col">کد ملی</th>
+                                                        <th scope="col">عملیات</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for d in dgs %}
+                                                        <tr>
+                                                            <td>{{ d.id }}</td>
+                                                            <td>{{ student.clas }}</td>
+                                                            <td>{{ student.mobile }}</td>
+                                                            <td>{{ student.username }}</td>
+                                                            <td>
+                                                                {% comment %} <button type="button"
+                                                                        class="btn btn-warning btn-sm"
+                                                                        onclick="modal_url('/student/update/{{ student.id }}', 'update');"
+                                                                        data-toggle="modal"
+                                                                        data-target="#update_modal">ویرایش</button> {% endcomment %}
+                                                                <a href="{% url 'student-detail' student.id %}"
+                                                                   class="btn btn-outline-info btn-sm">اطلاعات کامل</a>
+                                                                <a href="{% url 'student-detail' student.id %}"
+                                                                   class="btn btn-outline-warning btn-sm">مواردانضباطی</a>
+                                                                <a href="{% url 'student-detail' student.id %}"
+                                                                   class="btn btn-outline-secondary btn-sm">نمرات دروس ترم</a>
+                                                            </td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    {% else %}
+                                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                            هیچ نتیجه ای در جستجو یافت نشد! مجددا تلاش کنید.
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                <span aria-hidden="true">x</span>
+                                            </button>
+                                        </div>
+                                    {% endif %}
+                                    <div class="row">
+                                        <nav aria-label="">
+                                            <ul class="pagination">
+                                                {% if page_obj.has_previous %}
+                                                    <li class="page-item">
+                                                        <a class="page-link"
+                                                           href="?page={{ page_obj.previous_page_number }}"
+                                                           tabindex="-1">قبلی</a>
+                                                    </li>
+                                                {% else %}
+                                                    <li class="page-item disabled">
+                                                        <a class="page-link" href="">صفحه قبل</a>
+                                                    </li>
+                                                {% endif %}
+                                                <li class="page-item active">
+                                                    <a class="page-link" href="#">{{ page_obj.number }} <span class="sr-only">(صفحه فعلی)</span></a>
+                                                </li>
+                                                {% if page_obj.has_next %}
+                                                    <li class="page-item">
+                                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">صفحه بعد</a>
+                                                    </li>
+                                                {% else %}
+                                                    <li class="page-item disabled">
+                                                        <a class="page-link" href="">صفحه بعد</a>
+                                                    </li>
+                                                {% endif %}
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- simple table -->
+                </div>
+                <!-- end section -->
+            </div>
+            <!-- .col-12 -->
+        </div>
+        <!-- .row -->
+    </main>
+    {% include 'base/updateModal.html' %}
+    {% include 'base/detailModal.html' %}
+{% endblock content %}
+{% block moreScript %}
+    <script src="{% static 'plugins/jalaliDatepicker/kamadatepicker.min.js'%}"></script>
+    <script>kamaDatepicker('id_register_date', {buttonsColor: "green", forceFarsiDigits: true});</script>
+    <script>
+function modal_url(url, type) {
+    $.ajax({
+        url: url,
+        type: 'GET',
+        success: function (data) {
+            $("#"+ type +"_modal_body").html(data);
+        }
+    })
+}
+    </script>
+{% endblock moreScript %}

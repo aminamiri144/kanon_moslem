@@ -24,7 +24,8 @@ urlpatterns = [
     path('', PanelView.as_view(), name="panel"),
     path('login/', UserLoginView.as_view(), name='login'),
     path('logout/', UserLogoutView.as_view(), name='logout'),
-    path('members/', include("members.urls")),
+    path('m/', include("members.urls")),
+    path('edu/', include("education_management.urls")),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

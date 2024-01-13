@@ -4,20 +4,7 @@ from .validators import is_valid_codemeli
 from django.core.exceptions import ValidationError
 from kanon_moslem.datetimeUtils import change_date_to_english
 from django.utils.html import format_html
-
-
-class BaseFormKanon(forms.ModelForm):
-    MODEL_VERBOSE_NAME = None
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field_name, field in self.fields.items():
-            field.label = f'{field.label} {self.MODEL_VERBOSE_NAME}'
-
-        for visible in self.visible_fields():
-            visible.field.widget.attrs['class'] = 'form-control'
-            visible.field.widget.attrs['placeholder'] = f'{visible.field.label} را وارد کنید ...'
-
+from kanon_moslem.aminBaseViews import *
 
 
 
@@ -73,7 +60,10 @@ class StudentCreateForm(BaseFormKanon):
             "clas",
             "father_name",
             "mather_name",
-            "school_name"
+            "mather_name",
+            "home_phone",
+            "father_phone",
+            "mather_phone"
         ]
 
     def clean_username(self):

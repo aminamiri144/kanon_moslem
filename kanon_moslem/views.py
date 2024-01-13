@@ -90,6 +90,16 @@ class PanelView(LoginRequiredMixin, TemplateView):
         return context
 
 
+class PanelView1(LoginRequiredMixin, TemplateView):
+    template_name = "main1.html"
+
+    def get_context_data(self, **kwargs):
+        context = {}
+        context['page_title'] = titles.KANON_NAME
+        context['page_description'] = 'سامانه مدیریت کانون تربیتی'
+        return context
+
+
 
 
 class UserLogoutView(LoginRequiredMixin, View):

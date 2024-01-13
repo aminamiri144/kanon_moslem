@@ -8,6 +8,11 @@ class Term(models.Model):
     class Meta:
         verbose_name = "نیم‌سال تحصیلی"
         verbose_name_plural = "نیم‌سال‌های‌تحصیلی"
+
+        constraints = [
+            models.UniqueConstraint(fields=['year', 'mterm'], name='unique_term')
+        ]
+
     TERM_CHOICES = [
         ('T', 'تابستان'),
         ('M', 'پاییز'),
@@ -18,9 +23,21 @@ class Term(models.Model):
     year = models.CharField(max_length=4, verbose_name="سال")
     mterm = models.CharField(choices=TERM_CHOICES, default='T',verbose_name="نیم‌سال", max_length=20)
     is_active = models.BooleanField(default=False, verbose_name="نیم‌سال فعال")
+    
+    unique_together = ('year', 'mterm',)
 
+    @property
     def get_full_title(self):
         return f'{self.get_mterm_display()} | {self.year}'
+
+    @property
+    def get_is_active(self):
+        if self.is_active == False:
+            return '0'
+        else:
+            return '1'
+    
+
 
     def __str__(self):
         return f'{self.get_mterm_display()} | {self.year}'
@@ -50,6 +67,7 @@ class Lesson(models.Model):
     description = models.TextField(max_length=300, verbose_name="توضیحات درس", null=True, blank=True)
     ratio = models.IntegerField(default=1, verbose_name="ضریب درس")
 
+    
     
 
     def __str__(self):

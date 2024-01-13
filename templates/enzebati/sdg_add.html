@@ -6,21 +6,20 @@
     <main role="main" class="main-content">
         <div class="container-fluid">
             <div class="row justify-content-center">
-                <div class="col-md-12">
-                    <h3 class="mb-2 page-title">{{ page_title }}</h3>
-                    <p class="card-text">{{ page_description }}</p>
+                <div class="col-12">
+                    <h2 class="mb-2 page-title">لیست درخواست دهنده ها</h2>
+                    <p class="card-text">لیست افراد و سازمان های درخواست دهنده</p>
                     <div class="row my-4">
                         <!-- Small table -->
-                        <div class="col-xl-8">
+                        <div class="col-md-12">
                             <div class="card shadow">
                                 <div class="card-body">
-                                    <div class="col">
+                                    <div class="col-md-6">
                                         <form class="needs-validation"
-                                              action="{{ action_url }}"
+                                              action="{% url 'sdg-add' student_id %}"
                                               method="post"
                                               autocomplete="off"
                                               id="customer-form"
-                                              enctype="multipart/form-data"
                                               novalidate>
                                             {% csrf_token %}
                                             {% for field in form %}
@@ -28,13 +27,12 @@
                                                     <label class="col-form-label col-lg-3 col-sm-12">{{ field.label_tag }}</label>
                                                     <div class="col-lg-9 col-md-9 col-sm-12">
                                                         {{ field }}
-                                                        {% if form.errors.field %}<span class="text-danger">{{ form.errors.field.0 }}</span>{% endif %}
                                                         <div class="invalid-feedback">مقدار مناسب را وارد کنید.</div>
                                                         {% for error in field.errors %}<div class="feedbackinvalid">{{ error|escape }}</div>{% endfor %}
                                                     </div>
                                                 </div>
                                             {% endfor %}
-                                            <button type="submit" class="btn mb-2 btn-success btn-lg btn-block">{{ button_title }}</button>
+                                            <button type="submit" class="btn btn-success">ثبت نام</button>
                                         </form>
                                     </div>
                                 </div>
@@ -49,19 +47,36 @@
         </div>
         <!-- .row -->
     </main>
-    {% include 'base/createModal.html' %}
 {% endblock content %}
 {% block moreScript %}
     <script>
-    kamaDatepicker('{{ date_field_id }}', {buttonsColor: "green", forceFarsiDigits: true});
-    function modal_url(url, type) {
-        $.ajax({
-            url: url,
-            type: 'GET',
-            success: function (data) {
-                $("#"+ type +"_modal_body").html(data);
+    kamaDatepicker('id_created', {buttonsColor: "green", forceFarsiDigits: true});
+
+    $('#id_customer').select2({
+        ajax: {
+          url: 'https://api.github.com/search/repositories',
+          dataType: 'json'
+        }
+      });   
+
+
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (function() {
+      'use strict';
+      window.addEventListener('load', function() {
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.getElementsByClassName('needs-validation');
+        // Loop over them and prevent submission
+        var validation = Array.prototype.filter.call(forms, function(form) {
+          form.addEventListener('submit', function(event) {
+            if (form.checkValidity() === false) {
+              event.preventDefault();
+              event.stopPropagation();
             }
-        })
-    }
+            form.classList.add('was-validated');
+          }, false);
+        });
+      }, false);
+    })();
     </script>
 {% endblock moreScript %}

@@ -29,17 +29,10 @@
                 </a>
             </li>
             <li class="nav-item dropdown">
-                <a href="{% url 'panel' %}"
+                <a href="{% url 'student-view' %}"
                    class="nav-link">
                     <i class="fe fe-users fe-16"></i>
                     <span class="ml-3 item-text">متربیان</span><span class="sr-only">(current)</span>
-                </a>
-            </li>
-            <li class="nav-item dropdown">
-                <a href="{% url 'panel' %}"
-                   class="nav-link">
-                    <i class="bi bi-cash"></i>
-                    <span class="ml-3 item-text">امورمالی و شهریه</span><span class="sr-only">(current)</span>
                 </a>
             </li>
             <li class="nav-item dropdown">
@@ -56,10 +49,10 @@
                         <a class="nav-link pl-3" href="{% url 'teacher-add' %}"><span class="ml-1 item-text">افزودن سرگروه</span></a>
                       </li>
                     <li class="nav-item">
-                      <a class="nav-link pl-3" href="./table_advanced.html"><span class="ml-1 item-text">ترم های تحصیلی</span></a>
+                      <a class="nav-link pl-3" href="{% url 'term-view' %}"><span class="ml-1 item-text">ترم های تحصیلی</span></a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link pl-3" href="./table_datatables.html"><span class="ml-1 item-text">درس ها</span></a>
+                      <a class="nav-link pl-3" href="{% url 'lesson-view' %}"><span class="ml-1 item-text">درس ها</span></a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link pl-3" href="./table_datatables.html"><span class="ml-1 item-text">تنظیمات</span></a>
@@ -71,6 +64,13 @@
                    class="nav-link">
                     <i class="fe fe-edit fe-16"></i>
                     <span class="ml-3 item-text">ثبت نمرات و کارنامه</span><span class="sr-only">(current)</span>
+                </a>
+            </li>
+            <li class="nav-item dropdown">
+                <a href="{% url 'panel' %}"
+                   class="nav-link">
+                    <i class="bi bi-cash"></i>
+                    <span class="ml-3 item-text">امورمالی و شهریه</span><span class="sr-only">(current)</span>
                 </a>
             </li>
             <li class="nav-item dropdown">

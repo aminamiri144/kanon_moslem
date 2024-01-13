@@ -121,7 +121,10 @@ class Student(Member):
     father_name = models.CharField(max_length=30, verbose_name="نام پدر ")
     mather_name = models.CharField(max_length=30, verbose_name="نام و نام خانوادگی مادر")
     register_date = jmodels.jDateTimeField(auto_now_add=True, verbose_name="تاریخ ثبت نام")
-    school_name = models.CharField(max_length=50, verbose_name="نام مدرسه ", default='نامشخص')
+    school_name = models.CharField(max_length=50, verbose_name="نام مدرسه ", blank=True, null=True)
+    home_phone = models.CharField(max_length=11, verbose_name="تلفن منزل", blank=True, null=True)
+    father_phone = models.CharField(max_length=11, verbose_name="شماره موبایل پدر", blank=True, null=True)
+    mather_phone = models.CharField(max_length=11, verbose_name="شماره موبایل مادر", blank=True, null=True)
 
     @property
     def jd_register_date(self):
