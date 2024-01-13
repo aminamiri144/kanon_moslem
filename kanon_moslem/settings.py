@@ -85,7 +85,7 @@ DATABASES = {
         'NAME': 'dbmoslem', 
         'USER': 'root',
         'PASSWORD': 'm18qVjltFvLTMXDUPJVYeYMH',
-        # 'HOST': env('DB_HOST'), 
+        'HOST': 'my-network', 
         'PORT': '5432',
         # 'OPTIONS': {'autocommit': True} if IS_IN_SERVER else {}
     }
