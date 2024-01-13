@@ -28,7 +28,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -82,8 +81,13 @@ WSGI_APPLICATION = 'kanon_moslem.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'dbmoslem', 
+        'USER': 'root',
+        'PASSWORD': 'm18qVjltFvLTMXDUPJVYeYMH',
+        # 'HOST': env('DB_HOST'), 
+        'PORT': '5432',
+        # 'OPTIONS': {'autocommit': True} if IS_IN_SERVER else {}
     }
 }
 
