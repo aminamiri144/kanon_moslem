@@ -13,7 +13,7 @@ class TeacherCreateView(BaseCreateViewAmin):
     PAGE_TITLE = 'افزودن سرگروه'
     ACTION_URL = 'teacher-add'
     BUTTON_TITLE = 'افزودن سرگروه'
-    date_field_id = 'birth_date'
+    date_field_id = 'id_birth_date'
 
 
     
@@ -25,7 +25,7 @@ class StudentCreateView(BaseCreateViewAmin):
     PAGE_TITLE = 'ثبت نام متربی'
     ACTION_URL = 'student-add'
     BUTTON_TITLE = "ثبت نام متربی"
-    date_field_id = 'birth_date'
+    date_field_id = 'id_birth_date'
     def get_success_url(self):
         return reverse('student-view')
 
