@@ -102,8 +102,8 @@ class SdgCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         student = self.kwargs['pk']
         return {'student': student, 'term': t.id}
 
-    def get_success_url(self):
-        return reverse('sdg-list', self.kwargs['pk'])
+    # def get_success_url(self):
+    #     return reverse('sdg-list')
     
 
 
