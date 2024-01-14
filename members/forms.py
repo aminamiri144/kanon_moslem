@@ -29,11 +29,11 @@ class TeacherCreateForm(BaseFormKanon):
             "study_field",
         ]
 
-    def clean_username(self):
-        username = self.cleaned_data.get('username')
-        if not is_valid_codemeli(username):
-            raise ValidationError("کدملی وارد شده معتبر نمی‌باشد")
-        return username
+    # def clean_username(self):
+    #     username = self.cleaned_data.get('username')
+    #     if not is_valid_codemeli(username):
+    #         raise ValidationError("کدملی وارد شده معتبر نمی‌باشد")
+    #     return username
 
     def clean_birth_date(self):
         birth_date = self.cleaned_data['birth_date']
