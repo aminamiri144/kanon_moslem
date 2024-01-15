@@ -12,7 +12,7 @@ from kanon_moslem.aminBaseViews import *
 class TeacherCreateForm(BaseFormKanon):
     MODEL_VERBOSE_NAME = 'سرگروه'
 
-    birth_date = forms.DateField(label='تاریخ تولد')
+    birth_date = forms.CharField(label='تاریخ تولد', widget=forms.TextInput(attrs={'placeholder': 'تاریخ را انتخاب کنید'}))
 
     class Meta:
         model = Teacher
@@ -29,11 +29,6 @@ class TeacherCreateForm(BaseFormKanon):
             "study_field",
         ]
 
-    # def clean_username(self):
-    #     username = self.cleaned_data.get('username')
-    #     if not is_valid_codemeli(username):
-    #         raise ValidationError("کدملی وارد شده معتبر نمی‌باشد")
-    #     return username
 
     def clean_birth_date(self):
         birth_date = self.cleaned_data['birth_date']
@@ -58,19 +53,14 @@ class StudentCreateForm(BaseFormKanon):
             "mobile",
             "address",
             "clas",
+            "school_name",
             "father_name",
-            "mather_name",
             "mather_name",
             "home_phone",
             "father_phone",
             "mather_phone"
         ]
 
-    def clean_username(self):
-        username = self.cleaned_data.get('username')
-        if not is_valid_codemeli(username):
-            raise ValidationError("کدملی وارد شده معتبر نمی‌باشد")
-        return username
 
     def clean_birth_date(self):
         birth_date = self.cleaned_data['birth_date']

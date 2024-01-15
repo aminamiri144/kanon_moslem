@@ -47,10 +47,8 @@ class Member(AbstractUser):
     
     username = models.CharField(max_length=10, blank=True, verbose_name="کد ملی",
      unique=True,
-     validators=[is_valid_codemeli],
      error_messages={
             "unique": "این کد ملی قبلا ثبت شده است .",
-            "validators": "کدملی وارد شده معتبر نمی باشد",
             }
         )
      
@@ -72,14 +70,14 @@ class Member(AbstractUser):
             return 'ثبت نشده!'
 
 
-    def clean(self):
-        #super().clean()
-        if not is_valid_codemeli(self.username):
-            raise ValidationError("کدملی وارد شده معتبر نمی‌باشد")
+    # def clean(self):
+    #     #super().clean()
+    #     if not is_valid_codemeli(self.username):
+    #         raise ValidationError("کدملی وارد شده معتبر نمی‌باشد")
 
-    def save(self, *args, **kwargs):
-        self.full_clean()  # اعتبارسنجی قبل از ذخیره
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     self.full_clean()  # اعتبارسنجی قبل از ذخیره
+    #     super().save(*args, **kwargs)
 
     def __str__(self):
         return self.get_full_name()
@@ -106,9 +104,11 @@ class Teacher(Member):
 
     education = models.CharField(choices=EDUCATION_CHOICES, default='OT',verbose_name="تحصیلات", max_length=100, blank=True, null=True)
     clss = models.ForeignKey(Class, on_delete=models.DO_NOTHING, verbose_name="گروه", blank=True, null=True)
-    experiences = models.ManyToManyField('Experience' , verbose_name="تخصص ها", blank=True, null=True)
+    experiences = models.ManyToManyField(Experience , verbose_name="تخصص ها", blank=True, null=True)
     study_field = models.ForeignKey(StudyField, on_delete=models.DO_NOTHING, verbose_name="رشته تحصیلی", blank=True, null=True)
 
+    def __str__(self):
+        return self.get_full_name()
 
     
 class Student(Member):

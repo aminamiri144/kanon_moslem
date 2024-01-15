@@ -13,8 +13,8 @@ class TeacherCreateView(BaseCreateViewAmin):
     PAGE_TITLE = 'افزودن سرگروه'
     ACTION_URL = 'teacher-add'
     BUTTON_TITLE = 'افزودن سرگروه'
-    date_field_id = 'id_birth_date'
-
+    DATE_FIELD_ID = 'id_birth_date'
+    SUCCESS_URL = 'teacher-detail'
 
     
 
@@ -25,9 +25,10 @@ class StudentCreateView(BaseCreateViewAmin):
     PAGE_TITLE = 'ثبت نام متربی'
     ACTION_URL = 'student-add'
     BUTTON_TITLE = "ثبت نام متربی"
-    date_field_id = 'id_birth_date'
-    def get_success_url(self):
-        return reverse('student-view')
+    DATE_FIELD_ID = 'id_birth_date'
+    SUCCESS_URL = 'student-detail'
+
+
 
 
     
@@ -57,14 +58,23 @@ class StudentDetailView(BaseDetailViewAmin):
 
 
 
-# class StudentModelView(ListView):
-#     model= Student
-#     PAGE_TITLE = "لیست متربیان"
-#     PAGE_DESCRIPTION = 'کانون تربیتی حضرت مسلم ابن عقیل'
-#     create_button_title = 'افزودن متربی جدید' 
-#     create_url = 'student-add' 
-#     fields_verbose = ['شناسه', 'نام ونام خانوادگی', 'گروه', 'کدملی', 'تاریخ تولد', 'شماره همراه']
-#     fields = ['id', 'get_full_name', 'clas', 'username', 'jd_birth_date', 'mobile'] 
+
+class TeacherDetailView(BaseDetailViewAmin):
+    PAGE_TITLE = 'مشخصات سرگروه'
+    PAGE_DESCRIPTION = ''
+    model = Teacher
+    fields = [
+        'first_name',
+        'last_name',
+        'mobile',
+        'username',
+        'birth_date',  
+        'clss',
+        'experiences',
+        'study_field',  
+        'address',
+    ]
+    models_property = ['birth_date']
 
 
 class StudentListView(LoginRequiredMixin, ListView):

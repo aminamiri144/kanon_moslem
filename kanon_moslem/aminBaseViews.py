@@ -30,9 +30,9 @@ class BaseCreateViewAmin(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     PAGE_DESCRIPTION = ''
     ACTION_URL = ''
     BUTTON_TITLE = ''
-    ACTION_URL = 'panel'
     template_name = 'base_views/create.html'
-    date_field_id = 'id_date'
+    DATE_FIELD_ID = 'id_date'
+    SUCCESS_URL = None
 
     def form_valid(self, form):
         try:  
@@ -48,18 +48,18 @@ class BaseCreateViewAmin(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         context['page_description'] = self.PAGE_DESCRIPTION
         context['action_url'] = reverse(self.ACTION_URL)
         context['button_title'] = self.BUTTON_TITLE
-        context['date_field_id'] = self.date_field_id
+        context['date_field_id'] = self.DATE_FIELD_ID
         return context
 
-    # def get_success_url(self):
-    #     return reverse(self.ACTION_URL, kwargs={'pk': self.object.pk, })
+    def get_success_url(self):
+        return reverse(self.SUCCESS_URL, kwargs={'pk': self.object.pk,})
 
 
 class BaseDetailViewAmin(View):
     PAGE_TITLE = ''
     PAGE_DESCRIPTION = ''
     model = None
-    template_name = 'base_views/detail_view.html'
+    template_name = 'base_views/detail.html'
     fields = []
     models_property = []
 
@@ -75,10 +75,11 @@ class BaseDetailViewAmin(View):
     def get_fields_info(self, obj):
         fields_info = []
         for field in obj._meta.fields:
-
+            value = getattr(obj, 'experiences')
+            print(value, 'experiences')
             if field.name in self.fields:
                 value = getattr(obj, field.name)
-
+                
                 if field.name in self.models_property:
                     value = getattr(obj, f'jd_{field.name}')
                 field_info = {
