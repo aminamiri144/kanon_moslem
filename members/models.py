@@ -121,7 +121,7 @@ class Student(Member):
     clas = models.ForeignKey(Class, on_delete=models.DO_NOTHING, verbose_name="گروه")
     father_name = models.CharField(max_length=30, verbose_name="نام پدر ")
     mather_name = models.CharField(max_length=30, verbose_name="نام و نام خانوادگی مادر")
-    register_date = jmodels.jDateTimeField(verbose_name="تاریخ ثبت نام", default=jdatetime.now())
+    register_date = models.DateTimeField(auto_now_add=True ,verbose_name="تاریخ ثبت نام")
     school_name = models.CharField(max_length=50, verbose_name="نام مدرسه ", blank=True, null=True)
     home_phone = models.CharField(max_length=11, verbose_name="تلفن منزل", blank=True, null=True)
     father_phone = models.CharField(max_length=11, verbose_name="شماره موبایل پدر", blank=True, null=True)
