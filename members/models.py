@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from .validators import *
 from django.core.exceptions import ValidationError
 from django_jalali.db import models as jmodels
+from jdatetime import datetime as jdatetime
 
 # Create your models here.
 
@@ -120,7 +121,7 @@ class Student(Member):
     clas = models.ForeignKey(Class, on_delete=models.DO_NOTHING, verbose_name="گروه")
     father_name = models.CharField(max_length=30, verbose_name="نام پدر ")
     mather_name = models.CharField(max_length=30, verbose_name="نام و نام خانوادگی مادر")
-    register_date = jmodels.jDateTimeField(auto_now_add=True, verbose_name="تاریخ ثبت نام")
+    register_date = jmodels.jDateTimeField(verbose_name="تاریخ ثبت نام", default=jdatetime.now())
     school_name = models.CharField(max_length=50, verbose_name="نام مدرسه ", blank=True, null=True)
     home_phone = models.CharField(max_length=11, verbose_name="تلفن منزل", blank=True, null=True)
     father_phone = models.CharField(max_length=11, verbose_name="شماره موبایل پدر", blank=True, null=True)
