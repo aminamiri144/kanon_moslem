@@ -75,8 +75,6 @@ class BaseDetailViewAmin(View):
     def get_fields_info(self, obj):
         fields_info = []
         for field in obj._meta.fields:
-            value = getattr(obj, 'experiences')
-            print(value, 'experiences')
             if field.name in self.fields:
                 value = getattr(obj, field.name)
                 
