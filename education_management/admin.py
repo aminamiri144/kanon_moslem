@@ -27,5 +27,9 @@ class DisciplineGradeAdmin(admin.ModelAdmin):
     list_display = ('student', 'discipline', 'grade', 'term', 'description', 'created')
 admin.site.register(DisciplineGrade, DisciplineGradeAdmin)
 
+class ControlSelectionAdmin(admin.ModelAdmin):
+    list_display = ('clas', 'lesson', 'term')
+admin.site.register(ControlSelection, ControlSelectionAdmin)
+
 
 

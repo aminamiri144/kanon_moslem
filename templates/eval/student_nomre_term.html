@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    {% include 'base/navigator.html' %}
+    {% include 'base/aside.html' %}
+    <main role="main" class="main-content">
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <h2 class="mb-2 page-title">ثبت نمرات ترم</h2>
+                    <span class="card-text">ثبت نمرات متربی: {{ student }}</span>
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{% if message.tag %}{{ message.tag }}{% endif %} alert-dismissible fade show"
+                                 role="alert">
+                                {{ message.message }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">x</span>
+                                </button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    <div class="row my-4">
+                        <!-- Small table -->
+                        <div class="col-md-12">
+                            <div class="card shadow">
+                                <div class="card-body">
+                                    <div class="col-md-6">
+                                        <h3 class="card-text">ثبت نمرات متربی: {{ student }}</h3>
+                                        <form class="needs-validation"
+                                              action="{% url 'grade-student-add' student.id %}"
+                                              method="post"
+                                              autocomplete="off"
+                                              id="customer-form"
+                                              novalidate>
+                                            {% csrf_token %}
+                                            {% comment %} <table class="table table-hover"> {% endcomment %}
+                                                {% comment %} <thead>
+                                                    <tr>
+                                                        <th>نام درس</th>
+                                                        <th>ثبت نمره</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody> {% endcomment %}
+                                                    {% for grade in grades %}
+                                                        {% comment %} <tr> {% endcomment %}
+                                                            <div class="form-group row">
+                                                                {% comment %} <td> {% endcomment %}
+                                                                    <div class="col-md-6 mb-3">
+                                                                        <select class="form-control" name="lesson" id="id_lesson" readonly>
+                                                                            <option value="{{ grade.lesson.id }}">{{ grade.lesson }}</option>
+                                                                        </select>
+                                                                    </div>
+                                                                {% comment %} </td>
+                                                                <td> {% endcomment %}
+                                                                    <div class="col-md-6 mb-3">
+                                                                        <select class="form-control" name="grade" id="id_grade">
+                                                                            <option value="1" {% if grade.grade == '1' %} selected="" {% endif %}>عالی</option>
+                                                                            <option value="2" {% if grade.grade == '2' %} selected="" {% endif %}>بسیارخوب</option>
+                                                                            <option value="3" {% if grade.grade == '3' %} selected="" {% endif %}>خوب</option>
+                                                                            <option value="4" {% if grade.grade == '4' %} selected="" {% endif %}>متوسط</option>
+                                                                            <option value="5" {% if grade.grade == '5' %} selected="" {% endif %}>ضعیف</option>
+                                                                            <option value="6" {% if grade.grade == '6' %} selected="" {% endif %}>بسیارضعیف</option>
+                                                                            <option value="7" {% if grade.grade == '7' %} selected="" {% endif %}>غایب</option>
+                                                                            <option value="8" {% if grade.grade == '8' %} selected="" {% endif %}>ثبت نشده</option>
+                                                                        </select>
+                                                                        
+                                                                    </div>
+                                                                {% comment %} </td> {% endcomment %}
+                                                            </div>
+                                                        {% comment %} </tr> {% endcomment %}
+                                                    {% endfor %}
+                                                {% comment %} </tbody> {% endcomment %}
+                                            {% comment %} </table> {% endcomment %}
+                                            <button type="submit" class="btn btn-success">ثبت نمرات</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- simple table -->
+                </div>
+                <!-- end section -->
+            </div>
+            <!-- .col-12 -->
+        </div>
+        <!-- .row -->
+    </main>
+{% endblock content %}
+{% block moreScript %}
+    <script>
+    kamaDatepicker('id_created', {buttonsColor: "green", forceFarsiDigits: true});
+
+    $('#id_customer').select2({
+        ajax: {
+          url: 'https://api.github.com/search/repositories',
+          dataType: 'json'
+        }
+      });   
+
+
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (function() {
+      'use strict';
+      window.addEventListener('load', function() {
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.getElementsByClassName('needs-validation');
+        // Loop over them and prevent submission
+        var validation = Array.prototype.filter.call(forms, function(form) {
+          form.addEventListener('submit', function(event) {
+            if (form.checkValidity() === false) {
+              event.preventDefault();
+              event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+          }, false);
+        });
+      }, false);
+    })();
+    </script>
+{% endblock moreScript %}

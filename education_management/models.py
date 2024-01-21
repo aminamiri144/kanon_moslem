@@ -1,5 +1,5 @@
 from django.db import models
-from members.models import Student
+from members.models import Student, Class
 
 # Create your models here.
 
@@ -138,3 +138,17 @@ class DisciplineGrade(models.Model):
     
 
 
+class ControlSelection(models.Model):
+    class Meta:
+        verbose_name = "کنترل انتخاب واحد گروه"
+        verbose_name_plural = "کنترل انتخاب واحد گروه ها"
+
+        constraints = [
+            models.UniqueConstraint(fields=['clas', 'lesson', 'term'], name='unique_clas_term_lesson')
+        ]
+
+    clas = models.ForeignKey(Class, on_delete=models.CASCADE, verbose_name="گروه")
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, verbose_name="درس")
+    term = models.ForeignKey(Term, on_delete=models.CASCADE, verbose_name="ترم‌تحصیلی")
+
+    unique_together = ('clas', 'lesson','term',)
