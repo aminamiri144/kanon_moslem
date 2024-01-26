@@ -29,12 +29,15 @@ class SelectionLessonClass(View, LoginRequiredMixin):
             try:
                 ControlSelection(clas=clas, term=term, lesson=lesson).save()
                 for student in students:
-                    SelectedLesson(student=student, lesson=lesson,term=term).save()
+                    SelectedLesson(student=student,
+                                   lesson=lesson, term=term).save()
             except:
-                messages = [{'message': 'این درس قبلا برای این گروه گرفته شده است.','tag': 'danger',}]
+                messages = [
+                    {'message': 'این درس قبلا برای این گروه گرفته شده است.', 'tag': 'danger', }]
                 return render(request, self.template_name, {"form": form, "messages": messages})
 
-        messages = [{'message': 'انتخاب واحد با موفقیت انجام شد.','tag': 'success',}]
+        messages = [
+            {'message': 'انتخاب واحد با موفقیت انجام شد.', 'tag': 'success', }]
         return render(request, self.template_name, {"form": form, "messages": messages})
 
 
@@ -47,9 +50,7 @@ class GradeStudent(View, LoginRequiredMixin):
 
         grades = SelectedLesson.objects.filter(student=student, term=term)
 
-        
         return render(request, self.template_name, {"grades": grades, 'student': student})
-
 
     def post(self, request, *args, **kwargs):
         lesson = request.POST.getlist('lesson')
@@ -64,9 +65,20 @@ class GradeStudent(View, LoginRequiredMixin):
         term = Term.objects.filter(is_active=True).first()
         grades = SelectedLesson.objects.filter(student=student, term=term)
 
-        messages = [{'message': ' نمرات با موفقیت ثبت و بروزرسانی شد.','tag': 'success',}]
+        messages = [
+            {'message': ' نمرات با موفقیت ثبت و بروزرسانی شد.', 'tag': 'success', }]
 
         return render(request, self.template_name, {"grades": grades, 'student': student, "messages": messages})
+
+
+class GradesDetailView(View, LoginRequiredMixin):
+    template_name = "eval/karname.html"
+
+    def get(self, request, *args, **kwargs):
+        student = Student.objects.get(id=self.kwargs['pk'])
+        term = Term.objects.filter(is_active=True).first()
+        grades = SelectedLesson.objects.filter(student=student, term=term)
+
         
-        
-        
+
+        return render(request, self.template_name, {"grades": grades, 'student': student, 'term': term})

@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    {% include 'base/navigator.html' %}
+    {% include 'base/aside.html' %}
+    <main role="main" class="main-content">
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <h2 class="mb-2 page-title">کارنامه تربیتی</h2>
+                    <span class="card-text">ترم تحصیلی: {{ term }}</span>
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{% if message.tag %}{{ message.tag }}{% endif %} alert-dismissible fade show"
+                                 role="alert">
+                                {{ message.message }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">x</span>
+                                </button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    <div class="row my-4">
+                        <!-- Small table -->
+                        <div class="col-md-12">
+                            <div class="card shadow">
+                                <div class="card-body">
+                                    <div class="col-md-6">
+                                        <p class="card-text">متربی: {{ student }}</p>
+                                        <table class="table table-bordered table-hover mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>عنوان</th>
+                                                    <th>نمره</th>
+                                                    <th>توضیحات</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for g in grades %}
+                                            <tr>
+                                                <td>{{ g.lesson }}</td>
+                                                <td>{{ g.get_grade_display }}</td>
+                                                <td>توضیحات</td>
+                                                
+                                            </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- simple table -->
+                </div>
+                <!-- end section -->
+            </div>
+            <!-- .col-12 -->
+        </div>
+        <!-- .row -->
+    </main>
+{% endblock content %}
+{% block moreScript %}
+    <script>
+    kamaDatepicker('id_created', {buttonsColor: "green", forceFarsiDigits: true});
+
+    $('#id_customer').select2({
+        ajax: {
+          url: 'https://api.github.com/search/repositories',
+          dataType: 'json'
+        }
+      });   
+
+
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (function() {
+      'use strict';
+      window.addEventListener('load', function() {
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.getElementsByClassName('needs-validation');
+        // Loop over them and prevent submission
+        var validation = Array.prototype.filter.call(forms, function(form) {
+          form.addEventListener('submit', function(event) {
+            if (form.checkValidity() === false) {
+              event.preventDefault();
+              event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+          }, false);
+        });
+      }, false);
+    })();
+    </script>
+{% endblock moreScript %}

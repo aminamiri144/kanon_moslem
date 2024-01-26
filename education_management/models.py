@@ -152,3 +152,6 @@ class ControlSelection(models.Model):
     term = models.ForeignKey(Term, on_delete=models.CASCADE, verbose_name="ترم‌تحصیلی")
 
     unique_together = ('clas', 'lesson','term',)
+
+    def __str__(self):
+        return f"{self.clas} | {self.lesson} | {self.term}"
