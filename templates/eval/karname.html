@@ -28,7 +28,7 @@
                                     <div class="col-md-6">
                                         <p class="card-text">متربی: {{ student }}</p>
                                         <table class="table table-bordered table-hover mb-0">
-                                            <thead>
+                                            <thead class="thead-dark">
                                                 <tr>
                                                     <th>عنوان</th>
                                                     <th>نمره</th>
@@ -44,6 +44,11 @@
                                                 
                                             </tr>
                                             {% endfor %}
+                                            <tr class="table-primary">
+                                                <td> معدل ترم</td>
+                                                <td>{{ average }} ({{ nt }})</td>
+                                                <td>نمره معدل از 5 می باشد.</td>
+                                            </tr>
                                             </tbody>
                                         </table>
                                     </div>

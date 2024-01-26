@@ -78,7 +78,37 @@ class GradesDetailView(View, LoginRequiredMixin):
         student = Student.objects.get(id=self.kwargs['pk'])
         term = Term.objects.filter(is_active=True).first()
         grades = SelectedLesson.objects.filter(student=student, term=term)
+        sum_grades = 0
+        lesson_count = 0
+        for g in grades:
+            if g.grade not in ['n', 'g']:
+                n = int(g.grade)
+                l = g.lesson.ratio
+                sum_grades += n * l
+                lesson_count += l
 
+        average = round(sum_grades / lesson_count, 1)
+        nomre_tosifi = ""
+        if  0 <= average < 1 :
+            nomre_tosifi = "بسیار ضعیف"
+        elif 1 <= average < 2 :
+            nomre_tosifi = "ضعیف"
+        elif 2 <= average < 3 :
+            nomre_tosifi = "متوسط"
+        elif 3 <= average < 4 :
+            nomre_tosifi = "خوب"
+        elif 4 <= average < 5 :
+            nomre_tosifi = "بسیار خوب"
+        else:
+            nomre_tosifi = "نامشخص"
         
 
-        return render(request, self.template_name, {"grades": grades, 'student': student, 'term': term})
+        context = {
+            "grades": grades,
+            'student': student,
+            'term': term,
+            'average':  average,
+            'nt': nomre_tosifi,
+        }
+
+        return render(request, self.template_name, context)
