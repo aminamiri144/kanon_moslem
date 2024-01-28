@@ -29,7 +29,7 @@
                             <div class="card">
                                 <div class="card-body">
 
-                                    {% if dgs %}
+                                    {% if objects_list %}
                                         <div class="table-responsive">
                                             <table class="table table-hover text-nowrap">
                                                 <thead>
@@ -37,31 +37,16 @@
                                                         <th scope="col">نام و نام خانوادگی</th>
                                                         <th scope="col">گروه</th>
                                                         <th scope="col">شماره تماس</th>
-                                                        <th scope="col">کد ملی</th>
-                                                        <th scope="col">عملیات</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {% for d in dgs %}
+                                                    {% for d in objects_list %}
                                                         <tr>
-                                                            <td>{{ d.id }}</td>
-                                                            <td>{{ student.clas }}</td>
-                                                            <td>{{ student.mobile }}</td>
-                                                            <td>{{ student.username }}</td>
-                                                            <td>
-                                                                {% comment %} <button type="button"
-                                                                        class="btn btn-warning btn-sm"
-                                                                        onclick="modal_url('/student/update/{{ student.id }}', 'update');"
-                                                                        data-toggle="modal"
-                                                                        data-target="#update_modal">ویرایش</button> {% endcomment %}
-                                                                <a href="{% url 'student-detail' student.id %}"
-                                                                   class="btn btn-outline-info btn-sm">اطلاعات کامل</a>
-                                                                <a href="{% url 'student-detail' student.id %}"
-                                                                   class="btn btn-outline-warning btn-sm">مواردانضباطی</a>
-                                                                <a href="{% url 'student-detail' student.id %}"
-                                                                   class="btn btn-outline-secondary btn-sm">نمرات دروس ترم</a>
-                                                            </td>
+                                                            <td>{{ d.discipline }}</td>
+                                                            <td>{{ d.grade }}</td>
+                                                            <td>{{ d.description }}</td>
                                                         </tr>
+                                                                                                                   </tr>
                                                     {% endfor %}
                                                 </tbody>
                                             </table>

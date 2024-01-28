@@ -51,7 +51,7 @@ class LessonModelView(ListViewAmin):
 class StudentDisciplineGradeListView(LoginRequiredMixin, ListView):
     paginate_by = 20
     model = DisciplineGrade
-    context_object_name = 'dgs'
+    # context_object_name = 'dgs'
     template_name = 'enzebati/enzebati_list.html'
 
     def get_queryset(self):
@@ -62,16 +62,17 @@ class StudentDisciplineGradeListView(LoginRequiredMixin, ListView):
         #     object_list = self.model.objects.filter(**query)
         #     self.request.session['search'] = self.request.GET.get('q','')
         # else:
-        query = {'id': self.kwargs['pk']}
-        object_list = self.model.objects.filter(**query)
+        s = Student.objects.get(pk=self.kwargs['pk'])
+        # query = {'id': self.kwargs['pk']}
+        object_list = self.model.objects.filter(student=s)
         return object_list
         
     def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         s = Student.objects.get(pk=self.kwargs['pk'])
-        return {
-            'student_id': s.id,
-            'student_fullname': s.get_full_name(),     
-        }
+        context['student_id'] = s.id
+        context['student_fullname'] = s.get_full_name()
+        return context
 
 class SdgCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = DisciplineGrade
