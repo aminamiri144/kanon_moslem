@@ -2,11 +2,12 @@ from members.models import *
 from .forms import *
 from kanon_moslem.aminBaseViews import *
 from education_management.models import *
+from kanon_moslem.views import *
 
 # Create your views here.
 
 
-class TeacherCreateView(BaseCreateViewAmin):
+class TeacherCreateView(NoStudent, BaseCreateViewAmin):
     model = Teacher
     form_class = TeacherCreateForm
     success_message = 'سرگروه جدید با موفقیت افزوده شد !'
@@ -18,7 +19,7 @@ class TeacherCreateView(BaseCreateViewAmin):
 
     
 
-class StudentCreateView(BaseCreateViewAmin):
+class StudentCreateView(NoStudent, BaseCreateViewAmin):
     model = Student
     form_class = StudentCreateForm
     success_message = 'متربی جدید با موفقیت افزوده شد !'
@@ -34,7 +35,7 @@ class StudentCreateView(BaseCreateViewAmin):
     
 
 
-class StudentDetailView(BaseDetailViewAmin):
+class StudentDetailView(NoStudent, BaseDetailViewAmin):
     PAGE_TITLE = 'مشخصات متربی'
     PAGE_DESCRIPTION = ''
     model = Student
@@ -59,7 +60,7 @@ class StudentDetailView(BaseDetailViewAmin):
 
 
 
-class TeacherDetailView(BaseDetailViewAmin):
+class TeacherDetailView(NoStudent, BaseDetailViewAmin):
     PAGE_TITLE = 'مشخصات سرگروه'
     PAGE_DESCRIPTION = ''
     model = Teacher
@@ -77,7 +78,7 @@ class TeacherDetailView(BaseDetailViewAmin):
     models_property = ['birth_date']
 
 
-class StudentListView(LoginRequiredMixin, ListView):
+class StudentListView(NoStudent, LoginRequiredMixin, ListView):
     paginate_by = 20
     model = Student
     context_object_name = 'students'

@@ -11,6 +11,7 @@ from django import forms
 
 
 
+
 class BaseTemplateViewAmin(TemplateView):
     PAGE_TITLE = ''
     PAGE_DESCRIPTION = ''

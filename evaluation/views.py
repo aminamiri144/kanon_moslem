@@ -3,12 +3,12 @@ from django.views import View
 from .forms import LessonClassSelectionForm
 from members.models import Student
 from education_management.models import SelectedLesson, Term, ControlSelection
-from kanon_moslem.views import LoginRequiredMixin, SuccessMessageMixin
-
+from kanon_moslem.views import *
+from kanon_moslem.aminBaseViews import *
 # Create your views here.
 
 
-class SelectionLessonClass(View, LoginRequiredMixin):
+class SelectionLessonClass(NoStudent, View, LoginRequiredMixin):
     form_class = LessonClassSelectionForm
     template_name = "eval/select_lesson_class.html"
     success_message = "انتخاب واحد با موفقیت انجام شد."
@@ -41,7 +41,7 @@ class SelectionLessonClass(View, LoginRequiredMixin):
         return render(request, self.template_name, {"form": form, "messages": messages})
 
 
-class GradeStudent(View, LoginRequiredMixin):
+class GradeStudent(NoStudent, View, LoginRequiredMixin):
     template_name = 'eval/student_nomre_term.html'
 
     def get(self, request, *args, **kwargs):
@@ -72,10 +72,21 @@ class GradeStudent(View, LoginRequiredMixin):
 
 
 class GradesDetailView(View, LoginRequiredMixin):
-    template_name = "eval/karname.html"
+    
+
+
+    def get_template_names(self):
+        if hasattr(self.request.user, 'student'):
+            return "spanel/student_karname.html"
+        else:
+            return "eval/karname.html"
+
 
     def get(self, request, *args, **kwargs):
-        student = Student.objects.get(id=self.kwargs['pk'])
+        if hasattr(self.request.user, 'student'):
+            student = Student.objects.get(id=self.request.user.id)
+        else:
+            student = Student.objects.get(id=self.kwargs['pk'])
         term = Term.objects.filter(is_active=True).first()
         grades = SelectedLesson.objects.filter(student=student, term=term)
         sum_grades = 0
@@ -111,4 +122,4 @@ class GradesDetailView(View, LoginRequiredMixin):
             'nt': nomre_tosifi,
         }
 
-        return render(request, self.template_name, context)
+        return render(request, self.get_template_names(), context)

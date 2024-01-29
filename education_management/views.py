@@ -1,10 +1,16 @@
 from django.shortcuts import render
 from education_management.models import *
 from kanon_moslem.aminBaseViews import *
+from kanon_moslem.views import *
 from education_management.forms import *
 
 
-class TermModalCreateView(BaseCreateViewAmin):
+
+
+ 
+
+
+class TermModalCreateView(NoStudent, BaseCreateViewAmin):
     model = Term
     form_class = TermCreateForm
     success_message = 'ترم جدید با موفقیت افزوده شد !'
@@ -15,7 +21,14 @@ class TermModalCreateView(BaseCreateViewAmin):
     def get_success_url(self):
         return reverse('term-view')
 
-class TermModelView(ListViewAmin):
+    # def test_func(self):
+    #     print('aaaa:   ',self.request.user)
+    #     return not self.request.user
+
+    # def handle_no_permission(self):
+    #     return redirect(reverse('spanel')) 
+
+class TermModelView(NoStudent,ListViewAmin):
     model= Term
     PAGE_TITLE = "امور آموزشی"
     PAGE_DESCRIPTION = 'مدیریت ترم های تحصیلی'
@@ -25,7 +38,7 @@ class TermModelView(ListViewAmin):
     fields = ['id', 'get_full_title', 'get_is_active']  
 
 
-class LessonModalCreateView(BaseCreateViewAmin):
+class LessonModalCreateView(NoStudent,BaseCreateViewAmin):
     model = Lesson
     form_class = LessonCreateForm
     success_message = 'درس جدید با موفقیت افزوده شد !'
@@ -37,7 +50,7 @@ class LessonModalCreateView(BaseCreateViewAmin):
     def get_success_url(self):
         return reverse('lesson-view')
 
-class LessonModelView(ListViewAmin):
+class LessonModelView(NoStudent, ListViewAmin):
     model= Lesson
     PAGE_TITLE = "امور آموزشی"
     PAGE_DESCRIPTION = 'مدیریت درس ها'
@@ -48,7 +61,7 @@ class LessonModelView(ListViewAmin):
 
 
 
-class StudentDisciplineGradeListView(LoginRequiredMixin, ListView):
+class StudentDisciplineGradeListView(NoStudent, LoginRequiredMixin, ListView):
     paginate_by = 20
     model = DisciplineGrade
     # context_object_name = 'dgs'
@@ -74,7 +87,7 @@ class StudentDisciplineGradeListView(LoginRequiredMixin, ListView):
         context['student_fullname'] = s.get_full_name()
         return context
 
-class SdgCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+class SdgCreateView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = DisciplineGrade
     template_name = 'enzebati/sdg_add.html'
     success_url = '/requestions/'

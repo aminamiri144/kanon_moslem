@@ -22,6 +22,7 @@ from kanon_moslem.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', PanelView.as_view(), name="panel"),
+    path('spanel/', StudentPanelView.as_view(), name="spanel"),
     path('login/', UserLoginView.as_view(), name='login'),
     path('logout/', UserLogoutView.as_view(), name='logout'),
     path('m/', include("members.urls")),

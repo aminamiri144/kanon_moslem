@@ -1,17 +1,29 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.shortcuts import render
 from django.contrib.auth.views import LoginView
 from django.views.generic import TemplateView
 from django.views import View
 from django.contrib.auth import logout
 from django.shortcuts import redirect
 from . import titles
+from django.shortcuts import redirect
+from django.contrib.auth.mixins import UserPassesTestMixin
+from django.urls import reverse
 
 
+class NoStudent(UserPassesTestMixin):
+    def test_func(self):
+        return not hasattr(self.request.user, 'student')
 
+    def handle_no_permission(self):
+        return redirect(reverse('spanel')) 
 
+class NoTeacher(UserPassesTestMixin):
+    def test_func(self):
+        return not hasattr(self.request.user, 'teacher')
 
+    def handle_no_permission(self):
+        return redirect(reverse('tpanel')) 
 
 
 # class Index(TemplateView):
@@ -80,13 +92,21 @@ class UserLoginView(LoginView):
 
 
 
-class PanelView(LoginRequiredMixin, TemplateView):
+class PanelView(NoStudent, LoginRequiredMixin, TemplateView):
     template_name = "panel.html"
 
     def get_context_data(self, **kwargs):
         context = {}
         context['page_title'] = titles.KANON_NAME
         context['page_description'] = 'سامانه مدیریت کانون تربیتی'
+        return context
+class StudentPanelView(LoginRequiredMixin, TemplateView):
+    template_name = "spanel/student_panel.html"
+
+    def get_context_data(self, **kwargs):
+        context = {}
+        context['page_title'] = titles.KANON_NAME
+        context['page_description'] = 'پنل کاربری متربی'
         return context
 
 
