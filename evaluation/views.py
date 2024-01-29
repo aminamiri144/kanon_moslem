@@ -98,7 +98,11 @@ class GradesDetailView(View, LoginRequiredMixin):
                 sum_grades += n * l
                 lesson_count += l
 
-        average = round(sum_grades / lesson_count, 1)
+        try:
+            average = round(sum_grades / lesson_count, 1)
+        except:
+            average = 8
+
         nomre_tosifi = ""
         if  0 <= average < 1 :
             nomre_tosifi = "بسیار ضعیف"
@@ -111,7 +115,8 @@ class GradesDetailView(View, LoginRequiredMixin):
         elif 4 <= average < 5 :
             nomre_tosifi = "بسیار خوب"
         else:
-            nomre_tosifi = "نامشخص"
+            nomre_tosifi = "ثبت نشده"
+            average = ''
         
 
         context = {
