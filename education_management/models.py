@@ -98,6 +98,7 @@ class SelectedLesson(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, verbose_name="درس")
     term = models.ForeignKey(Term, on_delete=models.CASCADE, verbose_name="ترم‌تحصیلی")
     grade = models.CharField(choices=GradeChoice, default='n' ,max_length=10, blank=True, null=True, verbose_name="نمره‌")
+    description = models.CharField(blank=True, null=True, verbose_name="توضیحات", default="توضیحات", max_length=255)
 
     unique_together = ('student', 'lesson','term',)
 

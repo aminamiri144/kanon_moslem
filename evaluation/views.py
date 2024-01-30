@@ -55,12 +55,14 @@ class GradeStudent(NoStudent, View, LoginRequiredMixin):
     def post(self, request, *args, **kwargs):
         lesson = request.POST.getlist('lesson')
         grade = request.POST.getlist('grade')
-        result = list(zip(lesson, grade))
+        desc = request.POST.getlist('description')
+        result = list(zip(lesson, grade, desc))
         student = Student.objects.get(id=self.kwargs['pk'])
 
         for g in result:
             s = SelectedLesson.objects.get(student=student, lesson_id=g[0])
             s.grade = g[1]
+            s.description = g[2]
             s.save()
         term = Term.objects.filter(is_active=True).first()
         grades = SelectedLesson.objects.filter(student=student, term=term)

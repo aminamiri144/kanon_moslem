@@ -46,14 +46,14 @@
                                                         {% comment %} <tr> {% endcomment %}
                                                             <div class="form-group row">
                                                                 {% comment %} <td> {% endcomment %}
-                                                                    <div class="col-md-6 mb-3">
+                                                                    <div class="col-md-4 mb-3">
                                                                         <select class="form-control" name="lesson" id="id_lesson" readonly>
                                                                             <option value="{{ grade.lesson.id }}">{{ grade.lesson }}</option>
                                                                         </select>
                                                                     </div>
                                                                 {% comment %} </td>
                                                                 <td> {% endcomment %}
-                                                                    <div class="col-md-6 mb-3">
+                                                                    <div class="col-md-4 mb-3">
                                                                         <select class="form-control" name="grade" id="id_grade">
                                                                             <option value="5" {% if grade.grade == '5' %} selected="" {% endif %}>عالی</option>
                                                                             <option value="4" {% if grade.grade == '4' %} selected="" {% endif %}>بسیارخوب</option>
@@ -65,6 +65,9 @@
                                                                             <option value="n" {% if grade.grade == 'n' %} selected="" {% endif %}>ثبت نشده</option>
                                                                         </select>
                                                                         
+                                                                    </div>
+                                                                    <div class="col-md-4 mb-3">
+                                                                        <input name="description" class="form-control" id="id_description" placeholder="توضیحات مربی" value="{{ grade.description }}">
                                                                     </div>
                                                                 {% comment %} </td> {% endcomment %}
                                                             </div>
