@@ -55,12 +55,12 @@
                                                                 <td> {% endcomment %}
                                                                     <div class="col-md-6 mb-3">
                                                                         <select class="form-control" name="grade" id="id_grade">
-                                                                            <option value="5" {% if grade.grade == '1' %} selected="" {% endif %}>عالی</option>
-                                                                            <option value="4" {% if grade.grade == '2' %} selected="" {% endif %}>بسیارخوب</option>
+                                                                            <option value="5" {% if grade.grade == '5' %} selected="" {% endif %}>عالی</option>
+                                                                            <option value="4" {% if grade.grade == '4' %} selected="" {% endif %}>بسیارخوب</option>
                                                                             <option value="3" {% if grade.grade == '3' %} selected="" {% endif %}>خوب</option>
-                                                                            <option value="2" {% if grade.grade == '4' %} selected="" {% endif %}>متوسط</option>
-                                                                            <option value="1" {% if grade.grade == '5' %} selected="" {% endif %}>ضعیف</option>
-                                                                            <option value="0" {% if grade.grade == '6' %} selected="" {% endif %}>بسیارضعیف</option>
+                                                                            <option value="2" {% if grade.grade == '2' %} selected="" {% endif %}>متوسط</option>
+                                                                            <option value="1" {% if grade.grade == '1' %} selected="" {% endif %}>ضعیف</option>
+                                                                            <option value="0" {% if grade.grade == '0' %} selected="" {% endif %}>بسیارضعیف</option>
                                                                             <option value="g" {% if grade.grade == 'g' %} selected="" {% endif %}>غایب</option>
                                                                             <option value="n" {% if grade.grade == 'n' %} selected="" {% endif %}>ثبت نشده</option>
                                                                         </select>
