@@ -1,8 +1,6 @@
 {
     "django": {
-      "mirror": false
-    },
-    "build": {
-        "location": "germany"
-     }
+      "mirror": false,
+      "pythonVersion": "3.9.2"
+    }
 }
