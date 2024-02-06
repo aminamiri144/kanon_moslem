@@ -1,6 +1,6 @@
 {
     "django": {
       "mirror": false,
-      "pythonVersion": "3.9.2"
+      "pythonVersion": "3.9"
     }
 }
