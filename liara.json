@@ -1,5 +1,8 @@
 {
     "django": {
       "mirror": false
-    }
+    },
+    "build": {
+        "location": "germany"
+     }
 }
