@@ -29,8 +29,11 @@ class SelectionLessonClass(NoStudent, View, LoginRequiredMixin):
             try:
                 ControlSelection(clas=clas, term=term, lesson=lesson).save()
                 for student in students:
-                    SelectedLesson(student=student,
+                    try:
+                        SelectedLesson(student=student,
                                    lesson=lesson, term=term).save()
+                    except:
+                        pass
             except:
                 messages = [
                     {'message': 'این درس قبلا برای این گروه گرفته شده است.', 'tag': 'danger', }]
