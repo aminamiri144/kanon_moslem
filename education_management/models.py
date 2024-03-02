@@ -1,6 +1,7 @@
 from django.db import models
 from members.models import Student, Class
-
+from django_jalali.db import models as jmodels
+from jdatetime import datetime as jdatetime
 # Create your models here.
 
 
@@ -124,10 +125,18 @@ class DisciplineGrade(models.Model):
 
     student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name="متربی")
     discipline = models.ForeignKey(Discipline, on_delete=models.CASCADE, verbose_name="مورد انضباطی")
-    created = models.DateTimeField(verbose_name="زمان ثبت")
+    created = jmodels.jDateField(verbose_name="زمان ثبت")
     grade = models.IntegerField(verbose_name="نمره")
     term = models.ForeignKey(Term, on_delete=models.CASCADE, verbose_name="ترم‌تحصیلی")
     description = models.TextField(blank=True, null=True, verbose_name="توضیح")
+
+    @property
+    def jd_created_date(self):
+        created_date = str(self.created).replace('-','/')
+        try:
+            return created_date
+        except:
+            return 'ثبت نشده!'
 
     def __str__(self):
         return f"{self.student} | {self.discipline} | {self.created} | {self.grade}"

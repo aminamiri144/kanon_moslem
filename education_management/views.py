@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from education_management.models import *
 from kanon_moslem.aminBaseViews import *
 from kanon_moslem.views import *
@@ -77,22 +77,23 @@ class StudentDisciplineGradeListView(NoStudent, LoginRequiredMixin, ListView):
         # else:
         s = Student.objects.get(pk=self.kwargs['pk'])
         # query = {'id': self.kwargs['pk']}
-        object_list = self.model.objects.filter(student=s)
-        return object_list
+        self.students_disciplin_grades = self.model.objects.filter(student=s)
+        return self.students_disciplin_grades
         
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        context = super(StudentDisciplineGradeListView, self).get_context_data(**kwargs)
         s = Student.objects.get(pk=self.kwargs['pk'])
         context['student_id'] = s.id
         context['student_fullname'] = s.get_full_name()
+        context['sdg'] = self.students_disciplin_grades 
         return context
 
 class SdgCreateView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = DisciplineGrade
     template_name = 'enzebati/sdg_add.html'
-    success_url = '/requestions/'
+    # success_url = '/requestions/'
     form_class = DisciplineGradeCreateForm
-    success_message = "درخواست جدید با موفقیت افزوده شد !"
+    success_message = "مورد انضباطی ثبت شد."
 
     def get_context_data(self, **kwargs):
         """در اینجا فیلد کاستومر یا درخواست دهنده را طوری تنظیم میکنیم که 
@@ -115,6 +116,14 @@ class SdgCreateView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, CreateVi
         t = Term.objects.get(is_active=True)
         student = self.kwargs['pk']
         return {'student': student, 'term': t.id}
+
+    def get_success_url(self):
+        i =self.kwargs['pk']
+        try:
+            i = str(i)
+        except:
+            pass
+        return reverse('sdg-list', kwargs={'pk': i})
 
     # def get_success_url(self):
     #     return reverse('sdg-list')
