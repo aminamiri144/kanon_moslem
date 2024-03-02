@@ -13,7 +13,8 @@ class Class(models.Model):
         verbose_name = "گروه"
         verbose_name_plural = "گروه ها"
     name = models.CharField(max_length=100, verbose_name="نام گروه")
-    created_year = models.CharField(max_length=4, verbose_name="سال تشکیل") 
+    created_year = models.CharField(max_length=4, verbose_name="سال تشکیل")
+    dore = models.CharField(max_length=2, verbose_name="دوره", default="0") 
 
     def __str__(self):
         return self.name
