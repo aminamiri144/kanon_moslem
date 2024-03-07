@@ -5,7 +5,6 @@ from django.core.exceptions import ValidationError
 from education_management.models import *
 
 
-
 class TermCreateForm(BaseFormKanon):
     MODEL_VERBOSE_NAME = 'ترم تحصیلی'
 
@@ -54,6 +53,33 @@ class DisciplineGradeCreateForm(BaseFormKanon):
 
     def clean_created(self):
         date = self.cleaned_data['created']
+        try:
+            date = change_date_to_english(date, 2)
+        except:
+            date = None
+        return date
+
+
+class ReportHalgheForm(BaseFormKanon):
+    MODEL_VERBOSE_NAME = ''
+    date = forms.CharField(label='تاریخ', widget=forms.TextInput(attrs={'placeholder': 'تاریخ را انتخاب کنید'}))
+    def __init__(self, *args, **kwargs):
+        super(ReportHalgheForm, self).__init__(*args, **kwargs)
+        self.fields['clas'].readonly = True
+        self.fields['term'].readonly = True
+
+    class Meta:
+        model = GroupReport
+        fields = [
+            "title",
+            "report_type",
+            "clas",
+            "term",
+            "date"
+        ]
+
+    def clean_date(self):
+        date = self.cleaned_data['date']
         try:
             date = change_date_to_english(date, 2)
         except:

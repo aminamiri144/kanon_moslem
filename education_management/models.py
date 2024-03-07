@@ -1,7 +1,7 @@
 from django.db import models
 from members.models import Student, Class
 from django_jalali.db import models as jmodels
-from jdatetime import datetime as jdatetime
+import jdatetime 
 # Create your models here.
 
 
@@ -118,34 +118,8 @@ class Discipline(models.Model):
         return self.title
 
 
-class DisciplineGrade(models.Model):
-    class Meta:
-        verbose_name = "نمره انضباطی"
-        verbose_name_plural = "نمرات انضباطی"
-
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name="متربی")
-    discipline = models.ForeignKey(Discipline, on_delete=models.CASCADE, verbose_name="مورد انضباطی")
-    created = jmodels.jDateField(verbose_name="زمان ثبت")
-    grade = models.IntegerField(verbose_name="نمره")
-    term = models.ForeignKey(Term, on_delete=models.CASCADE, verbose_name="ترم‌تحصیلی")
-    description = models.TextField(blank=True, null=True, verbose_name="توضیح")
-
-    @property
-    def jd_created_date(self):
-        created_date = str(self.created).replace('-','/')
-        try:
-            return created_date
-        except:
-            return 'ثبت نشده!'
-
-    def __str__(self):
-        return f"{self.student} | {self.discipline} | {self.created} | {self.grade}"
 
 
-
-
-
-    
 
 
 class ControlSelection(models.Model):
@@ -165,3 +139,64 @@ class ControlSelection(models.Model):
 
     def __str__(self):
         return f"{self.clas} | {self.lesson} | {self.term}"
+
+
+
+class ReportTypes(models.Model):
+    class Meta:
+        verbose_name = 'نوع گزارش'
+        verbose_name_plural= 'انواع گزارش'
+    title = models.CharField(max_length=60, verbose_name="نوع گزارش")
+    def __str__(self):
+        return self.title
+
+class GroupReport(models.Model):
+    class Meta:
+        verbose_name = "گزارش روزانه گروه"
+        verbose_name_plural = "گزارش های روزانه گروه ها"
+
+        constraints = [
+            models.UniqueConstraint(fields=['clas', 'term', 'date', 'report_type'], name='unique_clas_term_date_report_type')
+        ]
+    
+
+    title = models.CharField(max_length=60, default="برگزاری گروه", verbose_name="عنوان گزارش")
+    report_type =models.ForeignKey(ReportTypes, on_delete=models.CASCADE, verbose_name="نوع گزارش", default=1)
+    clas = models.ForeignKey(Class, on_delete=models.CASCADE, verbose_name="گروه")
+    term = models.ForeignKey(Term, on_delete=models.CASCADE, verbose_name="ترم‌تحصیلی")
+    date = jmodels.jDateField(verbose_name="تاریخ گزارش")
+
+    unique_together = ('clas', 'term','date','report_type',)
+
+    def __str__(self):
+        return f"{self.clas} | {self.report_type} | {self.title}"
+
+
+
+    
+
+class DisciplineGrade(models.Model):
+    class Meta:
+        verbose_name = "نمره انضباطی"
+        verbose_name_plural = "نمرات انضباطی"
+
+    report = models.ForeignKey(GroupReport, on_delete=models.CASCADE, verbose_name="گزارش گروه", blank=True, null=True)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name="متربی")
+    discipline = models.ForeignKey(Discipline, on_delete=models.CASCADE, verbose_name="مورد انضباطی")
+    created = jmodels.jDateField(verbose_name="زمان ثبت")
+    grade = models.IntegerField(verbose_name="نمره")
+    term = models.ForeignKey(Term, on_delete=models.CASCADE, verbose_name="ترم‌تحصیلی")
+    description = models.TextField(blank=True, null=True, verbose_name="توضیح")
+
+    @property
+    def jd_created_date(self):
+        created_date = str(self.created).replace('-','/')
+        try:
+            return created_date
+        except:
+            return 'ثبت نشده!'
+
+    def __str__(self):
+        return f"{self.student} | {self.discipline} | {self.created} | {self.grade}"
+
+

@@ -8,5 +8,6 @@ urlpatterns = [
     path('lesson/add', LessonModalCreateView.as_view(), name='lesson-add'),
     path('sdg/<int:pk>',StudentDisciplineGradeListView.as_view(), name='sdg-list'),
     path('sdg/add/<int:pk>',SdgCreateView.as_view(), name='sdg-add'),
+    path('report/add/<int:pk>',GroupReportView.as_view(), name='rg-add'),
     
 ]

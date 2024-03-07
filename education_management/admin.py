@@ -32,4 +32,14 @@ class ControlSelectionAdmin(admin.ModelAdmin):
 admin.site.register(ControlSelection, ControlSelectionAdmin)
 
 
+class GroupReportAdmin(admin.ModelAdmin):
+    list_display = ('clas', 'report_type', 'title', 'date', 'term')
+admin.site.register(GroupReport, GroupReportAdmin)
+
+
+class ReportTypesAdmin(admin.ModelAdmin):
+    list_display = ('title',)
+admin.site.register(ReportTypes, ReportTypesAdmin)
+
+
 
