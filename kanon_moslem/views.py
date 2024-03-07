@@ -9,7 +9,7 @@ from . import titles
 from django.shortcuts import redirect
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.urls import reverse
-
+from education_management.models import Class
 
 class NoStudent(UserPassesTestMixin):
     def test_func(self):
@@ -99,6 +99,7 @@ class PanelView(NoStudent, LoginRequiredMixin, TemplateView):
         context = {}
         context['page_title'] = titles.KANON_NAME
         context['page_description'] = 'سامانه مدیریت کانون تربیتی'
+        context['classes'] = Class.objects.all()
         return context
 class StudentPanelView(LoginRequiredMixin, TemplateView):
     template_name = "spanel/student_panel.html"

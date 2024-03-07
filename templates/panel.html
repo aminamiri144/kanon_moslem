@@ -24,12 +24,16 @@
                     <div class="row my-4">
                         <!-- Small table -->
                         <div class="col-md-12">
+                            
                             <div class="card">
+                                <div class="card-header">
+                                    <strong class="card-title">ثبت گزارش گروه</strong>
+                                </div>
                                 <div class="card-body">
-                                    {% for g in groups %}
-                                        <a href="{% url 'group-students-list' g.id %}"
+                                    {% for c in classes %}
+                                        <a href="{% url 'rg-add' c.id %}"
                                            type="button"
-                                           class="btn mb-2 btn-success btn-lg btn-block">{{ g.name }}</a>
+                                           class="btn mb-2 btn-info btn-lg btn-block">ثبت گزارش گروه {{ c.name }}</a>
                                     {% endfor %}
                                 </div>
                             </div>
