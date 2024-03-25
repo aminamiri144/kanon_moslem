@@ -12,15 +12,15 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os
-import environ
+#import environ
 
-env = environ.Env()
+# env = environ.Env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-environ.Env.read_env(os.path.join(BASE_DIR, 'develop.env'))
-IS_IN_SERVER = False if env('IIS') == 'false' else True
+# environ.Env.read_env(os.path.join(BASE_DIR, 'develop.env'))
+IS_IN_SERVER = False if os.getenv('IIS', 'false') == 'false' else True
 
 
 # Quick-start development settings - unsuitable for production
@@ -33,7 +33,7 @@ SECRET_KEY = '_@9u$bl4vqbj%s10^h9sb=chzw6_0dym)g6m-%5s16v%s-reoj'
 DEBUG = True
 
 if IS_IN_SERVER:
-    allowed_hosts = env('ALLOWED_HOSTS')
+    allowed_hosts = os.getenv('ALLOWED_HOSTS')
     allowed_hosts = allowed_hosts.split(',')
     ALLOWED_HOSTS = allowed_hosts
 else:
@@ -94,12 +94,12 @@ WSGI_APPLICATION = 'kanon_moslem.wsgi.application'
 if IS_IN_SERVER:
     DATABASES = {
         'default': {
-            'ENGINE': env('ENGINE'),
-            'NAME': env('DB_NAME'),
-            'USER': env('DB_USER'),
-            'PASSWORD': env('DB_PASSWORD'),
-            'HOST': env('DB_HOST'),
-            'PORT': env('DB_PORT'),
+            'ENGINE': os.getenv('ENGINE'),
+            'NAME': os.getenv('DB_NAME'),
+            'USER': os.getenv('DB_USER'),
+            'PASSWORD': os.getenv('DB_PASSWORD'),
+            'HOST': os.getenv('DB_HOST'),
+            'PORT': os.getenv('DB_PORT'),
             'OPTIONS': {'autocommit': True} if IS_IN_SERVER else {}
         }
     }
