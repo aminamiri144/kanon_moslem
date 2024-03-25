@@ -12,9 +12,15 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os
+import environ
+
+env = environ.Env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+environ.Env.read_env(os.path.join(BASE_DIR, 'develop.env'))
+IS_IN_SERVER = False if env('IIS') == 'false' else True
 
 
 # Quick-start development settings - unsuitable for production
@@ -26,7 +32,12 @@ SECRET_KEY = '_@9u$bl4vqbj%s10^h9sb=chzw6_0dym)g6m-%5s16v%s-reoj'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+if IS_IN_SERVER:
+    allowed_hosts = env('ALLOWED_HOSTS')
+    allowed_hosts = allowed_hosts.split(',')
+    ALLOWED_HOSTS = allowed_hosts
+else:
+    ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -80,17 +91,38 @@ WSGI_APPLICATION = 'kanon_moslem.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'hungry_banach', 
-        'USER': 'root',
-        'PASSWORD': 'EvpSWvtsbwYMArpWngJ2HbSG',
-        'HOST': 'db-moslem', 
-        'PORT': '3306',
-        # 'OPTIONS': {'autocommit': True} if IS_IN_SERVER else {}
+if IS_IN_SERVER:
+    DATABASES = {
+        'default': {
+            'ENGINE': env('ENGINE'),
+            'NAME': env('DB_NAME'),
+            'USER': env('DB_USER'),
+            'PASSWORD': env('DB_PASSWORD'),
+            'HOST': env('DB_HOST'),
+            'PORT': env('DB_PORT'),
+            'OPTIONS': {'autocommit': True} if IS_IN_SERVER else {}
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'hungry_banach',
+#         'USER': 'root',
+#         'PASSWORD': 'EvpSWvtsbwYMArpWngJ2HbSG',
+#         'HOST': 'db-moslem',
+#         'PORT': '3306',
+#         # 'OPTIONS': {'autocommit': True} if IS_IN_SERVER else {}
+#     }
+# }
 
 
 # DATABASES = {
@@ -141,7 +173,7 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'templates/static')]
 
 
 ASSETS_URL = '/assets/'
-ASSETS_ROOT =  os.path.join(BASE_DIR, 'templates/assets')
+ASSETS_ROOT = os.path.join(BASE_DIR, 'templates/assets')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
