@@ -12,17 +12,13 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os
-#import environ
 
-# env = environ.Env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-# environ.Env.read_env(os.path.join(BASE_DIR, 'develop.env'))
 IS_IN_SERVER = False if os.getenv('IIS', 'false') == 'false' else True
 
-
+ADMIN_URL = os.getenv('ADMIN_URL', 'admin')
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
@@ -110,27 +106,6 @@ else:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'hungry_banach',
-#         'USER': 'root',
-#         'PASSWORD': 'EvpSWvtsbwYMArpWngJ2HbSG',
-#         'HOST': 'db-moslem',
-#         'PORT': '3306',
-#         # 'OPTIONS': {'autocommit': True} if IS_IN_SERVER else {}
-#     }
-# }
-
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
