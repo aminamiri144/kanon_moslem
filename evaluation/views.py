@@ -8,14 +8,14 @@ from kanon_moslem.aminBaseViews import *
 # Create your views here.
 
 
-class SelectionLessonClass(NoStudent, View, LoginRequiredMixin):
+class SelectionLessonClass(View, NoStudent, LoginRequiredMixin):
     form_class = LessonClassSelectionForm
     template_name = "eval/select_lesson_class.html"
     success_message = "انتخاب واحد با موفقیت انجام شد."
 
     def get(self, request, *args, **kwargs):
         form = self.form_class()
-        return render(request, self.template_name, {"form": form})
+        return render(request, self.template_name, {"form": form, "term": self.request.session['term_title']})
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
@@ -23,7 +23,7 @@ class SelectionLessonClass(NoStudent, View, LoginRequiredMixin):
 
             clas = form.cleaned_data['clas']
             lesson = form.cleaned_data['lesson']
-            term = Term.objects.filter(is_active=True).first()
+            term = Term.objects.filter(id=self.request.session['term_id']).first()
 
             students = Student.objects.filter(clas=clas)
             try:
@@ -41,7 +41,7 @@ class SelectionLessonClass(NoStudent, View, LoginRequiredMixin):
 
         messages = [
             {'message': 'انتخاب واحد با موفقیت انجام شد.', 'tag': 'success', }]
-        return render(request, self.template_name, {"form": form, "messages": messages})
+        return render(request, self.template_name, {"form": form, "messages": messages, "term": self.request.session['term_title']})
 
 
 class GradeStudent(NoStudent, View, LoginRequiredMixin):
@@ -49,7 +49,7 @@ class GradeStudent(NoStudent, View, LoginRequiredMixin):
 
     def get(self, request, *args, **kwargs):
         student = Student.objects.get(id=self.kwargs['pk'])
-        term = Term.objects.filter(is_active=True).first()
+        term = Term.objects.filter(id=self.request.session['term_id']).first()
 
         grades = SelectedLesson.objects.filter(student=student, term=term)
 
@@ -67,7 +67,7 @@ class GradeStudent(NoStudent, View, LoginRequiredMixin):
             s.grade = g[1]
             s.description = g[2]
             s.save()
-        term = Term.objects.filter(is_active=True).first()
+        term = Term.objects.filter(id=self.request.session['term_id']).first()
         grades = SelectedLesson.objects.filter(student=student, term=term)
 
         messages = [
@@ -76,7 +76,7 @@ class GradeStudent(NoStudent, View, LoginRequiredMixin):
         return render(request, self.template_name, {"grades": grades, 'student': student, "messages": messages})
 
 
-class GradesDetailView(View, LoginRequiredMixin):
+class GradesDetailView(AminView, LoginRequiredMixin):
     
 
 

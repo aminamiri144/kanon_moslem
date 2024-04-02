@@ -11,9 +11,13 @@ from django import forms
 from django.http import HttpResponseRedirect
 
 
+class AminView(View):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['term'] = self.request.session['term_title']
+        return context
 
-
-class BaseTemplateViewAmin(TemplateView):
+class BaseTemplateViewAmin(AminView, TemplateView):
     PAGE_TITLE = ''
     PAGE_DESCRIPTION = ''
     template_name = None
@@ -22,12 +26,13 @@ class BaseTemplateViewAmin(TemplateView):
         context = {}
         context['page_title'] = self.PAGE_TITLE
         context['page_description'] = self.PAGE_DESCRIPTION
+        context['term'] = self.request.session['term_title']
         return context
 
     
 
 
-class BaseCreateViewAmin(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+class BaseCreateViewAmin(AminView, LoginRequiredMixin, SuccessMessageMixin, CreateView):
     PAGE_TITLE = ''
     PAGE_DESCRIPTION = ''
     ACTION_URL = ''
@@ -51,13 +56,14 @@ class BaseCreateViewAmin(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         context['action_url'] = reverse(self.ACTION_URL)
         context['button_title'] = self.BUTTON_TITLE
         context['date_field_id'] = self.DATE_FIELD_ID
+        context['term'] = self.request.session['term_title']
         return context
 
     def get_success_url(self):
         return reverse(self.SUCCESS_URL, kwargs={'pk': self.object.pk,})
 
 
-class BaseDetailViewAmin(View):
+class BaseDetailViewAmin(AminView):
     PAGE_TITLE = ''
     PAGE_DESCRIPTION = ''
     model = None
@@ -72,6 +78,7 @@ class BaseDetailViewAmin(View):
         context['page_title'] = self.PAGE_TITLE
         context['page_description'] = self.PAGE_DESCRIPTION
         context['fields_info'] = fields_info
+        context['term'] = self.request.session['term_title']
         return render(request, self.template_name, context=context)
 
     def get_fields_info(self, obj):
@@ -89,7 +96,7 @@ class BaseDetailViewAmin(View):
                 fields_info.append(field_info)
         return fields_info
 
-class ListViewAmin(ListView):
+class ListViewAmin(AminView, ListView):
     PAGE_TITLE = ''
     PAGE_DESCRIPTION = ''
     template_name = 'model_list_view.html'
@@ -123,6 +130,7 @@ class ListViewAmin(ListView):
         context['create_url'] = reverse(self.create_url)
         context['list_titles'] = list_titles
         context['list_values'] = list_values
+        context['term'] = self.request.session['term_title']
         return context
 #####################################################
 

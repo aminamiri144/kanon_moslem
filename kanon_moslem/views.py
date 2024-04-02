@@ -9,7 +9,7 @@ from . import titles
 from django.shortcuts import redirect
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.urls import reverse
-from education_management.models import Class
+from education_management.models import Class ,Term
 
 class NoStudent(UserPassesTestMixin):
     def test_func(self):
@@ -76,18 +76,18 @@ class UserLoginView(LoginView):
     success_url = '/'
 
     def get_redirect_url(self):
+        if 'term_title' not in self.request.session:
+            default_term = Term.objects.filter(is_active=True).first()
+            self.request.session['term_title'] = str(default_term)
+            self.request.session['term_id'] = str(default_term.id)
+
+        if hasattr(self.request.user, 'teacher'):
+            return '/tpanel'
+
+        if hasattr(self.request.user, 'student'):
+            return '/spanel'
+
         return '/'
-
-    # def form_valid(self, form):
-    #     """
-    #     برای لاگ کردن ورود کاربر استفاده میشود
-
-    #     Arguments:
-    #         form:
-    #             فرم ارسال شده است
-    #     """
-    #     res = super().form_valid(form)
-    #     return res
 
 
 
@@ -99,6 +99,7 @@ class PanelView(NoStudent, LoginRequiredMixin, TemplateView):
         context = {}
         context['page_title'] = titles.KANON_NAME
         context['page_description'] = 'سامانه مدیریت کانون تربیتی'
+        context['term'] = self.request.session['term_title']
         context['classes'] = Class.objects.all()
         return context
 class StudentPanelView(LoginRequiredMixin, TemplateView):
@@ -108,6 +109,19 @@ class StudentPanelView(LoginRequiredMixin, TemplateView):
         context = {}
         context['page_title'] = titles.KANON_NAME
         context['page_description'] = 'پنل کاربری متربی'
+        context['term'] = self.request.session['term_title']
+        return context
+
+
+class TeacherPanelView(LoginRequiredMixin, TemplateView, NoStudent):
+    template_name = "teacher/panel.html"
+
+    def get_context_data(self, **kwargs):
+        
+        context = {}
+        context['page_title'] = titles.KANON_NAME
+        context['page_description'] = 'پنل کاربری مربی'
+        context['term'] = self.request.session['term_title']
         return context
 
 

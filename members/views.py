@@ -78,12 +78,12 @@ class TeacherDetailView(NoStudent, BaseDetailViewAmin):
     models_property = ['birth_date']
 
 
-class StudentListView(NoStudent, LoginRequiredMixin, ListView):
+class StudentListView(AminView ,NoStudent, LoginRequiredMixin, ListView):
     paginate_by = 20
     model = Student
     context_object_name = 'students'
     template_name = 'student/list.html'
-
+    
     def get_queryset(self):
         value = self.request.GET.get('q', '')
         option = self.request.GET.get('option', '')

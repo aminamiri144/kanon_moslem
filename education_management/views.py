@@ -22,12 +22,7 @@ class TermModalCreateView(NoStudent, BaseCreateViewAmin):
     def get_success_url(self):
         return reverse('term-view')
 
-    # def test_func(self):
-    #     print('aaaa:   ',self.request.user)
-    #     return not self.request.user
 
-    # def handle_no_permission(self):
-    #     return redirect(reverse('spanel')) 
 
 class TermModelView(NoStudent,ListViewAmin):
     model= Term
@@ -148,11 +143,12 @@ class GroupReportView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, Create
         و طوره نباشه که همه درخواست دهنده ها در اپشن های فیلد سلکت نمایش داده بشن
         """
         clas = Class.objects.get(id=self.kwargs['pk'])
-        term = Term.objects.filter(is_active=True).first()
         context = super(GroupReportView, self).get_context_data(**kwargs)
         context['form'].fields['clas'].choices.field.queryset = Class.objects.filter(pk=self.kwargs['pk'])
         context['class_id'] = self.kwargs['pk']
         context['students'] = Student.objects.filter(clas=clas)
+        context['term'] = self.request.session['term_title']
+
         
         return context
     
@@ -171,9 +167,8 @@ class GroupReportView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, Create
         report_title = request.POST.get('title')
         report_type = request.POST.get('report_type')
         clas = request.POST.get('clas')
-        term = request.POST.get('term')
         date = request.POST.get('date').replace('/','-')
-        this_term = Term.objects.get(id=term)
+        this_term = Term.objects.get(id=self.request.session['term_id'])
         new_report = GroupReport()
         new_report.title = report_title
         new_report.report_type = ReportTypes.objects.get(id=report_type)
@@ -235,9 +230,6 @@ class GroupReportView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, Create
                     new_dgt.term = this_term
                     new_dgt.description = dg[4]
                     new_dgt.save()
-
-            
-
 
         # messages = [{'message': 'گزارش با موفقیت ثبت شد.', 'tag': 'success', }]
         # return render(request, self.template_name, {"messages": messages, "class_id": self.kwargs['pk']})
