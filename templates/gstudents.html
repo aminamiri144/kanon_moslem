@@ -74,9 +74,8 @@
         </div>
         <!-- .row -->
     </main>
-    {% include 'base/createModal.html' %}
-    {% include 'base/updateModal.html' %}
-    {% include 'base/detailModal.html' %}
+    {% include 'base/change_term_modal.html' %}
+
     <footer class="fixed-bottom bg-light">
         <div class="container">
           <div class="row">
@@ -87,19 +86,4 @@
         </div>
       </footer>
 {% endblock content %}
-{% block moreScript %}
-    {% comment %} <script src="{% static 'customers/js/datatablescripts.js'%}"></script> {% endcomment %}
-    {% comment %} <script src="{% static 'customers/plugins/jalaliDatepicker/kamadatepicker.min.js'%}"></script>
-    <script>kamaDatepicker('id_register_date', {buttonsColor: "green", forceFarsiDigits: true});</script> {% endcomment %}
-    <script>
-function modal_url(url, type) {
-    $.ajax({
-        url: url,
-        type: 'GET',
-        success: function (data) {
-            $("#"+ type +"_modal_body").html(data);
-        }
-    })
-}
-    </script>
-{% endblock moreScript %}
+

@@ -7,10 +7,6 @@ from members.models import *
 import jdatetime
 from django.contrib.messages import constants as messages
 
-
- 
-
-
 class TermModalCreateView(NoStudent, BaseCreateViewAmin):
     model = Term
     form_class = TermCreateForm
@@ -23,18 +19,17 @@ class TermModalCreateView(NoStudent, BaseCreateViewAmin):
         return reverse('term-view')
 
 
-
-class TermModelView(NoStudent,ListViewAmin):
-    model= Term
+class TermModelView(NoStudent, ListViewAmin):
+    model = Term
     PAGE_TITLE = "امور آموزشی"
     PAGE_DESCRIPTION = 'مدیریت ترم های تحصیلی'
-    create_button_title = 'افزودن ترم تحصیلی' 
-    create_url = 'term-add' 
-    fields_verbose = ['شناسه','عنوان ترم','ترم فعال']
-    fields = ['id', 'get_full_title', 'get_is_active']  
+    create_button_title = 'افزودن ترم تحصیلی'
+    create_url = 'term-add'
+    fields_verbose = ['شناسه', 'عنوان ترم', 'ترم فعال']
+    fields = ['id', 'get_full_title', 'get_is_active']
 
 
-class LessonModalCreateView(NoStudent,BaseCreateViewAmin):
+class LessonModalCreateView(NoStudent, BaseCreateViewAmin):
     model = Lesson
     form_class = LessonCreateForm
     success_message = 'درس جدید با موفقیت افزوده شد !'
@@ -42,19 +37,18 @@ class LessonModalCreateView(NoStudent,BaseCreateViewAmin):
     ACTION_URL = 'lesson-view'
     BUTTON_TITLE = "اضافه کردن درس"
 
-
     def get_success_url(self):
         return reverse('lesson-view')
 
+
 class LessonModelView(NoStudent, ListViewAmin):
-    model= Lesson
+    model = Lesson
     PAGE_TITLE = "امور آموزشی"
     PAGE_DESCRIPTION = 'مدیریت درس ها'
-    create_button_title = 'افزودن درس جدید' 
-    create_url = 'lesson-add' 
-    fields_verbose = ['شناسه','نام درس','نوع درس', 'توضیحات', 'ضریب نمره']
-    fields = ['id', 'title', 'lesson_type', 'description', 'ratio'] 
-
+    create_button_title = 'افزودن درس جدید'
+    create_url = 'lesson-add'
+    fields_verbose = ['شناسه', 'نام درس', 'نوع درس', 'توضیحات', 'ضریب نمره']
+    fields = ['id', 'title', 'lesson_type', 'description', 'ratio']
 
 
 class StudentDisciplineGradeListView(NoStudent, LoginRequiredMixin, ListView):
@@ -64,16 +58,18 @@ class StudentDisciplineGradeListView(NoStudent, LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         s = Student.objects.get(pk=self.kwargs['pk'])
-        self.students_disciplin_grades = self.model.objects.filter(student=s)
+        self.students_disciplin_grades = self.model.objects.filter(student=s).order_by('-created')
         return self.students_disciplin_grades
-        
+
     def get_context_data(self, **kwargs):
-        context = super(StudentDisciplineGradeListView, self).get_context_data(**kwargs)
+        context = super(StudentDisciplineGradeListView,
+                        self).get_context_data(**kwargs)
         s = Student.objects.get(pk=self.kwargs['pk'])
         context['student_id'] = s.id
         context['student_fullname'] = s.get_full_name()
-        context['sdg'] = self.students_disciplin_grades 
+        context['sdg'] = self.students_disciplin_grades
         return context
+
 
 class SdgCreateView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = DisciplineGrade
@@ -87,12 +83,14 @@ class SdgCreateView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, CreateVi
         و طوره نباشه که همه درخواست دهنده ها در اپشن های فیلد سلکت نمایش داده بشن
         """
         context = super(SdgCreateView, self).get_context_data(**kwargs)
-        context['form'].fields['student'].choices.field.queryset = Student.objects.filter(pk=self.kwargs['pk'])
-        context['form'].fields['term'].choices.field.queryset = Term.objects.filter(is_active=True)
+        context['form'].fields['student'].choices.field.queryset = Student.objects.filter(
+            pk=self.kwargs['pk'])
+        context['form'].fields['term'].choices.field.queryset = Term.objects.filter(
+            is_active=True)
         context['student_id'] = self.kwargs['pk']
-        
+
         return context
-    
+
     def get_initial(self):
         """
         در اینجا مقدار فیلد درخواست دهنده را با توجه به ادرس مقدار دهی میکنیم 
@@ -100,10 +98,9 @@ class SdgCreateView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, CreateVi
         t = Term.objects.get(is_active=True)
         student = self.kwargs['pk']
         return {'student': student, 'term': t.id}
-        
 
     def get_success_url(self):
-        i =self.kwargs['pk']
+        i = self.kwargs['pk']
         try:
             i = str(i)
         except:
@@ -123,17 +120,15 @@ class SdgCreateView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, CreateVi
 #         report_form.fields['clas'].choices.field.queryset = Class.objects.filter(pk=self.kwargs['pk'])
 #         students = Student.objects.filter(clas=clas)
 #         return render(request, self.template_name, {"class": clas, 'students': students, 'report_form': report_form})
-        
 
 
 #     def post(self, request, *args, **kwargs):
 #         pass
 
 
-
 class GroupReportView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = GroupReport
-    template_name = 'eval/group_report.html'
+    template_name = 'eval/group_report_create.html'
     form_class = ReportHalgheForm
     success_message = " گزارش گروه ثبت شد."
 
@@ -144,14 +139,14 @@ class GroupReportView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, Create
         """
         clas = Class.objects.get(id=self.kwargs['pk'])
         context = super(GroupReportView, self).get_context_data(**kwargs)
-        context['form'].fields['clas'].choices.field.queryset = Class.objects.filter(pk=self.kwargs['pk'])
+        context['form'].fields['clas'].choices.field.queryset = Class.objects.filter(
+            pk=self.kwargs['pk'])
         context['class_id'] = self.kwargs['pk']
         context['students'] = Student.objects.filter(clas=clas)
         context['term'] = self.request.session['term_title']
 
-        
         return context
-    
+
     def get_initial(self):
         """
         در اینجا مقدار فیلد درخواست دهنده را با توجه به ادرس مقدار دهی میکنیم 
@@ -160,14 +155,13 @@ class GroupReportView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, Create
         return {
             'clas': self.kwargs['pk'],
             'term': t.id,
-            }
-        
+        }
 
     def post(self, request, *args, **kwargs):
         report_title = request.POST.get('title')
         report_type = request.POST.get('report_type')
         clas = request.POST.get('clas')
-        date = request.POST.get('date').replace('/','-')
+        date = request.POST.get('date').replace('/', '-')
         this_term = Term.objects.get(id=self.request.session['term_id'])
         new_report = GroupReport()
         new_report.title = report_title
@@ -182,14 +176,16 @@ class GroupReportView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, Create
         hozor_description = request.POST.getlist('description1')
         takhir = request.POST.getlist('takhir')
         takhir_description = request.POST.getlist('description2')
-        result = list(zip(students_id, hozor, hozor_description,takhir,takhir_description))
+        result = list(zip(students_id, hozor, hozor_description,
+                      takhir, takhir_description))
         for dg in result:
-            #غیبت غیر موجه
+            # غیبت غیر موجه
             if dg[1] in '0':
                 new_dg = DisciplineGrade()
                 new_dg.report = new_report
                 new_dg.student = Student.objects.get(id=dg[0])
-                new_dg.discipline = Discipline.objects.filter(title__contains='غیبت').first()
+                new_dg.discipline = Discipline.objects.filter(
+                    title__contains='غیبت').first()
                 new_dg.created = date
                 new_dg.grade = -3
                 new_dg.term = this_term
@@ -200,7 +196,8 @@ class GroupReportView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, Create
                 new_dg = DisciplineGrade()
                 new_dg.report = new_report
                 new_dg.student = Student.objects.get(id=dg[0])
-                new_dg.discipline = Discipline.objects.filter(title__contains='غیبت').first()
+                new_dg.discipline = Discipline.objects.filter(
+                    title__contains='غیبت').first()
                 new_dg.created = date
                 new_dg.grade = 0
                 new_dg.term = this_term
@@ -213,7 +210,8 @@ class GroupReportView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, Create
                     new_dgt = DisciplineGrade()
                     new_dgt.report = new_report
                     new_dgt.student = Student.objects.get(id=dg[0])
-                    new_dgt.discipline = Discipline.objects.filter(title__contains='تاخیر').first()
+                    new_dgt.discipline = Discipline.objects.filter(
+                        title__contains='تاخیر').first()
                     new_dgt.created = date
                     new_dgt.grade = -1
                     new_dgt.term = this_term
@@ -224,7 +222,8 @@ class GroupReportView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, Create
                     new_dgt = DisciplineGrade()
                     new_dgt.report = new_report
                     new_dgt.student = Student.objects.get(id=dg[0])
-                    new_dgt.discipline = Discipline.objects.filter(title__contains='تاخیر').first()
+                    new_dgt.discipline = Discipline.objects.filter(
+                        title__contains='تاخیر').first()
                     new_dgt.created = date
                     new_dgt.grade = 0
                     new_dgt.term = this_term
@@ -236,10 +235,56 @@ class GroupReportView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, Create
         return redirect('/')
 
     def get_success_url(self):
-        i =self.kwargs['pk']
+        i = self.kwargs['pk']
         try:
             i = str(i)
         except:
             pass
-        return reverse('sdg-view', kwargs={'pk': i })
-    
+        return reverse('sdg-view', kwargs={'pk': i})
+
+
+class GroupReportDetailView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, BaseDetailViewAmin):
+    PAGE_TITLE = 'گزارش گروه'
+    PAGE_DESCRIPTION = 'گزارش روزانه حضور غیاب برنامه ها'
+    model = GroupReport
+    template_name = 'eval/group_report_detail.html'
+    fields = ['title', 'report_type', 'clas', 'term', 'date']
+    models_property = ['date']
+
+    def get_more_contexts(self):
+        sdgs = DisciplineGrade.objects.filter(report__id=self.pk)
+        return sdgs
+
+
+class GroupReportsListView(NoStudent, LoginRequiredMixin, ListView):
+    paginate_by = 20
+    model = GroupReport
+    template_name = 'eval/group_reports_list.html'
+
+    def get_queryset(self):
+        term = Term.objects.get(id=self.request.session['term_id'])
+
+        if hasattr(self.request.user, 'teacher'):
+            t_id = self.request.user.id
+            teacher = Teacher.objects.get(id=t_id)
+            self.t_class = teacher.clss
+
+            self.rgs = GroupReport.objects.filter(clas=self.t_class, term=term).order_by('-date')
+            return self.rgs
+        else:
+            self.rgs = GroupReport.objects.filter(term=term).order_by('-date')
+            return self.rgs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['rsg'] = self.rgs
+        try:
+            context['title'] = f"گزارش های گروه {self.t_class} "
+        except:
+            context['title'] = f" گزارش های گروه ها"
+
+        context['description'] = ""
+        context['term'] = self.request.session['term_title']
+
+
+        return context

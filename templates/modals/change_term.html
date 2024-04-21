@@ -1,0 +1,24 @@
+{% load static %}
+<div class="row">
+    <div class="col-md-12">
+        <form action="{{ request.path }}"
+              method="post"
+              autocomplete="off"
+              id="update-form">
+            {% csrf_token %}
+            <div class="form-group mb-3">
+                <label for="termselect">انتخاب ترم</label>
+                <select class="form-control" id="termselect" name="term_select">
+                {% for t in terms %}
+                  <option value="{{ t.id }}">{{ t }}</option>
+                {% endfor %}
+
+                  
+                </select>
+              </div>
+            <button type="submit" class="btn btn-success">تغییر ترم فعال شما </button>
+            <button class="btn btn-danger" data-dismiss="modal">بستن</button>
+        </form>
+    </div>
+</div>
+<script src="{% static '/js/jquery.min.js' %}"></script>

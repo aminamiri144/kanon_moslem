@@ -168,6 +168,14 @@ class GroupReport(models.Model):
 
     unique_together = ('clas', 'term','date','report_type',)
 
+    @property
+    def jd_date(self):
+        date = str(self.date).replace('-','/')
+        try:
+            return date
+        except:
+            return 'ثبت نشده!'
+
     def __str__(self):
         return f"{self.clas} | {self.report_type} | {self.title}"
 

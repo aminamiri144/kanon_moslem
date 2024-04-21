@@ -70,15 +70,16 @@ class BaseDetailViewAmin(AminView):
     template_name = 'base_views/detail.html'
     fields = []
     models_property = []
-
     def get(self, request, pk):
         obj = get_object_or_404(self.model, pk=pk)
+        self.pk = pk
         context = {}
         fields_info = self.get_fields_info(obj)
         context['page_title'] = self.PAGE_TITLE
         context['page_description'] = self.PAGE_DESCRIPTION
         context['fields_info'] = fields_info
         context['term'] = self.request.session['term_title']
+        context['more_context'] = self.get_more_contexts()
         return render(request, self.template_name, context=context)
 
     def get_fields_info(self, obj):
@@ -95,6 +96,9 @@ class BaseDetailViewAmin(AminView):
                 }
                 fields_info.append(field_info)
         return fields_info
+
+    def get_more_contexts(self):
+        return []
 
 class ListViewAmin(AminView, ListView):
     PAGE_TITLE = ''

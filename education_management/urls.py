@@ -9,5 +9,7 @@ urlpatterns = [
     path('sdg/<int:pk>',StudentDisciplineGradeListView.as_view(), name='sdg-list'),
     path('sdg/add/<int:pk>',SdgCreateView.as_view(), name='sdg-add'),
     path('report/add/<int:pk>',GroupReportView.as_view(), name='rg-add'),
+    path('report/detail/<int:pk>',GroupReportDetailView.as_view(), name='rg-detail'),
+    path('report/list/',GroupReportsListView.as_view(), name='group_reports_list'),
     
 ]

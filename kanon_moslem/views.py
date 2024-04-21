@@ -10,6 +10,8 @@ from django.shortcuts import redirect
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.urls import reverse
 from education_management.models import Class ,Term
+from django.shortcuts import render
+
 
 class NoStudent(UserPassesTestMixin):
     def test_func(self):
@@ -92,7 +94,7 @@ class UserLoginView(LoginView):
 
 
 
-class PanelView(NoStudent, LoginRequiredMixin, TemplateView):
+class PanelView(NoStudent,NoTeacher, LoginRequiredMixin, TemplateView):
     template_name = "panel.html"
 
     def get_context_data(self, **kwargs):
@@ -156,3 +158,24 @@ class UserLogoutView(LoginRequiredMixin, View):
         logout(request)
 
         return redirect('/login')
+
+
+class ChangeSystemTerm(LoginRequiredMixin, SuccessMessageMixin, View):
+    template_name = 'modals/change_term.html'
+    success_message = " گزارش گروه ثبت شد."
+
+    def get(self, request):
+        terms = Term.objects.all()
+        return render(self.request, self.template_name, {"terms": terms})
+    
+    def post(self, request, *args, **kwargs):
+        selected_term = request.POST.get('term_select')
+        
+        default_term = Term.objects.get(id=selected_term)
+        self.request.session['term_title'] = str(default_term)
+        self.request.session['term_id'] = str(default_term.id)
+        if hasattr(self.request.user, 'teacher'):
+            return redirect(reverse('tpanel')) 
+        else:
+            return redirect(reverse('panel')) 
+

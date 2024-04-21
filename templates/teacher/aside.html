@@ -22,17 +22,17 @@
         </div>
         <ul class="navbar-nav flex-fill w-100 mb-2">
             <li class="nav-item dropdown">
-                <a href="{% url 'spanel' %}"
+                <a href="{% url 'tpanel' %}"
                    class="nav-link">
                     <i class="fe fe-home fe-16"></i>
-                    <span class="ml-3 item-text">پنل دانش آموز</span><span class="sr-only">(current)</span>
+                    <span class="ml-3 item-text">پنل مربی</span><span class="sr-only">(current)</span>
                 </a>
             </li>
             <li class="nav-item dropdown">
-                <a href="{% url 'student-term-karname' request.user.id %}"
+                <a href="{% url 'group_reports_list' %}"
                    class="nav-link">
                     <i class="fe fe-users fe-16"></i>
-                    <span class="ml-3 item-text">کارنامه ترم</span><span class="sr-only">(current)</span>
+                    <span class="ml-3 item-text">گزارش های گروه</span><span class="sr-only">(current)</span>
                 </a>
             </li>
         </ul>

@@ -1,4 +1,17 @@
 {% load static %}
+{% include 'base/change_term_modal.html' %}
+
+<script>
+function modal_url(url, type) {
+    $.ajax({
+        url: url,
+        type: 'GET',
+        success: function (data) {
+            $("#"+ type +"_modal_body").html(data);
+        }
+    })
+}
+</script>
 <script src="{% static 'js/jquery.min.js' %}"></script>
 {% comment %} <script src="{% static 'js/popper.min.js' %}"></script>  {% endcomment %}
 {% comment %} <script src="{% static 'js/moment.min.js' %}"></script>  {% endcomment %}
