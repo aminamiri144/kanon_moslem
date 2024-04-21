@@ -27,7 +27,9 @@
                             <div class="card">
                                 <div class="card-body">
                                     {% block student_content %}
-                                        <a href="{% url 'student-term-karname' request.user.id %}" type="button"  class="btn mb-2 btn-info btn-lg">مشاهده کارنامه ترم </a>
+                                    <a href="{% url 'sdg4student-list' request.user.id %}" type="button"  class="btn mb-2 btn-primary btn-lg">مشاهده موارد انضباطی و حضور و غیاب </a>
+                                    <a href="{% url 'student-term-karname' request.user.id %}" type="button"  class="btn mb-2 btn-info btn-lg">مشاهده کارنامه ترم </a>
+
                                     {% endblock student_content %}
                                 </div>
                             </div>

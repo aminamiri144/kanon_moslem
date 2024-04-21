@@ -35,6 +35,13 @@
                     <span class="ml-3 item-text">کارنامه ترم</span><span class="sr-only">(current)</span>
                 </a>
             </li>
+            <li class="nav-item dropdown">
+                <a href="{% url 'sdg4student-list' request.user.id %}"
+                   class="nav-link">
+                    <i class="fe fe-users fe-16"></i>
+                    <span class="ml-3 item-text">موارد انضباطی</span><span class="sr-only">(current)</span>
+                </a>
+            </li>
         </ul>
         {% comment %} <p class="text-muted nav-heading mt-4 mb-1">
             <span>منو کاربری</span>

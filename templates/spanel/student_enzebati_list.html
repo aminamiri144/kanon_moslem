@@ -3,7 +3,7 @@
 {% load jformat %}
 {% block content %}
     {% include 'base/navigator.html' %}
-    {% include 'base/aside.html' %}
+    {% include 'spanel/student_aside.html' %}
     <main role="main" class="main-content">
         <div class="container-fluid">
             {% if messages %}
@@ -19,9 +19,8 @@
             {% endif %}
             <div class="row justify-content-center">
                 <div class="col-12">
-                    <h2 class="mb-2 page-title">موارد انضباطی</h2>
+                    <h2 class="mb-2 page-title">موارد انضباطی شما</h2>
                     <p class="card-text">لیست موارد انضباطی : {{ student_fullname }}</p>
-                    <a href="{% url 'sdg-add' student_id %}" class="btn btn-success btn ml-auto">ثبت مورد انضباطی</a>
                     <div class="row my-4">
                         <!-- Small table -->
                         <div class="col-md-12">
@@ -38,7 +37,6 @@
                                                         <th scope="col">نمره</th>
                                                         <th scope="col">تاریخ</th>
                                                         <th scope="col">توضیحات</th>
-                                                        <th scope="col">عملیات</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -48,12 +46,7 @@
                                                             <td>{{ d.grade }}</td>
                                                             <td>{{ d.jd_created_date }}</td>
                                                             <td>{{ d.description }}</td>
-                                                            <td>
-                                                                <a href="#"
-                                                                class="btn btn-outline-warning btn-sm">ویرایش</a>
-                                                                <a href="#"
-                                                                class="btn btn-outline-danger btn-sm">حذف</a>
-                                                            </td>
+                                                           
                                                         </tr>
                                                                                                                    
                                                     {% endfor %}
@@ -109,21 +102,6 @@
         </div>
         <!-- .row -->
     </main>
-    {% include 'base/updateModal.html' %}
-    {% include 'base/detailModal.html' %}
+
 {% endblock content %}
-{% block moreScript %}
-    <script src="{% static 'plugins/jalaliDatepicker/kamadatepicker.min.js'%}"></script>
-    <script>kamaDatepicker('id_register_date', {buttonsColor: "green", forceFarsiDigits: true});</script>
-    <script>
-function modal_url(url, type) {
-    $.ajax({
-        url: url,
-        type: 'GET',
-        success: function (data) {
-            $("#"+ type +"_modal_body").html(data);
-        }
-    })
-}
-    </script>
-{% endblock moreScript %}
+

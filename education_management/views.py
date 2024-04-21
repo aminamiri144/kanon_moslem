@@ -68,6 +68,7 @@ class StudentDisciplineGradeListView(NoStudent, LoginRequiredMixin, ListView):
         context['student_id'] = s.id
         context['student_fullname'] = s.get_full_name()
         context['sdg'] = self.students_disciplin_grades
+        context['term'] = self.request.session['term_title']
         return context
 
 
@@ -287,4 +288,27 @@ class GroupReportsListView(NoStudent, LoginRequiredMixin, ListView):
         context['term'] = self.request.session['term_title']
 
 
+        return context
+
+
+
+class SDGListView4Students(LoginRequiredMixin, ListView):
+    paginate_by = 20
+    model = DisciplineGrade
+    template_name = 'spanel/student_enzebati_list.html'
+
+    def get_queryset(self):
+        s = Student.objects.get(pk=self.kwargs['pk'])
+        term = Term.objects.get(pk=self.request.session['term_id'])
+        self.students_disciplin_grades = self.model.objects.filter(student=s, term=term).order_by('-created')
+        return self.students_disciplin_grades
+
+    def get_context_data(self, **kwargs):
+        context = super(SDGListView4Students,
+                        self).get_context_data(**kwargs)
+        s = Student.objects.get(pk=self.kwargs['pk'])
+        context['student_id'] = s.id
+        context['student_fullname'] = s.get_full_name()
+        context['sdg'] = self.students_disciplin_grades
+        context['term'] = self.request.session['term_title']
         return context
