@@ -92,7 +92,7 @@ class GradesDetailView(AminView, LoginRequiredMixin):
             student = Student.objects.get(id=self.request.user.id)
         else:
             student = Student.objects.get(id=self.kwargs['pk'])
-        term = Term.objects.filter(is_active=True).first()
+        term = Term.objects.get(id=self.request.session["term_id"])
         grades = SelectedLesson.objects.filter(student=student, term=term)
         sum_grades = 0
         lesson_count = 0

@@ -4,8 +4,7 @@ from kanon_moslem.aminBaseViews import *
 from kanon_moslem.views import *
 from education_management.forms import *
 from members.models import *
-import jdatetime
-from django.contrib.messages import constants as messages
+
 
 class TermModalCreateView(NoStudent, BaseCreateViewAmin):
     model = Term
@@ -58,7 +57,8 @@ class StudentDisciplineGradeListView(NoStudent, LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         s = Student.objects.get(pk=self.kwargs['pk'])
-        self.students_disciplin_grades = self.model.objects.filter(student=s).order_by('-created')
+        self.students_disciplin_grades = self.model.objects.filter(
+            student=s).order_by('-created')
         return self.students_disciplin_grades
 
     def get_context_data(self, **kwargs):
@@ -79,7 +79,7 @@ class SdgCreateView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, CreateVi
     success_message = "مورد انضباطی ثبت شد."
 
     def get_context_data(self, **kwargs):
-        """در اینجا فیلد کاستومر یا درخواست دهنده را طوری تنظیم میکنیم که 
+        """در اینجا فیلد کاستومر یا درخواست دهنده را طوری تنظیم میکنیم که
         فقط درخواست دهنده ای که میخواهیم براش درخواست ثبت کنیم نمایش داده بشه
         و طوره نباشه که همه درخواست دهنده ها در اپشن های فیلد سلکت نمایش داده بشن
         """
@@ -94,7 +94,7 @@ class SdgCreateView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, CreateVi
 
     def get_initial(self):
         """
-        در اینجا مقدار فیلد درخواست دهنده را با توجه به ادرس مقدار دهی میکنیم 
+        در اینجا مقدار فیلد درخواست دهنده را با توجه به ادرس مقدار دهی میکنیم
         """
         t = Term.objects.get(is_active=True)
         student = self.kwargs['pk']
@@ -134,7 +134,7 @@ class GroupReportView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, Create
     success_message = " گزارش گروه ثبت شد."
 
     def get_context_data(self, **kwargs):
-        """در اینجا فیلد کاستومر یا درخواست دهنده را طوری تنظیم میکنیم که 
+        """در اینجا فیلد کاستومر یا درخواست دهنده را طوری تنظیم میکنیم که
         فقط درخواست دهنده ای که میخواهیم براش درخواست ثبت کنیم نمایش داده بشه
         و طوره نباشه که همه درخواست دهنده ها در اپشن های فیلد سلکت نمایش داده بشن
         """
@@ -150,7 +150,7 @@ class GroupReportView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, Create
 
     def get_initial(self):
         """
-        در اینجا مقدار فیلد درخواست دهنده را با توجه به ادرس مقدار دهی میکنیم 
+        در اینجا مقدار فیلد درخواست دهنده را با توجه به ادرس مقدار دهی میکنیم
         """
         t = Term.objects.get(is_active=True)
         return {
@@ -270,7 +270,8 @@ class GroupReportsListView(NoStudent, LoginRequiredMixin, ListView):
             teacher = Teacher.objects.get(id=t_id)
             self.t_class = teacher.clss
 
-            self.rgs = GroupReport.objects.filter(clas=self.t_class, term=term).order_by('-date')
+            self.rgs = GroupReport.objects.filter(
+                clas=self.t_class, term=term).order_by('-date')
             return self.rgs
         else:
             self.rgs = GroupReport.objects.filter(term=term).order_by('-date')
@@ -287,9 +288,7 @@ class GroupReportsListView(NoStudent, LoginRequiredMixin, ListView):
         context['description'] = ""
         context['term'] = self.request.session['term_title']
 
-
         return context
-
 
 
 class SDGListView4Students(LoginRequiredMixin, ListView):
@@ -300,7 +299,8 @@ class SDGListView4Students(LoginRequiredMixin, ListView):
     def get_queryset(self):
         s = Student.objects.get(pk=self.kwargs['pk'])
         term = Term.objects.get(pk=self.request.session['term_id'])
-        self.students_disciplin_grades = self.model.objects.filter(student=s, term=term).order_by('-created')
+        self.students_disciplin_grades = self.model.objects.filter(
+            student=s, term=term).order_by('-created')
         return self.students_disciplin_grades
 
     def get_context_data(self, **kwargs):
