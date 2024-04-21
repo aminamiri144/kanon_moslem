@@ -11,6 +11,7 @@ urlpatterns = [
     path('sdg/add/<int:pk>',SdgCreateView.as_view(), name='sdg-add'),
     path('report/add/<int:pk>',GroupReportView.as_view(), name='rg-add'),
     path('report/detail/<int:pk>',GroupReportDetailView.as_view(), name='rg-detail'),
+    # path('report/update/<int:pk>',GroupReportUpdateView.as_view(), name='rg-update'),
     path('report/list/',GroupReportsListView.as_view(), name='group_reports_list'),
     
 ]

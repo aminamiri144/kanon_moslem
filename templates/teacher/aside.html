@@ -29,10 +29,30 @@
                 </a>
             </li>
             <li class="nav-item dropdown">
+                <a href="{% url 'student-view' %}"
+                   class="nav-link">
+                    <i class="fe fe-users fe-16"></i>
+                    <span class="ml-3 item-text">متربیان</span><span class="sr-only">(current)</span>
+                </a>
+            </li>
+            <li class="nav-item dropdown">
                 <a href="{% url 'group_reports_list' %}"
                    class="nav-link">
                     <i class="fe fe-users fe-16"></i>
                     <span class="ml-3 item-text">گزارش های گروه</span><span class="sr-only">(current)</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link pl-3" href="{% url 'group_reports_list' %}"><span class="ml-1 item-text">گزارش های گروه </span></a>
+              </li>
+            <li class="nav-item">
+              <a class="nav-link pl-3" href="{% url 'student-add' %}"><span class="ml-1 item-text">ثبت متربی</span></a>
+            </li>
+            <li class="nav-item dropdown">
+                <a href="{% url 'panel' %}"
+                   class="nav-link">
+                    <i class="fe fe-edit fe-16"></i>
+                    <span class="ml-3 item-text">ثبت نمرات و کارنامه</span><span class="sr-only">(current)</span>
                 </a>
             </li>
         </ul>

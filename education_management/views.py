@@ -4,6 +4,7 @@ from kanon_moslem.aminBaseViews import *
 from kanon_moslem.views import *
 from education_management.forms import *
 from members.models import *
+from django.views.generic.edit import UpdateView
 
 
 class TermModalCreateView(NoStudent, BaseCreateViewAmin):
