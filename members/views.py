@@ -92,7 +92,13 @@ class StudentListView(AminView ,NoStudent, LoginRequiredMixin, ListView):
             object_list = self.model.objects.filter(**query)
             self.request.session['search'] = self.request.GET.get('q','')
         else:
-            object_list = self.model.objects.all()
+            if hasattr(self.request.user, 'teacher'):
+                t_id = self.request.user.id
+                teacher = Teacher.objects.get(id=t_id)
+                tc = teacher.clss
+                object_list = self.model.objects.filter(clas_id=tc.id)
+            else:
+                object_list = self.model.objects.all()
         return object_list
         
     def get_initial(self):
