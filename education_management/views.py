@@ -34,7 +34,7 @@ class LessonModalCreateView(NoStudent, BaseCreateViewAmin):
     form_class = LessonCreateForm
     success_message = 'درس جدید با موفقیت افزوده شد !'
     PAGE_TITLE = 'افزودن درس جدید'
-    ACTION_URL = 'lesson-view'
+    ACTION_URL = 'lesson-add'
     BUTTON_TITLE = "اضافه کردن درس"
 
     def get_success_url(self):
@@ -153,10 +153,10 @@ class GroupReportView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, Create
         """
         در اینجا مقدار فیلد درخواست دهنده را با توجه به ادرس مقدار دهی میکنیم
         """
-        t = Term.objects.get(is_active=True)
+        # t = Term.objects.get(id=self.request.session['term_id'])
         return {
             'clas': self.kwargs['pk'],
-            'term': t.id,
+            'term': self.request.session['term_id'],
         }
 
     def post(self, request, *args, **kwargs):
