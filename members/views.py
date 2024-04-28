@@ -3,6 +3,7 @@ from .forms import *
 from kanon_moslem.aminBaseViews import *
 from education_management.models import *
 from kanon_moslem.views import *
+from django.utils.datetime_safe import datetime
 
 # Create your views here.
 
@@ -17,7 +18,6 @@ class TeacherCreateView(NoStudent, BaseCreateViewAmin):
     DATE_FIELD_ID = 'id_birth_date'
     SUCCESS_URL = 'teacher-detail'
 
-    
 
 class StudentCreateView(NoStudent, BaseCreateViewAmin):
     model = Student
@@ -28,11 +28,6 @@ class StudentCreateView(NoStudent, BaseCreateViewAmin):
     BUTTON_TITLE = "ثبت نام متربی"
     DATE_FIELD_ID = 'id_birth_date'
     SUCCESS_URL = 'student-detail'
-
-
-
-
-    
 
 
 class StudentDetailView(NoStudent, BaseDetailViewAmin):
@@ -48,16 +43,14 @@ class StudentDetailView(NoStudent, BaseDetailViewAmin):
         'clas',
         'school_name',
         'father_name',
-        'mather_name', 
+        'mather_name',
         'register_date',
-        'birth_date', 
-        'home_phone', 
-        'father_phone', 
-        'mather_phone', 
+        'birth_date',
+        'home_phone',
+        'father_phone',
+        'mather_phone',
     ]
-    models_property = ['register_date','birth_date']
-
-
+    models_property = ['register_date', 'birth_date']
 
 
 class TeacherDetailView(NoStudent, BaseDetailViewAmin):
@@ -69,28 +62,28 @@ class TeacherDetailView(NoStudent, BaseDetailViewAmin):
         'last_name',
         'mobile',
         'username',
-        'birth_date',  
+        'birth_date',
         'clss',
         'experiences',
-        'study_field',  
+        'study_field',
         'address',
     ]
     models_property = ['birth_date']
 
 
-class StudentListView(AminView ,NoStudent, LoginRequiredMixin, ListView):
+class StudentListView(AminView, NoStudent, LoginRequiredMixin, ListView):
     paginate_by = 20
     model = Student
     context_object_name = 'students'
     template_name = 'student/list.html'
-    
+
     def get_queryset(self):
         value = self.request.GET.get('q', '')
         option = self.request.GET.get('option', '')
         query = {f'{option}__icontains': value}
         if value:
             object_list = self.model.objects.filter(**query)
-            self.request.session['search'] = self.request.GET.get('q','')
+            self.request.session['search'] = self.request.GET.get('q', '')
         else:
             if hasattr(self.request.user, 'teacher'):
                 t_id = self.request.user.id
@@ -100,7 +93,7 @@ class StudentListView(AminView ,NoStudent, LoginRequiredMixin, ListView):
             else:
                 object_list = self.model.objects.all()
         return object_list
-        
+
     def get_initial(self):
         """
         در اینجا مقدار فیلد درخواست دهنده را با توجه به ادرس مقدار دهی میکنیم 
@@ -110,6 +103,26 @@ class StudentListView(AminView ,NoStudent, LoginRequiredMixin, ListView):
             return {'option': option}
 
 
+class StudentUpdateView(NoStudent, LoginRequiredMixin, UpdateView):
+    model = Student
+    form_class = StudentCreateForm
+    template_name = "student/student_update.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['term'] = self.request.session['term_title']
+        context['action_url'] = reverse(
+            'student-update', kwargs={'pk': self.object.pk, })
 
+        return context
 
+    def form_valid(self, form):
+        birth_date_str = self.request.POST.get('birth_date')
+        if '-' in birth_date_str:
+            form.instance.birth_date = birth_date_str
+        else:
+            form.instance.birth_date = birth_date_str.replace('/', '-')
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('student-detail', kwargs={'pk': self.object.pk, })

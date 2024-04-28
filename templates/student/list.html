@@ -119,6 +119,8 @@
                                                                    class="btn btn-outline-secondary btn-sm">نمرات دروس ترم</a>
                                                                    <a href="{% url 'student-term-karname' student.id %}"
                                                                    class="btn btn-info btn-sm">کارنامه ترم</a>
+                                                                <a href="{% url 'student-update' student.id %}"
+                                                                   class="btn btn-outline-warning btn-sm">ویرایش</a>
                                                             </td>
                                                         </tr>
                                                     {% endfor %}

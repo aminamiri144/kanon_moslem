@@ -127,7 +127,6 @@ class Student(Member):
     home_phone = models.CharField(max_length=11, verbose_name="تلفن منزل", blank=True, null=True)
     father_phone = models.CharField(max_length=11, verbose_name="شماره موبایل پدر", blank=True, null=True)
     mather_phone = models.CharField(max_length=11, verbose_name="شماره موبایل مادر", blank=True, null=True)
-
     @property
     def jd_register_date(self):
         jd_reg_date = str(self.register_date).replace('-','/')
