@@ -4,7 +4,7 @@ from kanon_moslem.views import LoginRequiredMixin, SuccessMessageMixin
 from django.urls import reverse
 from django.views import View
 from django.shortcuts import get_object_or_404
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import TemplateView, ListView
 from django.contrib.auth.hashers import make_password
 from django import forms
