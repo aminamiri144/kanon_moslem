@@ -1,5 +1,5 @@
 {
   "django": {
-    "mirror": false
+    "mirror": true
   }
 }
