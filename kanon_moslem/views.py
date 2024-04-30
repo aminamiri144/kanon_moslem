@@ -9,7 +9,7 @@ from . import titles
 from django.shortcuts import redirect
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.urls import reverse
-from education_management.models import Class ,Term
+from education_management.models import Class, Term
 from django.shortcuts import render
 
 
@@ -18,17 +18,19 @@ class NoStudent(UserPassesTestMixin):
         return not hasattr(self.request.user, 'student')
 
     def handle_no_permission(self):
-        return redirect(reverse('spanel')) 
+        return redirect(reverse('spanel'))
+
 
 class NoTeacher(UserPassesTestMixin):
     def test_func(self):
         return not hasattr(self.request.user, 'teacher')
 
     def handle_no_permission(self):
-        return redirect(reverse('tpanel')) 
+        return redirect(reverse('tpanel'))
+
+    # class Index(TemplateView):
 
 
-# class Index(TemplateView):
 #     template_name = "landing/index.html"
 
 
@@ -38,6 +40,7 @@ class LoginRequiredMixin(object):
     کاربر کاربرد دارد.
     """
     login_required = True
+
     @classmethod
     def as_view(cls, **kwargs):
         self = cls()
@@ -48,14 +51,13 @@ class LoginRequiredMixin(object):
             return view
 
 
-
 class SuccessMessageMixin:
     """
     Add a success message on successful form submission.
     """
     success_message = ''
     css = ''
-    
+
     def form_valid(self, form):
         response = super().form_valid(form)
         success_message = self.get_success_message(form.cleaned_data)
@@ -65,7 +67,6 @@ class SuccessMessageMixin:
 
     def get_success_message(self, cleaned_data):
         return self.success_message % cleaned_data
-
 
 
 class UserLoginView(LoginView):
@@ -92,9 +93,7 @@ class UserLoginView(LoginView):
         return '/'
 
 
-
-
-class PanelView(NoStudent,NoTeacher, LoginRequiredMixin, TemplateView):
+class PanelView(NoStudent, NoTeacher, LoginRequiredMixin, TemplateView):
     template_name = "panel.html"
 
     def get_context_data(self, **kwargs):
@@ -104,6 +103,8 @@ class PanelView(NoStudent,NoTeacher, LoginRequiredMixin, TemplateView):
         context['term'] = self.request.session['term_title']
         context['classes'] = Class.objects.all()
         return context
+
+
 class StudentPanelView(LoginRequiredMixin, TemplateView):
     template_name = "spanel/student_panel.html"
 
@@ -119,7 +120,6 @@ class TeacherPanelView(LoginRequiredMixin, TemplateView, NoStudent):
     template_name = "teacher/panel.html"
 
     def get_context_data(self, **kwargs):
-        
         context = {}
         context['page_title'] = titles.KANON_NAME
         context['page_description'] = 'پنل کاربری مربی'
@@ -135,8 +135,6 @@ class PanelView1(LoginRequiredMixin, TemplateView):
         context['page_title'] = titles.KANON_NAME
         context['page_description'] = 'سامانه مدیریت کانون تربیتی'
         return context
-
-
 
 
 class UserLogoutView(LoginRequiredMixin, View):
@@ -167,15 +165,14 @@ class ChangeSystemTerm(LoginRequiredMixin, SuccessMessageMixin, View):
     def get(self, request):
         terms = Term.objects.all()
         return render(self.request, self.template_name, {"terms": terms})
-    
+
     def post(self, request, *args, **kwargs):
         selected_term = request.POST.get('term_select')
-        
+
         default_term = Term.objects.get(id=selected_term)
         self.request.session['term_title'] = str(default_term)
         self.request.session['term_id'] = str(default_term.id)
         if hasattr(self.request.user, 'teacher'):
-            return redirect(reverse('tpanel')) 
+            return redirect(reverse('tpanel'))
         else:
-            return redirect(reverse('panel')) 
-
+            return redirect(reverse('panel'))
