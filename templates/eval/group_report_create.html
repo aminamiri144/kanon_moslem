@@ -7,7 +7,7 @@
         <div class="container-fluid">
             <div class="row justify-content-center">
                 <div class="col-12">
-                    <h2 class="mb-2 page-title">گزارش گروه</h2>
+                    <h2 class="mb-2 page-title"> گزارش گروه {{ class_name }} </h2>
                     
                     {% if messages %}
                         {% for message in messages %}
@@ -32,7 +32,7 @@
                                 {% csrf_token %}
                                 <div class="card shadow">
                                     <div class="card-header">
-                                        <strong class="card-title">سربرگ گزارش</strong>
+                                        <strong class="card-title">ثبت گزارش گروه {{ class_name }}</strong>
                                     </div>
                                     <div class="card-body">
                                         <div class="form-group row">
@@ -76,8 +76,8 @@
                                                             <td>
                                                                 <select class="form-control" name="hozor" id="id_grade">
                                                                     <option value="2" selected="">حاضر</option>
-                                                                    <option value="1">غایب|موجه</option>
-                                                                    <option value="0">غایب|غیرموجه</option>
+                                                                    <option value="1">غیبت موجه</option>
+                                                                    <option value="0">غیبت غیرموجه</option>
                                                                 </select>
                                                             </td>
                                                             <td>
@@ -89,8 +89,8 @@
                                                             <td>
                                                                 <select class="form-control" name="takhir">
                                                                     <option value="2" selected="">بدون تاخیر</option>
-                                                                    <option value="1">تاخیر|موجه</option>
-                                                                    <option value="0">تاخیر|غیرموجه</option>
+                                                                    <option value="1">تاخیر موجه</option>
+                                                                    <option value="0">تاخیر غیرموجه</option>
                                                                 </select>
                                                             </td>
                                                             <td>

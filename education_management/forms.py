@@ -39,6 +39,7 @@ class DisciplineGradeCreateForm(BaseFormKanon):
         super(DisciplineGradeCreateForm, self).__init__(*args, **kwargs)
         self.fields['student'].disabled = True
         self.fields['term'].disabled = True
+
     class Meta:
         model = DisciplineGrade
         fields = [
@@ -49,7 +50,6 @@ class DisciplineGradeCreateForm(BaseFormKanon):
             "term",
             "description",
         ]
-
 
     def clean_created(self):
         date = self.cleaned_data['created']
@@ -62,19 +62,18 @@ class DisciplineGradeCreateForm(BaseFormKanon):
 
 class ReportHalgheForm(BaseFormKanon):
     MODEL_VERBOSE_NAME = ''
-    date = forms.CharField(label='تاریخ', widget=forms.TextInput(attrs={'placeholder': 'تاریخ را انتخاب کنید'}))
+    date = forms.CharField(label='تاریخ', widget=forms.TextInput(attrs={'placeholder': 'تاریخ را انتخاب کنید', 'required': True}))
+
     def __init__(self, *args, **kwargs):
         super(ReportHalgheForm, self).__init__(*args, **kwargs)
-        self.fields['clas'].readonly = True
-        self.fields['term'].readonly = True
+        self.fields['date'].required = True
+        self.fields['date'].widget.attrs['required'] = True
 
     class Meta:
         model = GroupReport
         fields = [
             "title",
             "report_type",
-            "clas",
-            "term",
             "date"
         ]
 
@@ -85,3 +84,4 @@ class ReportHalgheForm(BaseFormKanon):
         except:
             date = None
         return date
+

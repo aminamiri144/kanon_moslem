@@ -35,12 +35,10 @@ class SelectionLessonClass(View, NoStudent, LoginRequiredMixin):
                     except:
                         pass
             except:
-                messages = [
-                    {'message': 'این درس قبلا برای این گروه گرفته شده است.', 'tag': 'danger', }]
+                messages = [{'message': 'این درس قبلا برای این گروه گرفته شده است.', 'tag': 'danger', }]
                 return render(request, self.template_name, {"form": form, "messages": messages})
 
-        messages = [
-            {'message': 'انتخاب واحد با موفقیت انجام شد.', 'tag': 'success', }]
+        messages = [{'message': 'انتخاب واحد با موفقیت انجام شد.', 'tag': 'success', }]
         return render(request, self.template_name, {"form": form, "messages": messages, "term": self.request.session['term_title']})
 
 

@@ -4,7 +4,6 @@ from django.contrib.auth.views import LoginView
 from django.views.generic import TemplateView
 from django.views import View
 from django.contrib.auth import logout
-from django.shortcuts import redirect
 from . import titles
 from django.shortcuts import redirect
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -97,11 +96,8 @@ class PanelView(NoStudent, NoTeacher, LoginRequiredMixin, TemplateView):
     template_name = "panel.html"
 
     def get_context_data(self, **kwargs):
-        context = {}
-        context['page_title'] = titles.KANON_NAME
-        context['page_description'] = 'سامانه مدیریت کانون تربیتی'
-        context['term'] = self.request.session['term_title']
-        context['classes'] = Class.objects.all()
+        context = {'page_title': titles.KANON_NAME, 'page_description': 'سامانه مدیریت کانون تربیتی',
+                   'term': self.request.session['term_title'], 'classes': Class.objects.all()}
         return context
 
 
@@ -109,10 +105,8 @@ class StudentPanelView(LoginRequiredMixin, TemplateView):
     template_name = "spanel/student_panel.html"
 
     def get_context_data(self, **kwargs):
-        context = {}
-        context['page_title'] = titles.KANON_NAME
-        context['page_description'] = 'پنل کاربری متربی'
-        context['term'] = self.request.session['term_title']
+        context = {'page_title': titles.KANON_NAME, 'page_description': 'پنل کاربری متربی',
+                   'term': self.request.session['term_title']}
         return context
 
 
@@ -120,10 +114,8 @@ class TeacherPanelView(LoginRequiredMixin, TemplateView, NoStudent):
     template_name = "teacher/panel.html"
 
     def get_context_data(self, **kwargs):
-        context = {}
-        context['page_title'] = titles.KANON_NAME
-        context['page_description'] = 'پنل کاربری مربی'
-        context['term'] = self.request.session['term_title']
+        context = {'page_title': titles.KANON_NAME, 'page_description': 'پنل کاربری مربی',
+                   'term': self.request.session['term_title']}
         return context
 
 
@@ -131,30 +123,13 @@ class PanelView1(LoginRequiredMixin, TemplateView):
     template_name = "main1.html"
 
     def get_context_data(self, **kwargs):
-        context = {}
-        context['page_title'] = titles.KANON_NAME
-        context['page_description'] = 'سامانه مدیریت کانون تربیتی'
+        context = {'page_title': titles.KANON_NAME, 'page_description': 'سامانه مدیریت کانون تربیتی'}
         return context
 
 
 class UserLogoutView(LoginRequiredMixin, View):
-    """
-    برای خروج کاربر یا اصطلاحاً لاگ آوت استفاده میشود
-    و پس از لاگ اوت کاربر را به صفحه لاگین هدایت میکند
-
-    Arguments:
-        request:
-           درخواست ارسال شده به صفحه است
-
-    """
-
     def get(self, request):
-        # request.user.last_logout = timezone.now()
-        # request.user.last_activity = timezone.now()
-        # request.user.save()
-        # log_save(request.user, 1, 2, True)
         logout(request)
-
         return redirect('/login')
 
 

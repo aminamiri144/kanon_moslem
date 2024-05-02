@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from education_management.models import *
 from kanon_moslem.aminBaseViews import *
@@ -109,69 +110,45 @@ class SdgCreateView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, CreateVi
             pass
         return reverse('sdg-list', kwargs={'pk': i})
 
-    # def get_success_url(self):
-    #     return reverse('sdg-list')
 
-
-# class GroupReportView(NoStudent, View, LoginRequiredMixin):
-#     template_name = 'eval/group_report.html'
-#     def get(self, request, *args, **kwargs):
-#         clas = Class.objects.get(id=self.kwargs['pk'])
-#         term = Term.objects.filter(is_active=True).first()
-#         report_form = ReportHalgheForm()
-#         report_form.fields['clas'].choices.field.queryset = Class.objects.filter(pk=self.kwargs['pk'])
-#         students = Student.objects.filter(clas=clas)
-#         return render(request, self.template_name, {"class": clas, 'students': students, 'report_form': report_form})
-
-
-#     def post(self, request, *args, **kwargs):
-#         pass
-
-
-class GroupReportView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, CreateView):
-    model = GroupReport
+class GroupReportCreateView(BaseTemplateViewAmin, LoginRequiredMixin, NoStudent):
     template_name = 'eval/group_report_create.html'
-    form_class = ReportHalgheForm
-    success_message = " گزارش گروه ثبت شد."
+    PAGE_TITLE = 'ثبت گزارش گروه'
+    PAGE_DESCRIPTION = ''
 
-    def get_context_data(self, **kwargs):
-        """در اینجا فیلد کاستومر یا درخواست دهنده را طوری تنظیم میکنیم که
-        فقط درخواست دهنده ای که میخواهیم براش درخواست ثبت کنیم نمایش داده بشه
-        و طوره نباشه که همه درخواست دهنده ها در اپشن های فیلد سلکت نمایش داده بشن
-        """
-        clas = Class.objects.get(id=self.kwargs['pk'])
-        context = super(GroupReportView, self).get_context_data(**kwargs)
-        context['form'].fields['clas'].choices.field.queryset = Class.objects.filter(
-            pk=self.kwargs['pk'])
+    def get_context_data(self, more_data=None, **kwargs):
+        context = super(GroupReportCreateView, self).get_context_data(**kwargs)
+        self.clas = Class.objects.get(id=self.kwargs['pk'])
         context['class_id'] = self.kwargs['pk']
-        context['students'] = Student.objects.filter(clas=clas)
+        context['class_name'] = self.clas.name
+        context['students'] = Student.objects.filter(clas=self.clas)
         context['term'] = self.request.session['term_title']
-
+        context['form'] = ReportHalgheForm()
+        if more_data is not None:
+            for data in more_data:
+                context[data['key']] = data['value']
         return context
 
-    def get_initial(self):
-        """
-        در اینجا مقدار فیلد درخواست دهنده را با توجه به ادرس مقدار دهی میکنیم
-        """
-        # t = Term.objects.get(id=self.request.session['term_id'])
-        return {
-            'clas': self.kwargs['pk'],
-            'term': self.request.session['term_id'],
-        }
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, context=self.get_context_data())
 
     def post(self, request, *args, **kwargs):
-        report_title = request.POST.get('title')
-        report_type = request.POST.get('report_type')
-        clas = request.POST.get('clas')
-        date = request.POST.get('date').replace('/', '-')
+
+        form = ReportHalgheForm(request.POST)
         this_term = Term.objects.get(id=self.request.session['term_id'])
-        new_report = GroupReport()
-        new_report.title = report_title
-        new_report.report_type = ReportTypes.objects.get(id=report_type)
-        new_report.clas = Class.objects.get(id=clas)
-        new_report.term = this_term
-        new_report.date = date
-        new_report.save()
+        if form.is_valid():
+            report_title = request.POST.get('title')
+            report_type = request.POST.get('report_type')
+            date = request.POST.get('date').replace('/', '-')
+            new_report = GroupReport()
+            new_report.title = report_title
+            new_report.report_type = ReportTypes.objects.get(id=report_type)
+            new_report.clas = Class.objects.get(id=self.kwargs['pk'])
+            new_report.term = this_term
+            new_report.date = date
+            new_report.save()
+        else:
+            return render(request, self.template_name, context=self.get_context_data([{'key': 'form', 'value': form}]))
 
         students_id = request.POST.getlist('student_id')
         hozor = request.POST.getlist('hozor')
@@ -179,7 +156,7 @@ class GroupReportView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, Create
         takhir = request.POST.getlist('takhir')
         takhir_description = request.POST.getlist('description2')
         result = list(zip(students_id, hozor, hozor_description,
-                      takhir, takhir_description))
+                          takhir, takhir_description))
         for dg in result:
             # غیبت غیر موجه
             if dg[1] in '0':
@@ -193,6 +170,7 @@ class GroupReportView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, Create
                 new_dg.term = this_term
                 new_dg.description = dg[2]
                 new_dg.save()
+
             # غیبت موجه
             elif dg[1] in '1':
                 new_dg = DisciplineGrade()
@@ -201,7 +179,7 @@ class GroupReportView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, Create
                 new_dg.discipline = Discipline.objects.filter(
                     title__contains='غیبت').first()
                 new_dg.created = date
-                new_dg.grade = 0
+                new_dg.grade = -1
                 new_dg.term = this_term
                 new_dg.description = dg[2]
                 new_dg.save()
@@ -215,7 +193,7 @@ class GroupReportView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, Create
                     new_dgt.discipline = Discipline.objects.filter(
                         title__contains='تاخیر').first()
                     new_dgt.created = date
-                    new_dgt.grade = -1
+                    new_dgt.grade = -2
                     new_dgt.term = this_term
                     new_dgt.description = dg[4]
                     new_dgt.save()
@@ -227,22 +205,11 @@ class GroupReportView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, Create
                     new_dgt.discipline = Discipline.objects.filter(
                         title__contains='تاخیر').first()
                     new_dgt.created = date
-                    new_dgt.grade = 0
+                    new_dgt.grade = -1
                     new_dgt.term = this_term
                     new_dgt.description = dg[4]
                     new_dgt.save()
-
-        # messages = [{'message': 'گزارش با موفقیت ثبت شد.', 'tag': 'success', }]
-        # return render(request, self.template_name, {"messages": messages, "class_id": self.kwargs['pk']})
-        return redirect('/')
-
-    def get_success_url(self):
-        i = self.kwargs['pk']
-        try:
-            i = str(i)
-        except:
-            pass
-        return reverse('sdg-view', kwargs={'pk': i})
+        return redirect(f'/edu/report/detail/{new_report.id}')
 
 
 class GroupReportDetailView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, BaseDetailViewAmin):
