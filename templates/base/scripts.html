@@ -1,17 +1,26 @@
 {% load static %}
 {% include 'base/change_term_modal.html' %}
 {% include 'base/delete_modal.html' %}
+{% include 'base/updateModal.html' %}
+
 <script>
-function modal_url(url, type) {
-    $.ajax({
-        url: url,
-        type: 'GET',
-        success: function (data) {
-            $("#"+ type +"_modal_body").html(data);
-        }
-    })
-}
+    function modal_url(url, type) {
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function (data) {
+                $("#" + type + "_modal_body").html(data);
+            }
+        })
+    }
 </script>
+{% if messages %}
+    {% for message in messages %}
+        <script>
+            swal("", "{{ message.message }}", "{{ message.tags }}", {button: "باشه", buttonsColor: "green"});
+        </script>
+    {% endfor %}
+{% endif %}
 <script src="{% static 'js/jquery.min.js' %}"></script>
 {% comment %} <script src="{% static 'js/popper.min.js' %}"></script>  {% endcomment %}
 {% comment %} <script src="{% static 'js/moment.min.js' %}"></script>  {% endcomment %}
@@ -28,9 +37,9 @@ function modal_url(url, type) {
 {% comment %} <script src="{% static 'js/datamaps.custom.js' %}"></script>  {% endcomment %}
 {% comment %} <script src="{% static 'js/Chart.min.js'%}"></script>  {% endcomment %}
 <script>
-  /* defind global options */
-  Chart.defaults.global.defaultFontFamily = base.defaultFontFamily;
-  Chart.defaults.global.defaultFontColor = colors.mutedColor;
+    /* defind global options */
+    Chart.defaults.global.defaultFontFamily = base.defaultFontFamily;
+    Chart.defaults.global.defaultFontColor = colors.mutedColor;
 </script>
 {% comment %} <script src="{% static 'js/gauge.min.js'%}"></script>  {% endcomment %}
 {% comment %} <script src="{% static 'js/jquery.sparkline.min.js'%}"></script>  {% endcomment %}
@@ -46,52 +55,51 @@ function modal_url(url, type) {
 {% comment %} <script src="{% static 'js/jquery.dataTables.min.js'%}"></script> {% endcomment %}
 {% comment %} <script src="{% static 'js/dataTables.bootstrap4.min.js'%}"></script> {% endcomment %}
 <script>
-  var uptarg = document.getElementById('drag-drop-area');
-  if (uptarg)
-  {
-    var uppy = Uppy.Core().use(Uppy.Dashboard,
-    {
-      inline: true,
-      target: uptarg,
-      proudlyDisplayPoweredByUppy: false,
-      theme: 'dark',
-      width: 770,
-      height: 210,
-      plugins: ['Webcam']
-    }).use(Uppy.Tus,
-    {
-      endpoint: 'https://master.tus.io/files/'
-    });
-    uppy.on('complete', (result) =>
-    {
-      console.log('Upload complete! We’ve uploaded these files:', result.successful)
-    });
-  }
+    var uptarg = document.getElementById('drag-drop-area');
+    if (uptarg) {
+        var uppy = Uppy.Core().use(Uppy.Dashboard,
+            {
+                inline: true,
+                target: uptarg,
+                proudlyDisplayPoweredByUppy: false,
+                theme: 'dark',
+                width: 770,
+                height: 210,
+                plugins: ['Webcam']
+            }).use(Uppy.Tus,
+            {
+                endpoint: 'https://master.tus.io/files/'
+            });
+        uppy.on('complete', (result) => {
+            console.log('Upload complete! We’ve uploaded these files:', result.successful)
+        });
+    }
 </script>
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-56159088-1"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag()
-  {
-    dataLayer.push(arguments);
-  }
-  gtag('js', new Date());
-  gtag('config', 'UA-56159088-1');
-</script>
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-56159088-1"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
+    window.dataLayer = window.dataLayer || [];
 
-  function gtag()
-  {
-    dataLayer.push(arguments);
-  }
-  gtag('js', new Date());
-  gtag('config', 'UA-56159088-1');
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-56159088-1');
 </script>
-<script src="{% static 'js/apps.js'%}"></script>
-<script src="{% static 'plugins/jalaliDatepicker/kamadatepicker.min.js'%}"></script>
-<script src="{% static 'plugins/select2/select2.min.js'%}"></script> 
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-56159088-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-56159088-1');
+</script>
+<script src="{% static 'js/apps.js' %}"></script>
+<script src="{% static 'plugins/jalaliDatepicker/kamadatepicker.min.js' %}"></script>
+<script src="{% static 'plugins/select2/select2.min.js' %}"></script>
 <script src="/static/js/django_select2.js"></script>

@@ -9,9 +9,11 @@ urlpatterns = [
     path('sdg/<int:pk>', StudentDisciplineGradeListView.as_view(), name='sdg-list'),
     path('sdg/student/<int:pk>', SDGListView4Students.as_view(), name='sdg4student-list'),
     path('sdg/add/<int:pk>', SdgCreateView.as_view(), name='sdg-add'),
+    path('sdg/update/<int:pk>', SDGUpdateView.as_view(), name='sdg-update'),
+    path('sdg/delete/<int:pk>', SDGDeleteView.as_view(), name='sdg-delete'),
     path('report/add/<int:pk>', GroupReportCreateView.as_view(), name='rg-add'),
     path('report/detail/<int:pk>', GroupReportDetailView.as_view(), name='rg-detail'),
     path('report/delete/<int:pk>', GroupReportDeleteView.as_view(), name='group_report_delete'),
+    path('report/update/<int:pk>', GroupReportUpdateView.as_view(), name='group_report_update'),
     path('report/list/', GroupReportsListView.as_view(), name='group_reports_list'),
-
 ]

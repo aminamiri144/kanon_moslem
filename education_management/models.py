@@ -1,7 +1,9 @@
 from django.db import models
 from members.models import Student, Class
 from django_jalali.db import models as jmodels
-import jdatetime 
+import jdatetime
+
+
 # Create your models here.
 
 
@@ -22,9 +24,9 @@ class Term(models.Model):
     ]
 
     year = models.CharField(max_length=4, verbose_name="سال")
-    mterm = models.CharField(choices=TERM_CHOICES, default='T',verbose_name="نیم‌سال", max_length=20)
+    mterm = models.CharField(choices=TERM_CHOICES, default='T', verbose_name="نیم‌سال", max_length=20)
     is_active = models.BooleanField(default=False, verbose_name="نیم‌سال فعال")
-    
+
     unique_together = ('year', 'mterm',)
 
     @property
@@ -37,12 +39,9 @@ class Term(models.Model):
             return '0'
         else:
             return '1'
-    
-
 
     def __str__(self):
         return f'{self.get_mterm_display()} | {self.year}'
-
 
 
 # class EduTerm(models.Model):
@@ -64,12 +63,10 @@ class Lesson(models.Model):
         verbose_name_plural = "درس‌ها"
 
     title = models.CharField(max_length=50, verbose_name="نام درس")
-    lesson_type = models.ForeignKey(LessonType, on_delete=models.DO_NOTHING, blank=True, null=True, verbose_name="نوع درس")
+    lesson_type = models.ForeignKey(LessonType, on_delete=models.DO_NOTHING, blank=True, null=True,
+                                    verbose_name="نوع درس")
     description = models.TextField(max_length=300, verbose_name="توضیحات درس", null=True, blank=True)
     ratio = models.IntegerField(default=1, verbose_name="ضریب درس")
-
-    
-    
 
     def __str__(self):
         return self.title
@@ -85,23 +82,24 @@ class SelectedLesson(models.Model):
         ]
 
     GradeChoice = [
-        ( '5' , 'عالی' ),
-        ( '4' , 'بسیارخوب'),
-        ( '3' , 'خوب'),
-        ( '2' , 'متوسط'),
-        ( '1' , 'ضعیف'),
-        ( '0' , 'بسیارضعیف'),
-        ( 'g' , 'غایب'),
-        ( 'n' , 'ثبت‌نشده'),
+        ('5', 'عالی'),
+        ('4', 'بسیارخوب'),
+        ('3', 'خوب'),
+        ('2', 'متوسط'),
+        ('1', 'ضعیف'),
+        ('0', 'بسیارضعیف'),
+        ('g', 'غایب'),
+        ('n', 'ثبت‌نشده'),
     ]
 
     student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name="متربی")
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, verbose_name="درس")
     term = models.ForeignKey(Term, on_delete=models.CASCADE, verbose_name="ترم‌تحصیلی")
-    grade = models.CharField(choices=GradeChoice, default='n' ,max_length=10, blank=True, null=True, verbose_name="نمره‌")
+    grade = models.CharField(choices=GradeChoice, default='n', max_length=10, blank=True, null=True,
+                             verbose_name="نمره‌")
     description = models.CharField(blank=True, null=True, verbose_name="توضیحات", default="توضیحات", max_length=255)
 
-    unique_together = ('student', 'lesson','term',)
+    unique_together = ('student', 'lesson', 'term',)
 
     def __str__(self):
         return self.student.get_full_name()
@@ -118,10 +116,6 @@ class Discipline(models.Model):
         return self.title
 
 
-
-
-
-
 class ControlSelection(models.Model):
     class Meta:
         verbose_name = "کنترل انتخاب واحد گروه"
@@ -135,20 +129,22 @@ class ControlSelection(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, verbose_name="درس")
     term = models.ForeignKey(Term, on_delete=models.CASCADE, verbose_name="ترم‌تحصیلی")
 
-    unique_together = ('clas', 'lesson','term',)
+    unique_together = ('clas', 'lesson', 'term',)
 
     def __str__(self):
         return f"{self.clas} | {self.lesson} | {self.term}"
 
 
-
 class ReportTypes(models.Model):
     class Meta:
         verbose_name = 'نوع گزارش'
-        verbose_name_plural= 'انواع گزارش'
+        verbose_name_plural = 'انواع گزارش'
+
     title = models.CharField(max_length=60, verbose_name="نوع گزارش")
+
     def __str__(self):
         return self.title
+
 
 class GroupReport(models.Model):
     class Meta:
@@ -156,21 +152,21 @@ class GroupReport(models.Model):
         verbose_name_plural = "گزارش های روزانه گروه ها"
 
         constraints = [
-            models.UniqueConstraint(fields=['clas', 'term', 'date', 'report_type'], name='unique_clas_term_date_report_type')
+            models.UniqueConstraint(fields=['clas', 'term', 'date', 'report_type'],
+                                    name='unique_clas_term_date_report_type')
         ]
-    
 
     title = models.CharField(max_length=60, default="برگزاری گروه", verbose_name="عنوان گزارش")
-    report_type =models.ForeignKey(ReportTypes, on_delete=models.CASCADE, verbose_name="نوع گزارش", default=1)
+    report_type = models.ForeignKey(ReportTypes, on_delete=models.CASCADE, verbose_name="نوع گزارش", default=1)
     clas = models.ForeignKey(Class, on_delete=models.CASCADE, verbose_name="گروه")
     term = models.ForeignKey(Term, on_delete=models.CASCADE, verbose_name="ترم‌تحصیلی")
     date = jmodels.jDateField(verbose_name="تاریخ گزارش")
 
-    unique_together = ('clas', 'term','date','report_type',)
+    unique_together = ('clas', 'term', 'date', 'report_type',)
 
     @property
     def jd_date(self):
-        date = str(self.date).replace('-','/')
+        date = str(self.date).replace('-', '/')
         try:
             return date
         except:
@@ -179,9 +175,6 @@ class GroupReport(models.Model):
     def __str__(self):
         return f"{self.clas} | {self.report_type} | {self.title}"
 
-
-
-    
 
 class DisciplineGrade(models.Model):
     class Meta:
@@ -198,7 +191,7 @@ class DisciplineGrade(models.Model):
 
     @property
     def jd_created_date(self):
-        created_date = str(self.created).replace('-','/')
+        created_date = str(self.created).replace('-', '/')
         try:
             return created_date
         except:
@@ -206,5 +199,3 @@ class DisciplineGrade(models.Model):
 
     def __str__(self):
         return f"{self.student} | {self.discipline} | {self.created} | {self.grade}"
-
-

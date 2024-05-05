@@ -17,11 +17,11 @@
                     <div class="col-lg-9 col-md-9 col-sm-12">{{ field }}</div>
                 </div>
             {% endfor %}
-            <button type="submit" class="btn btn-success">ثبت تغییرات</button>
+            <button type="submit" class="btn btn-success">بروز رسانی</button>
             <button class="btn btn-danger" data-dismiss="modal">بستن</button>
         </form>
     </div>
 </div>
 <script src="{% static 'js/jquery.min.js' %}"></script>
 <script src="{% static 'plugins/jalaliDatepicker/kamadatepicker.min.js'%}"></script>
-<script>kamaDatepicker('id_date', {buttonsColor: "green", forceFarsiDigits: true});</script>
+<script>kamaDatepicker('id_created', {buttonsColor: "green", forceFarsiDigits: true});</script>

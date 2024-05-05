@@ -8,18 +8,6 @@
             <div class="row justify-content-center">
                 <div class="col-12">
                     <h2 class="mb-2 page-title"> گزارش گروه {{ class_name }} </h2>
-                    
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-{% if message.tag %}{{ message.tag }}{% endif %} alert-dismissible fade show"
-                                 role="alert">
-                                {{ message.message }}
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">x</span>
-                                </button>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
                     <div class="row my-4">
                         <!-- Small table -->
                         <div class="col-md-12">
@@ -41,7 +29,8 @@
                                                     {{ field.label_tag }}
                                                     {{ field }}
                                                     <div class="invalid-feedback">مقدار مناسب را وارد کنید.</div>
-                                                    {% for error in field.errors %}<div class="feedbackinvalid">{{ error|escape }}</div>{% endfor %}
+                                                    {% for error in field.errors %}
+                                                        <div class="feedbackinvalid">{{ error|escape }}</div>{% endfor %}
                                                 </div>
                                             {% endfor %}
                                         </div>
@@ -57,96 +46,90 @@
                                         <div class="table-responsive">
                                             <table class="table table-hover text-nowrap">
                                                 <thead>
-                                                    <tr>
-                                                        <th>نام و نام خانوادگی</th>
-                                                        <th>حضور و غیاب</th>
-                                                        <th>توضیحات</th>
-                                                        <th>تاخیر</th>
-                                                        <th>توضیحات</th>
-                                                    </tr>
+                                                <tr>
+                                                    <th>نام و نام خانوادگی</th>
+                                                    <th>حضور و غیاب</th>
+                                                    <th>توضیحات</th>
+                                                    <th>تاخیر</th>
+                                                    <th>توضیحات</th>
+                                                </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {% for s in students %}
-                                                        <tr>
-                                                            <td>
-                                                                <select name="student_id" class="form-control" required="" readonly="">
-                                                                    <option value="{{ s.id }}" selected="">{{ s.get_full_name }}</option>
-                                                                </select>
-                                                            </td>
-                                                            <td>
-                                                                <select class="form-control" name="hozor" id="id_grade">
-                                                                    <option value="2" selected="">حاضر</option>
-                                                                    <option value="1">غیبت موجه</option>
-                                                                    <option value="0">غیبت غیرموجه</option>
-                                                                </select>
-                                                            </td>
-                                                            <td>
-                                                                <input name="description1"
-                                                                       class="form-control"
-                                                                       id="id_description1"
-                                                                       placeholder="توضیحات حضور غیاب">
-                                                            </td>
-                                                            <td>
-                                                                <select class="form-control" name="takhir">
-                                                                    <option value="2" selected="">بدون تاخیر</option>
-                                                                    <option value="1">تاخیر موجه</option>
-                                                                    <option value="0">تاخیر غیرموجه</option>
-                                                                </select>
-                                                            </td>
-                                                            <td>
-                                                                <input name="description2"
-                                                                       class="form-control"
-                                                                       id="id_description2"
-                                                                       placeholder="توضیحات تاخیر">
-                                                            </td>
-                                                        </tr>
-                                                    {% endfor %}
+                                                {% for s in students %}
+                                                    <tr>
+                                                        <td>
+                                                            <select name="student_id" class="form-control" required=""
+                                                                    readonly="">
+                                                                <option value="{{ s.id }}"
+                                                                        selected="">{{ s.get_full_name }}</option>
+                                                            </select>
+                                                        </td>
+                                                        <td>
+                                                            <select class="form-control" name="hozor" id="id_grade">
+                                                                <option value="2" selected="">حاضر</option>
+                                                                <option value="1">غیبت موجه</option>
+                                                                <option value="0">غیبت غیرموجه</option>
+                                                            </select>
+                                                        </td>
+                                                        <td>
+                                                            <input name="description1"
+                                                                   class="form-control"
+                                                                   id="id_description1"
+                                                                   placeholder="توضیحات حضور غیاب">
+                                                        </td>
+                                                        <td>
+                                                            <select class="form-control" name="takhir">
+                                                                <option value="2" selected="">بدون تاخیر</option>
+                                                                <option value="1">تاخیر موجه</option>
+                                                                <option value="0">تاخیر غیرموجه</option>
+                                                            </select>
+                                                        </td>
+                                                        <td>
+                                                            <input name="description2"
+                                                                   class="form-control"
+                                                                   id="id_description2"
+                                                                   placeholder="توضیحات تاخیر">
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
                                                 </tbody>
                                             </table>
                                             <button type="submit" class="btn btn-success">ثبت گزارش حلقه</button>
-                                        </form>
-                                    </div>
-                                </div>
                             </form>
                         </div>
                     </div>
+                    </form>
                 </div>
-                <!-- simple table -->
             </div>
-            <!-- end section -->
+        </div>
+        <!-- simple table -->
+        </div>
+        <!-- end section -->
         </div>
         <!-- .col-12 -->
-    </div>
-    <!-- .row -->
-</main>
+        </div>
+        <!-- .row -->
+    </main>
 {% endblock content %}
 {% block moreScript %}
     <script>
-    kamaDatepicker('id_date', {buttonsColor: "green", forceFarsiDigits: true});
-
-    {% comment %} $('#id_customer').select2({
-        ajax: {
-          url: 'https://api.github.com/search/repositories',
-          dataType: 'json'
-        }
-});    {% endcomment %}
-    // Example starter JavaScript for disabling form submissions if there are invalid fields
-    (function() {
-      'use strict';
-      window.addEventListener('load', function() {
-        // Fetch all the forms we want to apply custom Bootstrap validation styles to
-        var forms = document.getElementsByClassName('needs-validation');
-        // Loop over them and prevent submission
-        var validation = Array.prototype.filter.call(forms, function(form) {
-          form.addEventListener('submit', function(event) {
-            if (form.checkValidity() === false) {
-              event.preventDefault();
-              event.stopPropagation();
-            }
-            form.classList.add('was-validated');
-          }, false);
-        });
-      }, false);
-    })();
+        kamaDatepicker('id_date', {buttonsColor: "green", forceFarsiDigits: true});
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = document.getElementsByClassName('needs-validation');
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
     </script>
 {% endblock moreScript %}

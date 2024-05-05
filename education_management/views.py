@@ -1,11 +1,9 @@
-from django.http import HttpResponse
-from django.shortcuts import render, redirect
-from education_management.models import *
-from kanon_moslem.aminBaseViews import *
+from django.views.generic import DeleteView
+
 from kanon_moslem.views import *
 from education_management.forms import *
 from members.models import *
-from django.views.generic.edit import UpdateView
+from django.contrib import messages
 
 
 class TermModalCreateView(NoStudent, BaseCreateViewAmin):
@@ -209,6 +207,8 @@ class GroupReportCreateView(BaseTemplateViewAmin, LoginRequiredMixin, NoStudent)
                     new_dgt.term = this_term
                     new_dgt.description = dg[4]
                     new_dgt.save()
+            messages.add_message(self.request, messages.SUCCESS, 'گزارش با موفقیت ثبت شد')
+
         return redirect(f'/edu/report/detail/{new_report.id}')
 
 
@@ -271,7 +271,31 @@ class GroupReportDeleteView(AminView, LoginRequiredMixin, NoStudent, SuccessMess
         report_id = self.kwargs['pk']
         report = GroupReport.objects.get(pk=report_id)
         report.delete()
+        messages.add_message(self.request, messages.SUCCESS, 'گزارش با موفقیت حذف شد')
         return redirect('/')
+
+
+class GroupReportUpdateView(UpdateView, NoStudent, LoginRequiredMixin):
+    model = GroupReport
+    form_class = ReportHalgheForm
+    template_name = 'eval/group_report_update.html'
+
+    def form_valid(self, form):
+        if form.has_changed():
+            date = form.cleaned_data['date']
+            sdgs = DisciplineGrade.objects.filter(report__id=self.kwargs['pk'])
+            for s in sdgs:
+                s.created = date
+                s.save()
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        messages.add_message(self.request, messages.SUCCESS, "سربرگ گزارش گروه با موفقیت ویرایش شد")
+        return reverse('rg-detail', kwargs={'pk': self.kwargs['pk']})
+
+    def get_initial(self):
+        regdate = GroupReport.objects.get(pk=self.kwargs['pk']).jd_date
+        return {'date': regdate}
 
 
 class SDGListView4Students(LoginRequiredMixin, ListView):
@@ -295,3 +319,22 @@ class SDGListView4Students(LoginRequiredMixin, ListView):
         context['sdg'] = self.students_disciplin_grades
         context['term'] = self.request.session['term_title']
         return context
+
+
+class SDGUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    model = DisciplineGrade
+    form_class = DisciplineGradeUpdateForm
+    template_name = 'enzebati/sdg_update.html'
+
+    def get_success_url(self):
+        messages.add_message(self.request, messages.SUCCESS, "مورد انضباطی با موفقیت ویرایش شد")
+        id_report = DisciplineGrade.objects.get(pk=self.kwargs['pk']).report.id
+        return reverse('rg-detail', kwargs={'pk': id_report})
+
+    def get_initial(self):
+        regdate = DisciplineGrade.objects.get(pk=self.kwargs['pk']).jd_created_date
+        return {'created': regdate}
+
+
+class SDGDeleteView(LoginRequiredMixin, NoStudent, SuccessMessageMixin, DeleteView):
+    pass
