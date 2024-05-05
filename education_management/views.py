@@ -222,7 +222,8 @@ class GroupReportDetailView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, 
 
     def get_more_contexts(self):
         sdgs = DisciplineGrade.objects.filter(report__id=self.pk)
-        return sdgs
+        pk = self.kwargs['pk']
+        return {'sdgs': sdgs, 'pk': pk}
 
 
 class GroupReportsListView(NoStudent, LoginRequiredMixin, ListView):
@@ -257,6 +258,20 @@ class GroupReportsListView(NoStudent, LoginRequiredMixin, ListView):
         context['term'] = self.request.session['term_title']
 
         return context
+
+
+class GroupReportDeleteView(AminView, LoginRequiredMixin, NoStudent, SuccessMessageMixin):
+    template_name = 'eval/group_report_delete.html'
+    success_message = "گزارش با موفقیت حذف شد"
+
+    def get(self, request, *args, **kwargs):
+        return render(self.request, self.template_name)
+
+    def post(self, request, *args, **kwargs):
+        report_id = self.kwargs['pk']
+        report = GroupReport.objects.get(pk=report_id)
+        report.delete()
+        return redirect('/')
 
 
 class SDGListView4Students(LoginRequiredMixin, ListView):

@@ -10,7 +10,8 @@
                     <h2 class="mb-2 page-title">گزارش گروه</h2>
                     {% if messages %}
                         {% for message in messages %}
-                            <div class="alert alert-{% if message.tag %}{{ message.tag }}{% endif %} alert-dismissible fade show"
+                            <div class="alert alert-
+                                    {% if message.tag %}{{ message.tag }}{% endif %} alert-dismissible fade show"
                                  role="alert">
                                 {{ message.message }}
                                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -30,12 +31,23 @@
                                     <div class="form-group row">
                                         {% for field in fields_info %}
                                             <div class="col-md-2 mb-3">
-                                                <span class="mb-0 text-muted">{{ field.verbosename }}:</span>  {{ field.value }}  
+                                                <span class="mb-0 text-muted">{{ field.verbosename }}:</span> {{ field.value }}
                                             </div>
                                         {% endfor %}
+                                        <div class="col-md-1">
+                                            <button type="button" class="btn my-2 btn-warning">ویرایش گزارش
+                                            </button>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <button type="button"
+                                                    class="btn my-2 btn-outline-danger"
+                                                    onclick="modal_url('/edu/report/delete/{{ more_context.pk }}', 'delete');"
+                                                    data-toggle="modal"
+                                                    data-target="#delete_modal">حذف گزارش
+                                            </button>
+                                        </div>
                                     </div>
-                                    <button type="button" class="btn my-2 btn-warning">ویرایش گزارش</button>
-                                    <button type="button" class="btn my-2 btn-danger">حذف گزارش</button>
+
 
                                 </div>
                                 <!-- /. card-body -->
@@ -49,27 +61,27 @@
                                     <div class="table-responsive">
                                         <table class="table table-hover text-nowrap">
                                             <thead>
-                                                <tr>
-                                                    <th>نام و نام خانوادگی</th>
-                                                    <th>مورد انضباطی</th>
-                                                    <th>توضیحات</th>
-                                                    
-                                                </tr>
+                                            <tr>
+                                                <th>نام و نام خانوادگی</th>
+                                                <th>مورد انضباطی</th>
+                                                <th>توضیحات</th>
+
+                                            </tr>
                                             </thead>
                                             <tbody>
-                                                {% for s in more_context %}
-                                                    <tr>
-                                                        <td>
-                                                            <p>{{ s.student }}</p>
-                                                        </td>
-                                                        <td>
-                                                            <p>{{ s.discipline }}</p>
-                                                        </td>
-                                                        <td>
-                                                            <p>{{ s.description }}</p>
-                                                        </td>
-                                                    </tr>
-                                                {% endfor %}
+                                            {% for s in more_context.sdgs %}
+                                                <tr>
+                                                    <td>
+                                                        <p>{{ s.student }}</p>
+                                                    </td>
+                                                    <td>
+                                                        <p>{{ s.discipline }}</p>
+                                                    </td>
+                                                    <td>
+                                                        <p>{{ s.description }}</p>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
                                             </tbody>
                                         </table>
                                     </div>
@@ -87,32 +99,28 @@
     </main>
 {% endblock content %}
 {% block moreScript %}
-    <script>
-    kamaDatepicker('id_date', {buttonsColor: "green", forceFarsiDigits: true});
+    {% include 'eval/group_report_delete.html' %}
 
-    {% comment %} $('#id_customer').select2({
-        ajax: {
-          url: 'https://api.github.com/search/repositories',
-          dataType: 'json'
-        }
-});    {% endcomment %}
-    // Example starter JavaScript for disabling form submissions if there are invalid fields
-    (function() {
-      'use strict';
-      window.addEventListener('load', function() {
-        // Fetch all the forms we want to apply custom Bootstrap validation styles to
-        var forms = document.getElementsByClassName('needs-validation');
-        // Loop over them and prevent submission
-        var validation = Array.prototype.filter.call(forms, function(form) {
-          form.addEventListener('submit', function(event) {
-            if (form.checkValidity() === false) {
-              event.preventDefault();
-              event.stopPropagation();
-            }
-            form.classList.add('was-validated');
-          }, false);
-        });
-      }, false);
-    })();
+    <script>
+        kamaDatepicker('id_date', {buttonsColor: "green", forceFarsiDigits: true});
+
+
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = document.getElementsByClassName('needs-validation');
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
     </script>
 {% endblock moreScript %}

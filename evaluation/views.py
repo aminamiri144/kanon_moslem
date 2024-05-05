@@ -1,11 +1,7 @@
-from django.shortcuts import render
-from django.views import View
 from .forms import LessonClassSelectionForm
-from members.models import Student
-from education_management.models import SelectedLesson, Term, ControlSelection
+from education_management.models import SelectedLesson, ControlSelection
 from kanon_moslem.views import *
 from kanon_moslem.aminBaseViews import *
-# Create your views here.
 
 
 class SelectionLessonClass(View, NoStudent, LoginRequiredMixin):
@@ -31,7 +27,7 @@ class SelectionLessonClass(View, NoStudent, LoginRequiredMixin):
                 for student in students:
                     try:
                         SelectedLesson(student=student,
-                                   lesson=lesson, term=term).save()
+                                       lesson=lesson, term=term).save()
                     except:
                         pass
             except:
@@ -39,7 +35,8 @@ class SelectionLessonClass(View, NoStudent, LoginRequiredMixin):
                 return render(request, self.template_name, {"form": form, "messages": messages})
 
         messages = [{'message': 'انتخاب واحد با موفقیت انجام شد.', 'tag': 'success', }]
-        return render(request, self.template_name, {"form": form, "messages": messages, "term": self.request.session['term_title']})
+        return render(request, self.template_name,
+                      {"form": form, "messages": messages, "term": self.request.session['term_title']})
 
 
 class GradeStudent(NoStudent, View, LoginRequiredMixin):
@@ -75,15 +72,12 @@ class GradeStudent(NoStudent, View, LoginRequiredMixin):
 
 
 class GradesDetailView(AminView, LoginRequiredMixin):
-    
-
 
     def get_template_names(self):
         if hasattr(self.request.user, 'student'):
             return "spanel/student_karname.html"
         else:
             return "eval/karname.html"
-
 
     def get(self, request, *args, **kwargs):
         if hasattr(self.request.user, 'student'):
@@ -106,27 +100,25 @@ class GradesDetailView(AminView, LoginRequiredMixin):
         except:
             average = 8
 
-        nomre_tosifi = ""
-        if  0 <= average < 1 :
+        if 0 <= average < 1:
             nomre_tosifi = "بسیار ضعیف"
-        elif 1 <= average < 2 :
+        elif 1 <= average < 2:
             nomre_tosifi = "ضعیف"
-        elif 2 <= average < 3 :
+        elif 2 <= average < 3:
             nomre_tosifi = "متوسط"
-        elif 3 <= average < 4 :
+        elif 3 <= average < 4:
             nomre_tosifi = "خوب"
-        elif 4 <= average < 5 :
+        elif 4 <= average < 5:
             nomre_tosifi = "بسیار خوب"
         else:
             nomre_tosifi = "ثبت نشده"
             average = ''
-        
 
         context = {
             "grades": grades,
             'student': student,
             'term': term,
-            'average':  average,
+            'average': average,
             'nt': nomre_tosifi,
         }
 
