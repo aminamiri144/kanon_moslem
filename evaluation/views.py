@@ -143,9 +143,9 @@ class GroupTermGrades(AminView, LoginRequiredMixin, NoStudent):
             for student in Student.objects.filter(clas_id=self.t_class.id):
                 grades = SelectedLesson.objects.filter(student=student, term=term)
                 enzebati = DisciplineGrade.objects.filter(student=student, term=term)
-                nomre = 20
+                nomre = 20.0
                 for e in enzebati:
-                    nomre += int(e.grade)
+                    nomre += float(e.grade)
                 sg = {
                     'student': student,
                     'grades': grades,
