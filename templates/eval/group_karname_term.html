@@ -42,7 +42,7 @@
                                                     {% for lesson in lessons %}
                                                         <th>{{ lesson }}</th>
                                                     {% endfor %}
-                                                    <th>نمره موارد انضباطی</th>
+                                                    <th>نمره انضباطی (از 20)</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -89,11 +89,7 @@
                                                                             </option>
                                                                         </select>
                                                                     </div>
-                                                                    <div class="form_group"><input
-                                                                            name="description_{{ grade.id }}"
-                                                                            class="form-control"
-                                                                            placeholder="توضیحات مربی"
-                                                                            value="{{ grade.description }}"></div>
+                                                                    
                                                                 </div>
                                                             </td>
                                                         {% endfor %}

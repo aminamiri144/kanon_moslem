@@ -131,21 +131,22 @@ class GroupReportCreateView(BaseTemplateViewAmin, LoginRequiredMixin, NoStudent)
         return render(request, self.template_name, context=self.get_context_data())
 
     def post(self, request, *args, **kwargs):
-
-        form = ReportHalgheForm(request.POST)
         this_term = Term.objects.get(id=self.request.session['term_id'])
+        form = ReportHalgheForm(request.POST)
         if form.is_valid():
             report_title = request.POST.get('title')
             report_type = request.POST.get('report_type')
             date = request.POST.get('date').replace('/', '-')
             new_report = GroupReport()
             new_report.title = report_title
-            new_report.report_type = ReportTypes.objects.get(id=report_type)
+            self.report_type = ReportTypes.objects.get(id=report_type)
+            new_report.report_type = self.report_type
             new_report.clas = Class.objects.get(id=self.kwargs['pk'])
             new_report.term = this_term
             new_report.date = date
             new_report.save()
         else:
+            messages.add_message(self.request, messages.WARNING, "خطا، گزارش ثبت نشد !!! ")
             return render(request, self.template_name, context=self.get_context_data([{'key': 'form', 'value': form}]))
 
         students_id = request.POST.getlist('student_id')
@@ -164,7 +165,7 @@ class GroupReportCreateView(BaseTemplateViewAmin, LoginRequiredMixin, NoStudent)
                 new_dg.discipline = Discipline.objects.filter(
                     title__contains='غیبت').first()
                 new_dg.created = date
-                new_dg.grade = -3
+                new_dg.grade = self.report_type.grade1
                 new_dg.term = this_term
                 new_dg.description = dg[2]
                 new_dg.save()
@@ -177,7 +178,7 @@ class GroupReportCreateView(BaseTemplateViewAmin, LoginRequiredMixin, NoStudent)
                 new_dg.discipline = Discipline.objects.filter(
                     title__contains='غیبت').first()
                 new_dg.created = date
-                new_dg.grade = -1
+                new_dg.grade = self.report_type.grade2
                 new_dg.term = this_term
                 new_dg.description = dg[2]
                 new_dg.save()
@@ -191,7 +192,7 @@ class GroupReportCreateView(BaseTemplateViewAmin, LoginRequiredMixin, NoStudent)
                     new_dgt.discipline = Discipline.objects.filter(
                         title__contains='تاخیر').first()
                     new_dgt.created = date
-                    new_dgt.grade = -2
+                    new_dgt.grade = self.report_type.grade3
                     new_dgt.term = this_term
                     new_dgt.description = dg[4]
                     new_dgt.save()
@@ -203,7 +204,7 @@ class GroupReportCreateView(BaseTemplateViewAmin, LoginRequiredMixin, NoStudent)
                     new_dgt.discipline = Discipline.objects.filter(
                         title__contains='تاخیر').first()
                     new_dgt.created = date
-                    new_dgt.grade = -1
+                    new_dgt.grade = self.report_type.grade4
                     new_dgt.term = this_term
                     new_dgt.description = dg[4]
                     new_dgt.save()
@@ -233,7 +234,6 @@ class GroupReportsListView(NoStudent, LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         term = Term.objects.get(id=self.request.session['term_id'])
-
         if hasattr(self.request.user, 'teacher'):
             t_id = self.request.user.id
             self.t_class = Class.objects.get(teacher__id=t_id)
@@ -255,7 +255,8 @@ class GroupReportsListView(NoStudent, LoginRequiredMixin, ListView):
 
         context['description'] = ""
         context['term'] = self.request.session['term_title']
-        context['clas_id'] = self.t_class.id
+        if hasattr(self.request.user, 'teacher'):
+            context['clas_id'] = self.t_class.id
 
         return context
 

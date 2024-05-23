@@ -141,6 +141,10 @@ class ReportTypes(models.Model):
         verbose_name_plural = 'انواع گزارش'
 
     title = models.CharField(max_length=60, verbose_name="نوع گزارش")
+    grade1 = models.FloatField(verbose_name='نمره غیبت موجه', default=0.0)
+    grade2 = models.FloatField(verbose_name='نمره غیبت غیر غیرموجه', default=0.0)
+    grade3 = models.FloatField(verbose_name='نمره تاخیر موجه', default=0.0)
+    grade4 = models.FloatField(verbose_name='نمره تاخیر غیر غیرموجه', default=0.0)
 
     def __str__(self):
         return self.title
@@ -185,7 +189,7 @@ class DisciplineGrade(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name="متربی")
     discipline = models.ForeignKey(Discipline, on_delete=models.CASCADE, verbose_name="مورد انضباطی")
     created = jmodels.jDateField(verbose_name="زمان ثبت")
-    grade = models.IntegerField(verbose_name="نمره")
+    grade = models.FloatField(verbose_name="نمره")
     term = models.ForeignKey(Term, on_delete=models.CASCADE, verbose_name="ترم‌تحصیلی")
     description = models.TextField(blank=True, null=True, verbose_name="توضیح")
 

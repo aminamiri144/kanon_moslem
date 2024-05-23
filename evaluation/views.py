@@ -143,7 +143,7 @@ class GroupTermGrades(AminView, LoginRequiredMixin, NoStudent):
             for student in Student.objects.filter(clas_id=self.t_class.id):
                 grades = SelectedLesson.objects.filter(student=student, term=term)
                 enzebati = DisciplineGrade.objects.filter(student=student, term=term)
-                nomre = 0
+                nomre = 20
                 for e in enzebati:
                     nomre += int(e.grade)
                 sg = {
@@ -172,9 +172,7 @@ class GroupTermGrades(AminView, LoginRequiredMixin, NoStudent):
             grades = SelectedLesson.objects.filter(student=student, term=term)
             for grade in grades:
                 nomre = request.POST.get(f'grade_{grade.id}')
-                description = request.POST.get(f'description_{grade.id}')
                 grade.grade = nomre
-                grade.description = description
                 grade.save()
 
         messages.add_message(self.request, messages.SUCCESS,

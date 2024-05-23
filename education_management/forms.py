@@ -31,7 +31,7 @@ class LessonCreateForm(BaseFormKanon):
 
 
 class DisciplineGradeCreateForm(BaseFormKanon):
-    MODEL_VERBOSE_NAME = 'مورد انضباطی'
+    MODEL_VERBOSE_NAME = ''
 
     created = forms.CharField(label='تاریخ', widget=forms.TextInput(attrs={'placeholder': 'تاریخ را انتخاب کنید'}))
 
@@ -61,7 +61,7 @@ class DisciplineGradeCreateForm(BaseFormKanon):
 
 
 class DisciplineGradeUpdateForm(BaseFormKanon):
-    MODEL_VERBOSE_NAME = 'مورد انضباطی'
+    MODEL_VERBOSE_NAME = ''
 
     def __init__(self, *args, **kwargs):
         super(DisciplineGradeUpdateForm, self).__init__(*args, **kwargs)
@@ -93,7 +93,6 @@ class ReportHalgheForm(BaseFormKanon):
             "title",
             "report_type",
             "date",
-            "term"
         ]
 
     def clean_date(self):
