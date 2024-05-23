@@ -114,8 +114,9 @@ class TeacherPanelView(LoginRequiredMixin, TemplateView, NoStudent):
     template_name = "teacher/panel.html"
 
     def get_context_data(self, **kwargs):
+        clas_id = Class.objects.get(teacher=self.request.user).id
         context = {'page_title': titles.KANON_NAME, 'page_description': 'پنل کاربری مربی',
-                   'term': self.request.session['term_title']}
+                   'term': self.request.session['term_title'], 'clas_id': clas_id}
         return context
 
 
@@ -133,9 +134,8 @@ class UserLogoutView(LoginRequiredMixin, View):
         return redirect('/login')
 
 
-class ChangeSystemTerm(LoginRequiredMixin, SuccessMessageMixin, View):
+class ChangeSystemTerm(LoginRequiredMixin, View):
     template_name = 'modals/change_term.html'
-    success_message = " گزارش گروه ثبت شد."
 
     def get(self, request):
         terms = Term.objects.all()
@@ -147,6 +147,8 @@ class ChangeSystemTerm(LoginRequiredMixin, SuccessMessageMixin, View):
         default_term = Term.objects.get(id=selected_term)
         self.request.session['term_title'] = str(default_term)
         self.request.session['term_id'] = str(default_term.id)
+        messages.add_message(self.request, messages.SUCCESS, 'مدیریت ترم شما تغییر کرد')
+
         if hasattr(self.request.user, 'teacher'):
             return redirect(reverse('tpanel'))
         else:

@@ -17,19 +17,19 @@ class AminView(View):
         context['term'] = self.request.session['term_title']
         return context
 
+
 class BaseTemplateViewAmin(AminView, TemplateView):
     PAGE_TITLE = ''
     PAGE_DESCRIPTION = ''
     template_name = None
 
     def get_context_data(self, **kwargs):
-        context = {}
-        context['page_title'] = self.PAGE_TITLE
-        context['page_description'] = self.PAGE_DESCRIPTION
-        context['term'] = self.request.session['term_title']
+        context = {
+            'page_title': self.PAGE_TITLE,
+            'page_description': self.PAGE_DESCRIPTION,
+            'term': self.request.session['term_title']
+        }
         return context
-
-    
 
 
 class BaseCreateViewAmin(AminView, LoginRequiredMixin, SuccessMessageMixin, CreateView):
@@ -42,7 +42,7 @@ class BaseCreateViewAmin(AminView, LoginRequiredMixin, SuccessMessageMixin, Crea
     SUCCESS_URL = None
 
     def form_valid(self, form):
-        try:  
+        try:
             form.instance.password = make_password('12345')
             form.instance.email = 'test@example.com'
             return super().form_valid(form)
@@ -60,7 +60,7 @@ class BaseCreateViewAmin(AminView, LoginRequiredMixin, SuccessMessageMixin, Crea
         return context
 
     def get_success_url(self):
-        return reverse(self.SUCCESS_URL, kwargs={'pk': self.object.pk,})
+        return reverse(self.SUCCESS_URL, kwargs={'pk': self.object.pk, })
 
 
 class BaseDetailViewAmin(AminView):
@@ -70,6 +70,7 @@ class BaseDetailViewAmin(AminView):
     template_name = 'base_views/detail.html'
     fields = []
     models_property = []
+
     def get(self, request, pk):
         obj = get_object_or_404(self.model, pk=pk)
         self.pk = pk
@@ -87,7 +88,7 @@ class BaseDetailViewAmin(AminView):
         for field in obj._meta.fields:
             if field.name in self.fields:
                 value = getattr(obj, field.name)
-                
+
                 if field.name in self.models_property:
                     value = getattr(obj, f'jd_{field.name}')
                 field_info = {
@@ -100,13 +101,14 @@ class BaseDetailViewAmin(AminView):
     def get_more_contexts(self):
         return []
 
+
 class ListViewAmin(AminView, ListView):
     PAGE_TITLE = ''
     PAGE_DESCRIPTION = ''
     template_name = 'model_list_view.html'
     model = None
-    create_button_title = None # عنوان دکمه ایجاد مدل
-    create_url = None # آدرس دکمه ایجاد مدل
+    create_button_title = None  # عنوان دکمه ایجاد مدل
+    create_url = None  # آدرس دکمه ایجاد مدل
     fields = []
     fields_verbose = []
     actions = 'فاقد عملیات'
@@ -118,16 +120,15 @@ class ListViewAmin(AminView, ListView):
         objs = self.model.objects.all()
         for field in self.fields_verbose:
             list_titles.append(field)
-        list_titles.append('عملیات')    
+        list_titles.append('عملیات')
         for obj in objs:
-            obj_value = []    
+            obj_value = []
             for field_name in self.fields:
                 field_id = getattr(obj, 'id')
                 obj_value.append(getattr(obj, field_name))
             obj_value.append(self.actions)
             list_values.append(obj_value)
 
-        
         context['page_title'] = self.PAGE_TITLE
         context['page_description'] = self.PAGE_DESCRIPTION
         context['create_button_title'] = self.create_button_title
@@ -136,6 +137,8 @@ class ListViewAmin(AminView, ListView):
         context['list_values'] = list_values
         context['term'] = self.request.session['term_title']
         return context
+
+
 #####################################################
 
 
@@ -150,5 +153,3 @@ class BaseFormKanon(forms.ModelForm):
         for visible in self.visible_fields():
             visible.field.widget.attrs['class'] = 'form-control'
             visible.field.widget.attrs['placeholder'] = f'{visible.field.label} را وارد کنید ...'
-
-

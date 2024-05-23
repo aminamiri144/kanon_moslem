@@ -236,8 +236,7 @@ class GroupReportsListView(NoStudent, LoginRequiredMixin, ListView):
 
         if hasattr(self.request.user, 'teacher'):
             t_id = self.request.user.id
-            teacher = Teacher.objects.get(id=t_id)
-            self.t_class = teacher.clss
+            self.t_class = Class.objects.get(teacher__id=t_id)
 
             self.rgs = GroupReport.objects.filter(
                 clas=self.t_class, term=term).order_by('-date')
@@ -256,6 +255,7 @@ class GroupReportsListView(NoStudent, LoginRequiredMixin, ListView):
 
         context['description'] = ""
         context['term'] = self.request.session['term_title']
+        context['clas_id'] = self.t_class.id
 
         return context
 

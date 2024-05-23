@@ -2,6 +2,7 @@ from .forms import LessonClassSelectionForm
 from education_management.models import SelectedLesson, ControlSelection
 from kanon_moslem.views import *
 from kanon_moslem.aminBaseViews import *
+from education_management.models import DisciplineGrade
 
 
 class SelectionLessonClass(View, NoStudent, LoginRequiredMixin):
@@ -48,7 +49,8 @@ class GradeStudent(NoStudent, View, LoginRequiredMixin):
 
         grades = SelectedLesson.objects.filter(student=student, term=term)
 
-        return render(request, self.template_name, {"grades": grades, 'student': student})
+        return render(request, self.template_name,
+                      {"grades": grades, 'student': student, 'term': self.request.session['term_title']})
 
     def post(self, request, *args, **kwargs):
         lesson = request.POST.getlist('lesson')
@@ -123,3 +125,58 @@ class GradesDetailView(AminView, LoginRequiredMixin):
         }
 
         return render(request, self.get_template_names(), context)
+
+
+class GroupTermGrades(AminView, LoginRequiredMixin, NoStudent):
+    PAGE_TITLE = ''
+    PAGE_DESCRIPTION = ''
+    template_name = 'eval/group_karname_term.html'
+
+    def get(self, request, *args, **kwargs):
+        term = Term.objects.get(id=self.request.session['term_id'])
+        if hasattr(self.request.user, 'teacher'):
+            t_id = self.request.user.id
+            self.t_class = Class.objects.get(teacher__id=t_id)
+            lessons_selected_4clas = ControlSelection.objects.filter(clas_id=self.t_class.id, term=term)
+            lessons = [l.lesson.title for l in lessons_selected_4clas]
+            students_grades = []
+            for student in Student.objects.filter(clas_id=self.t_class.id):
+                grades = SelectedLesson.objects.filter(student=student, term=term)
+                enzebati = DisciplineGrade.objects.filter(student=student, term=term)
+                nomre = 0
+                for e in enzebati:
+                    nomre += int(e.grade)
+                sg = {
+                    'student': student,
+                    'grades': grades,
+                    'nomre_enzebati': nomre
+                }
+                students_grades.append(sg)
+            context = {
+                'term': self.request.session['term_title'],
+                'group_name': self.t_class.name,
+                'students_grades': students_grades,
+                'lessons': lessons,
+            }
+            return render(request, self.template_name, context)
+        else:
+            messages.add_message(self.request, messages.WARNING, 'فقط مربیان به این صفحه دسترسی دارند')
+            return redirect('/')
+
+    def post(self, request, *args, **kwargs):
+        t_id = self.request.user.id
+        t_class = Class.objects.get(teacher__id=t_id)
+        term = Term.objects.get(id=self.request.session['term_id'])
+        students = Student.objects.filter(clas=t_class)
+        for student in students:
+            grades = SelectedLesson.objects.filter(student=student, term=term)
+            for grade in grades:
+                nomre = request.POST.get(f'grade_{grade.id}')
+                description = request.POST.get(f'description_{grade.id}')
+                grade.grade = nomre
+                grade.description = description
+                grade.save()
+
+        messages.add_message(self.request, messages.SUCCESS,
+                             f'نمرات گروه {t_class.name} با موفقیت ثبت و بروزرسانی شد')
+        return redirect('/tpanel')

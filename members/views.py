@@ -90,6 +90,7 @@ class StudentListView(AminView, NoStudent, LoginRequiredMixin, ListView):
                 teacher = Teacher.objects.get(id=t_id)
                 tc = teacher.clss
                 object_list = self.model.objects.filter(clas_id=tc.id)
+                self.template_name = 'teacher/student_list_4teacher.html'
             else:
                 object_list = self.model.objects.all()
         return object_list

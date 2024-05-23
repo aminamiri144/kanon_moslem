@@ -12,7 +12,8 @@
         <div class="container-fluid">
             {% if messages %}
                 {% for message in messages %}
-                    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show"
+                    <div class="alert alert-
+                            {% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show"
                          role="alert">
                         {{ message|safe }}
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -30,36 +31,39 @@
                         <div class="col-md-12">
                             <div class="card">
                                 <div class="card-body">
+                                    <a href="{% url 'rg-add' clas_id %}" type="button"
+                                       class="btn mb-2 btn-info btn-lg">ثبت گزارش جدید </a>
                                     {% if object_list %}
                                         <div class="table-responsive">
                                             <table class="table table-hover text-nowrap">
                                                 <thead>
-                                                    <tr>
-                                                        {% if not user.teacher %}
-                                                            <th scope="col">نام گزارش</th>
-                                                        {% endif %}
-                                                        <th scope="col">عنوان گزارش</th>
-                                                        <th scope="col">موضوع گزارش</th>
-                                                        <th scope="col">تاریخ</th>
-                                                        <th scope="col">عملیات</th>
-                                                    </tr>
+                                                <tr>
+                                                    {% if not user.teacher %}
+                                                        <th scope="col">گروه</th>
+                                                    {% endif %}
+                                                    <th scope="col">عنوان گزارش</th>
+                                                    <th scope="col">موضوع گزارش</th>
+                                                    <th scope="col">تاریخ</th>
+                                                    <th scope="col">عملیات</th>
+                                                </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {% for d in object_list %}
-                                                        <tr>
-                                                            {% if not user.teacher %}
-                                                                <td>{{ d.clas }}</td>
-                                                            {% endif %}
-                                                            <td>{{ d.title }}</td>
-                                                            <td>{{ d.report_type }}</td>
-                                                            <td>{{ d.jd_date }}</td>
-                                                            <td>
-                                                                <a href="{% url 'rg-detail' d.id %}" class="btn btn-info btn-sm">مشاهده</a>
-                                                                {% comment %} <a href="{% url 'rg-update' d.id %}" class="btn btn-outline-warning btn-sm">ویرایش</a> {% endcomment %}
-                                                                <a href="#" class="btn btn-outline-danger btn-sm">حذف</a>
-                                                            </td>
-                                                        </tr>
-                                                    {% endfor %}
+                                                {% for d in object_list %}
+                                                    <tr>
+                                                        {% if not user.teacher %}
+                                                            <td>{{ d.clas }}</td>
+                                                        {% endif %}
+                                                        <td>{{ d.title }}</td>
+                                                        <td>{{ d.report_type }}</td>
+                                                        <td>{{ d.jd_date }}</td>
+                                                        <td>
+                                                            <a href="{% url 'rg-detail' d.id %}"
+                                                               class="btn btn-info btn-sm">مشاهده</a>
+                                                            {% comment %} <a href="{% url 'rg-update' d.id %}" class="btn btn-outline-warning btn-sm">ویرایش</a> {% endcomment %}
+                                                            <a href="#" class="btn btn-outline-danger btn-sm">حذف</a>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
                                                 </tbody>
                                             </table>
                                         </div>
@@ -86,11 +90,13 @@
                                                     </li>
                                                 {% endif %}
                                                 <li class="page-item active">
-                                                    <a class="page-link" href="#">{{ page_obj.number }} <span class="sr-only">(صفحه فعلی)</span></a>
+                                                    <a class="page-link" href="#">{{ page_obj.number }} <span
+                                                            class="sr-only">(صفحه فعلی)</span></a>
                                                 </li>
                                                 {% if page_obj.has_next %}
                                                     <li class="page-item">
-                                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">صفحه بعد</a>
+                                                        <a class="page-link"
+                                                           href="?page={{ page_obj.next_page_number }}">صفحه بعد</a>
                                                     </li>
                                                 {% else %}
                                                     <li class="page-item disabled">
@@ -116,17 +122,17 @@
     {% include 'base/detailModal.html' %}
 {% endblock content %}
 {% block moreScript %}
-    <script src="{% static 'plugins/jalaliDatepicker/kamadatepicker.min.js'%}"></script>
+    <script src="{% static 'plugins/jalaliDatepicker/kamadatepicker.min.js' %}"></script>
     <script>kamaDatepicker('id_register_date', {buttonsColor: "green", forceFarsiDigits: true});</script>
     <script>
-function modal_url(url, type) {
-    $.ajax({
-        url: url,
-        type: 'GET',
-        success: function (data) {
-            $("#"+ type +"_modal_body").html(data);
+        function modal_url(url, type) {
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (data) {
+                    $("#" + type + "_modal_body").html(data);
+                }
+            })
         }
-    })
-}
     </script>
 {% endblock moreScript %}

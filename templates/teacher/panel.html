@@ -8,7 +8,8 @@
         <div class="container-fluid">
             {% if messages %}
                 {% for message in messages %}
-                    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show"
+                    <div class="alert alert-
+                            {% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show"
                          role="alert">
                         {{ message|safe }}
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -26,16 +27,21 @@
                         <div class="col-md-12">
                             <div class="card">
                                 <div class="card-body">
-                                    {% block student_content %}
-                                        <a href="{% url 'group_reports_list' %}" type="button"  class="btn mb-2 btn-info btn-lg">لیست گزارش های گروه </a>
-                                    {% endblock student_content %}
+                                    <a href="{% url 'rg-add' clas_id %}" type="button"
+                                       class="btn mb-2 btn-info btn-lg">ثبت گزارش جدید </a>
+                                    <br>
+                                    <a href="{% url 'group_reports_list' %}" type="button"
+                                       class="btn mb-2 btn-info btn-lg">لیست گزارش های گروه </a>
+                                    <a href="{% url 'group_reports_list' %}" type="button"
+                                       class="btn mb-2 btn-info btn-lg"> کارنامه گروه </a>
+                                    
                                 </div>
                             </div>
                         </div>
                     </div>
                     <!-- simple table -->
                 </div>
-                
+
                 <!-- end section -->
             </div>
             <!-- .col-12 -->
@@ -48,17 +54,17 @@
 {% endblock content %}
 {% block moreScript %}
     {% comment %} <script src="{% static 'customers/js/datatablescripts.js'%}"></script> {% endcomment %}
-    <script src="{% static 'customers/plugins/jalaliDatepicker/kamadatepicker.min.js'%}"></script>
+    <script src="{% static 'customers/plugins/jalaliDatepicker/kamadatepicker.min.js' %}"></script>
     <script>kamaDatepicker('id_register_date', {buttonsColor: "green", forceFarsiDigits: true});</script>
     <script>
-function modal_url(url, type) {
-    $.ajax({
-        url: url,
-        type: 'GET',
-        success: function (data) {
-            $("#"+ type +"_modal_body").html(data);
+        function modal_url(url, type) {
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (data) {
+                    $("#" + type + "_modal_body").html(data);
+                }
+            })
         }
-    })
-}
     </script>
 {% endblock moreScript %}
