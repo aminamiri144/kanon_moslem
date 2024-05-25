@@ -82,7 +82,14 @@ class StudentListView(AminView, NoStudent, LoginRequiredMixin, ListView):
         option = self.request.GET.get('option', '')
         query = {f'{option}__icontains': value}
         if value:
-            object_list = self.model.objects.filter(**query)
+            if hasattr(self.request.user, 'teacher'):
+                t_id = self.request.user.id
+                teacher = Teacher.objects.get(id=t_id)
+                tc = teacher.clss
+                object_list = self.model.objects.filter(**query, clas=tc)
+            else:
+                object_list = self.model.objects.filter(**query)
+
             self.request.session['search'] = self.request.GET.get('q', '')
         else:
             if hasattr(self.request.user, 'teacher'):
