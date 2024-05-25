@@ -110,8 +110,16 @@ class StudentPanelView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class TeacherPanelView(LoginRequiredMixin, TemplateView, NoStudent):
+class TeacherPanelView(LoginRequiredMixin, View, NoStudent):
     template_name = "teacher/panel.html"
+
+    def get(self, *args, **kwargs):
+        if hasattr(self.request.user, 'teacher'):
+            context = self.get_context_data()
+            return render(self.request, self.template_name, context)
+        else:
+            messages.add_message(self.request, messages.WARNING, 'فقط مربیان به این صفحه دسترسی دارند')
+            return redirect(reverse('panel'))
 
     def get_context_data(self, **kwargs):
         clas_id = Class.objects.get(teacher=self.request.user).id
