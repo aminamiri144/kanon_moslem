@@ -3,6 +3,14 @@
 {% block content %}
     {% include 'base/navigator.html' %}
     {% include 'teacher/aside.html' %}
+    <style>
+        th {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 30px;
+        }
+    </style>
     <main role="main" class="main-content">
         <div class="container-fluid">
             <div class="row justify-content-center">
@@ -35,7 +43,7 @@
                                     </div>
                                     <div class="card-body">
                                      <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                                        توجه : قبل از خروج از صفحه، نمرات وارد شده را ذخیره و ثبت کنید. توجه: نمره انضباطی محاسبه شده، بدون احتساب نمرات مربوط به والدین می باشد.
+                                         توجه : قبل از خروج از صفحه، نمرات وارد شده را ذخیره و ثبت کنید. توجه: نمره انضباطی محاسبه شده، بدون احتساب نمرات مربوط به والدین می باشد. نمره انضباط و و الدین از 20 می باشد.
                                      </div>
                                         <div class="table-responsive">
                                             <table class="table table-hover text-nowrap">
@@ -43,10 +51,10 @@
                                                 <tr>
                                                     <th>نام و نام خانوادگی</th>
                                                     {% for lesson in lessons %}
-                                                        <th>{{ lesson }}</th>
+                                                        <th title="{{ lesson }}">{{ lesson }}</th>
                                                     {% endfor %}
-                                                    <th>نمره انضباطی (از 20)</th>
-                                                    <th>نمره خانواده (از 20)</th>
+                                                    <th title="نمره انضباطی">نمره انضباطی</th>
+                                                    <th title="نمره خانواده">نمره خانواده</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
