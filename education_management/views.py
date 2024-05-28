@@ -330,8 +330,12 @@ class SDGUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 
     def get_success_url(self):
         messages.add_message(self.request, messages.SUCCESS, "مورد انضباطی با موفقیت ویرایش شد")
-        id_report = DisciplineGrade.objects.get(pk=self.kwargs['pk']).report.id
-        return reverse('rg-detail', kwargs={'pk': id_report})
+        try:
+            id_report = DisciplineGrade.objects.get(pk=self.kwargs['pk']).report.id
+            return reverse('rg-detail', kwargs={'pk': id_report})
+        except:
+            id_report = DisciplineGrade.objects.get(pk=self.kwargs['pk']).student.id
+            return reverse('sdg-list', kwargs={'pk': id_report})
 
     def get_initial(self):
         regdate = DisciplineGrade.objects.get(pk=self.kwargs['pk']).jd_created_date
