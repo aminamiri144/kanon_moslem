@@ -165,7 +165,7 @@ class GroupReportCreateView(BaseTemplateViewAmin, LoginRequiredMixin, NoStudent)
                 new_dg.discipline = Discipline.objects.filter(
                     title__contains='غیبت').first()
                 new_dg.created = date
-                new_dg.grade = self.report_type.grade1
+                new_dg.grade = self.report_type.grade2
                 new_dg.term = this_term
                 new_dg.description = dg[2]
                 new_dg.save()
@@ -178,7 +178,7 @@ class GroupReportCreateView(BaseTemplateViewAmin, LoginRequiredMixin, NoStudent)
                 new_dg.discipline = Discipline.objects.filter(
                     title__contains='غیبت').first()
                 new_dg.created = date
-                new_dg.grade = self.report_type.grade2
+                new_dg.grade = self.report_type.grade1
                 new_dg.term = this_term
                 new_dg.description = dg[2]
                 new_dg.save()
@@ -192,7 +192,7 @@ class GroupReportCreateView(BaseTemplateViewAmin, LoginRequiredMixin, NoStudent)
                     new_dgt.discipline = Discipline.objects.filter(
                         title__contains='تاخیر').first()
                     new_dgt.created = date
-                    new_dgt.grade = self.report_type.grade3
+                    new_dgt.grade = self.report_type.grade4
                     new_dgt.term = this_term
                     new_dgt.description = dg[4]
                     new_dgt.save()
@@ -204,7 +204,7 @@ class GroupReportCreateView(BaseTemplateViewAmin, LoginRequiredMixin, NoStudent)
                     new_dgt.discipline = Discipline.objects.filter(
                         title__contains='تاخیر').first()
                     new_dgt.created = date
-                    new_dgt.grade = self.report_type.grade4
+                    new_dgt.grade = self.report_type.grade3
                     new_dgt.term = this_term
                     new_dgt.description = dg[4]
                     new_dgt.save()

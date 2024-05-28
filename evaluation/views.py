@@ -145,16 +145,23 @@ class GroupTermGrades(AminView, LoginRequiredMixin, NoStudent):
                 enzebati = DisciplineGrade.objects.filter(student=student, term=term)
                 nomre = 20.0
                 family_nomre = 20.0
+                fogh_nomre = 20.0
                 for e in enzebati:
-                    if 'خانواد' in e.report.report_type.title:
-                        family_nomre += float(e.grade)
-                    else:
+                    try:
+                        if 'خانواد' in e.report.report_type.title:
+                            family_nomre += float(e.grade)
+                        elif 'فوق' in e.report.report_type.title:
+                            fogh_nomre += float(e.grade)
+                        else:
+                            nomre += float(e.grade)
+                    except:
                         nomre += float(e.grade)
                 sg = {
                     'student': student,
                     'grades': grades,
                     'nomre_enzebati': nomre,
-                    'nomre_family': family_nomre
+                    'nomre_family': family_nomre,
+                    'nomre_fogh': fogh_nomre,
                 }
                 students_grades.append(sg)
             context = {
