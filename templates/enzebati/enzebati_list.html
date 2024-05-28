@@ -8,7 +8,8 @@
         <div class="container-fluid">
             {% if messages %}
                 {% for message in messages %}
-                    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show"
+                    <div class="alert alert-
+                            {% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show"
                          role="alert">
                         {{ message|safe }}
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -25,7 +26,7 @@
                     <div class="row my-4">
                         <!-- Small table -->
                         <div class="col-md-12">
-                            
+
                             <div class="card">
                                 <div class="card-body">
 
@@ -33,34 +34,38 @@
                                         <div class="table-responsive">
                                             <table class="table table-hover text-nowrap">
                                                 <thead>
-                                                    <tr>
-                                                        <th scope="col">نوع گزارش</th>
-                                                        <th scope="col">عنوان گزارش</th>
-                                                        <th scope="col">مورد انضباطی</th>
-                                                        <th scope="col">نمره</th>
-                                                        <th scope="col">تاریخ</th>
-                                                        <th scope="col">توضیحات</th>
-                                                        <th scope="col">عملیات</th>
-                                                    </tr>
+                                                <tr>
+                                                    <th scope="col">نوع گزارش</th>
+                                                    <th scope="col">عنوان گزارش</th>
+                                                    <th scope="col">مورد انضباطی</th>
+                                                    <th scope="col">نمره</th>
+                                                    <th scope="col">تاریخ</th>
+                                                    <th scope="col">توضیحات</th>
+                                                    <th scope="col">عملیات</th>
+                                                </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {% for d in sdg %}
-                                                        <tr>
-                                                            <td>{{ d.report.report_type.title }}</td>
-                                                            <td>{{ d.report.title }}</td>
-                                                            <td>{{ d.discipline }}</td>
-                                                            <td>{{ d.grade }}</td>
-                                                            <td>{{ d.jd_created_date }}</td>
-                                                            <td>{{ d.description }}</td>
-                                                            <td>
-                                                                <a href="#"
-                                                                class="btn btn-outline-warning btn-sm">ویرایش</a>
-                                                                <a href="#"
-                                                                class="btn btn-outline-danger btn-sm">حذف</a>
-                                                            </td>
-                                                        </tr>
-                                                                                                                   
-                                                    {% endfor %}
+                                                {% for d in sdg %}
+                                                    <tr>
+                                                        <td>{{ d.report.report_type.title }}</td>
+                                                        <td>{{ d.report.title }}</td>
+                                                        <td>{{ d.discipline }}</td>
+                                                        <td>{{ d.grade }}</td>
+                                                        <td>{{ d.jd_created_date }}</td>
+                                                        <td>{{ d.description }}</td>
+                                                        <td>
+                                                            <button type="button"
+                                                                    class="btn mr-2 btn-warning btn-sm"
+                                                                    onclick="modal_url('/edu/sdg/update/{{ d.id }}', 'update');"
+                                                                    data-toggle="modal"
+                                                                    data-target="#update_modal">ویرایش
+                                                            </button>
+{#                                                            <a href="#"#}
+{#                                                               class="btn btn-outline-danger btn-sm">حذف</a>#}
+                                                        </td>
+                                                    </tr>
+
+                                                {% endfor %}
                                                 </tbody>
                                             </table>
                                         </div>
@@ -87,11 +92,13 @@
                                                     </li>
                                                 {% endif %}
                                                 <li class="page-item active">
-                                                    <a class="page-link" href="#">{{ page_obj.number }} <span class="sr-only">(صفحه فعلی)</span></a>
+                                                    <a class="page-link" href="#">{{ page_obj.number }} <span
+                                                            class="sr-only">(صفحه فعلی)</span></a>
                                                 </li>
                                                 {% if page_obj.has_next %}
                                                     <li class="page-item">
-                                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">صفحه بعد</a>
+                                                        <a class="page-link"
+                                                           href="?page={{ page_obj.next_page_number }}">صفحه بعد</a>
                                                     </li>
                                                 {% else %}
                                                     <li class="page-item disabled">
@@ -117,17 +124,17 @@
     {% include 'base/detailModal.html' %}
 {% endblock content %}
 {% block moreScript %}
-    <script src="{% static 'plugins/jalaliDatepicker/kamadatepicker.min.js'%}"></script>
+    <script src="{% static 'plugins/jalaliDatepicker/kamadatepicker.min.js' %}"></script>
     <script>kamaDatepicker('id_register_date', {buttonsColor: "green", forceFarsiDigits: true});</script>
     <script>
-function modal_url(url, type) {
-    $.ajax({
-        url: url,
-        type: 'GET',
-        success: function (data) {
-            $("#"+ type +"_modal_body").html(data);
+        function modal_url(url, type) {
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (data) {
+                    $("#" + type + "_modal_body").html(data);
+                }
+            })
         }
-    })
-}
     </script>
 {% endblock moreScript %}

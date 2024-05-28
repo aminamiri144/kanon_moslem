@@ -56,9 +56,10 @@ class StudentDisciplineGradeListView(NoStudent, LoginRequiredMixin, ListView):
     template_name = 'enzebati/enzebati_list.html'
 
     def get_queryset(self):
+        term = Term.objects.get(id=self.request.session['term_id'])
         s = Student.objects.get(pk=self.kwargs['pk'])
         self.students_disciplin_grades = self.model.objects.filter(
-            student=s).order_by('-created')
+            student=s, term=term).order_by('-created')
         return self.students_disciplin_grades
 
     def get_context_data(self, **kwargs):
@@ -339,3 +340,5 @@ class SDGUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 
 class SDGDeleteView(LoginRequiredMixin, NoStudent, SuccessMessageMixin, DeleteView):
     pass
+    # model = DisciplineGrade
+    # success_url = reverse_lazy("author-list")
