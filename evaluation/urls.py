@@ -7,6 +7,7 @@ urlpatterns = [
     path('grade/student/<int:pk>', GradeStudent.as_view(), name='grade-student-add'),
     path('karname/term/<int:pk>', GradesDetailView.as_view(), name='student-term-karname'),
     path('karname/group', GroupTermGrades.as_view(), name='group-term-karname'),
+    path('karname/group/view/', GroupTermKarname.as_view(), name='group-term-karname-view'),
 
 ]
 

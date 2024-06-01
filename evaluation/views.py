@@ -192,3 +192,67 @@ class GroupTermGrades(AminView, LoginRequiredMixin, NoStudent):
         messages.add_message(self.request, messages.SUCCESS,
                              f'نمرات گروه {t_class.name} با موفقیت ثبت و بروزرسانی شد')
         return redirect('/tpanel')
+
+
+class GroupTermKarname(AminView, LoginRequiredMixin, NoStudent):
+    PAGE_TITLE = ''
+    PAGE_DESCRIPTION = ''
+    template_name = 'eval/group_karname_term_view.html'
+
+    def get(self, request, *args, **kwargs):
+        term = Term.objects.get(id=self.request.session['term_id'])
+        if hasattr(self.request.user, 'teacher'):
+            t_id = self.request.user.id
+            self.t_class = Class.objects.get(teacher__id=t_id)
+        elif request.GET.get('pk') is not None:
+            self.t_class = Class.objects.get(id=request.GET.get('pk'))
+        else:
+            messages.add_message(self.request, messages.WARNING, 'این صفحه در دسترس نیست')
+            return redirect('/')
+        lessons_selected_4clas = ControlSelection.objects.filter(clas_id=self.t_class.id, term=term)
+        lessons = [l.lesson.title for l in lessons_selected_4clas]
+        students_grades = []
+        for student in Student.objects.filter(clas_id=self.t_class.id):
+            grades = SelectedLesson.objects.filter(student=student, term=term)
+            sum_grades = 0
+            lesson_count = 0
+            for g in grades:
+                if g.grade not in ['n', 'g']:
+                    n = int(g.grade)
+                    l = g.lesson.ratio
+                    sum_grades += n * l
+                    lesson_count += l
+
+            try:
+                average = round(sum_grades / lesson_count, 1)
+            except:
+                average = 8
+
+            if 0 <= average < 1:
+                nomre_tosifi = "بسیار ضعیف"
+            elif 1 <= average < 2:
+                nomre_tosifi = "ضعیف"
+            elif 2 <= average < 3:
+                nomre_tosifi = "متوسط"
+            elif 3 <= average < 4:
+                nomre_tosifi = "خوب"
+            elif 4 <= average < 5:
+                nomre_tosifi = "بسیار خوب"
+            else:
+                nomre_tosifi = "ثبت نشده"
+                average = ''
+
+            sg = {
+                "grades": grades,
+                'student': student,
+                'average': average,
+                'nt': nomre_tosifi,
+            }
+            students_grades.append(sg)
+        context = {
+            'term': self.request.session['term_title'],
+            'group_name': self.t_class.name,
+            'students_grades': students_grades,
+            'lessons': lessons,
+        }
+        return render(request, self.template_name, context)

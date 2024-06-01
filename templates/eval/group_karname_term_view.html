@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    {% include 'base/navigator.html' %}
+    {% include 'teacher/aside.html' %}
+    <style>
+        th {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 30px;
+        }
+
+        @media only screen and (max-width: 600px) {
+            th {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 120px;
+                min-width: 120px;
+            }
+
+            .amin-th {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 120px;
+                min-width: 120px;
+            }
+        }
+        .amin-th {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 130px;
+        }
+    </style>
+    <main role="main" class="main-content">
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-
+                                    {% if message.tag %}{{ message.tag }}{% endif %} alert-dismissible fade show"
+                                 role="alert">
+                                {{ message.message }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">x</span>
+                                </button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    <div class="row my-4">
+                        <div class="col-md-12">
+                            <!-- Small table -->
+                            <form class="needs-validation"
+                                  action="{% url 'group-term-karname' %}"
+                                  method="post"
+                                  autocomplete="off"
+                                  id="customer-form"
+                                  novalidate>
+                                {% csrf_token %}
+                                <div class="card shadow">
+                                    <div class="card-header">
+                                        <strong class="card-title">ثبت کارنامه گروه {{ group_name }}</strong>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                            توجه : قبل از خروج از صفحه، نمرات وارد شده را ذخیره و ثبت کنید. توجه: نمره
+                                            انضباطی محاسبه شده، بدون احتساب نمرات مربوط به والدین می باشد. نمره انضباط و
+                                            و الدین از 20 می باشد.
+                                        </div>
+                                        <div class="table-responsive">
+                                            <table class="table table-hover text-nowrap">
+                                                <thead>
+                                                <tr>
+                                                    <th>نام و نام خانوادگی</th>
+                                                    {% for lesson in lessons %}
+                                                        <th title="{{ lesson }}">{{ lesson }}</th>
+                                                    {% endfor %}
+                                                    <th title="معدل">معدل</th>
+                                            
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for sg in students_grades %}
+                                                    <tr>
+                                                        <td class="amin-th" title="{{ sg.student.last_name }} {{ sg.student.first_name }}">{{ sg.student.last_name }} {{ sg.student.first_name }}</td>
+                                                        {% for grade in sg.grades %}
+                                                            <td>
+                                                                {{ grade.get_grade_display }}
+                                                            </td>
+                                                        {% endfor %}
+                                                        <td>
+                                                            ({{ sg.nt }}) {{ sg.average }}
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                            <button type="submit" class="btn btn-success">ثبت گزارش حلقه</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- simple table -->
+                </div>
+                <!-- end section -->
+            </div>
+            <!-- .col-12 -->
+        </div>
+        <!-- .row -->
+    </main>
+{% endblock content %}
+{% block moreScript %}
+    <script>
+        kamaDatepicker('id_created', {buttonsColor: "green", forceFarsiDigits: true});
+
+        $('#id_customer').select2({
+            ajax: {
+                url: 'https://api.github.com/search/repositories',
+                dataType: 'json'
+            }
+        });
+
+
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = document.getElementsByClassName('needs-validation');
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+    </script>
+{% endblock moreScript %}
