@@ -1,0 +1,24 @@
+{% load static %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="row align-items-center">
+            <div class="col-11">
+                <p class="card-text" style="color: darkred;">آیا از این حذف مورد اطمینان دارید؟</p>
+            </div>
+        </div>
+        <hr>
+        <form action="{{ request.path }}"
+              method="POST"
+              autocomplete="off"
+              id="delete_report">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.GET.next }}">
+            <div class="d-flex justify-content-center">
+                <button class="btn mr-5 btn-success" data-dismiss="modal">خیر لغو عملیات</button>
+                <button type="submit" class="btn mr-5 btn-outline-danger">بله حذف شود</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+<script src="{% static '/js/jquery.min.js' %}"></script>

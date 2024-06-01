@@ -342,7 +342,19 @@ class SDGUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         return {'created': regdate}
 
 
-class SDGDeleteView(LoginRequiredMixin, NoStudent, SuccessMessageMixin, DeleteView):
-    pass
-    # model = DisciplineGrade
-    # success_url = reverse_lazy("author-list")
+class SDGDeleteView(AminView, LoginRequiredMixin, NoStudent):
+    template_name = 'enzebati/sdg_delete.html'
+
+    def get(self, request, *args, **kwargs):
+        return render(self.request, self.template_name)
+
+    def post(self, request, *args, **kwargs):
+        mored_enzebati_id = self.kwargs['pk']
+        me = DisciplineGrade.objects.get(pk=mored_enzebati_id)
+        me.delete()
+        messages.add_message(self.request, messages.SUCCESS, 'مورد انضباطی با موفقیت حذف شد')
+        next_url = self.request.POST.get('next')
+        print(next_url)
+        if next_url:
+            return redirect(next_url)
+        return redirect('/')

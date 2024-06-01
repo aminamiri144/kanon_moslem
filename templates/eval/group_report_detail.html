@@ -75,19 +75,19 @@
                                                         <p>{{ s.description }}</p>
                                                     </td>
                                                     <td>
-                                                        
+
                                                         <button type="button"
                                                                 class="btn mr-2 btn-warning btn-sm"
                                                                 onclick="modal_url('/edu/sdg/update/{{ s.id }}', 'update');"
                                                                 data-toggle="modal"
-                                                                data-target="#update_modal">ویرایش 
+                                                                data-target="#update_modal">ویرایش
                                                         </button>
-{#                                                        <button type="button"#}
-{#                                                                class="btn mr-2 btn-outline-danger btn-sm"#}
-{#                                                                onclick="modal_url('/edu/report/delete/{{ s.id }}', 'delete');"#}
-{#                                                                data-toggle="modal"#}
-{#                                                                data-target="#delete_modal">حذف #}
-{#                                                        </button>#}
+                                                        <button type="button"
+                                                                class="btn mr-2 btn-outline-danger btn-sm"
+                                                                onclick="modal_url('/edu/sdg/delete/{{ s.id }}?next={{ request.path }}', 'delete');"
+                                                                data-toggle="modal"
+                                                                data-target="#delete_modal">حذف 
+                                                        </button>
                                                     </td>
                                                 </tr>
                                             {% endfor %}

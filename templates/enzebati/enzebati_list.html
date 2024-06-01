@@ -60,8 +60,12 @@
                                                                     data-toggle="modal"
                                                                     data-target="#update_modal">ویرایش
                                                             </button>
-{#                                                            <a href="#"#}
-{#                                                               class="btn btn-outline-danger btn-sm">حذف</a>#}
+                                                            <button type="button"
+                                                                class="btn mr-2 btn-outline-danger btn-sm"
+                                                                onclick="modal_url('/edu/sdg/delete/{{ d.id }}?next={{ request.path }}', 'delete');"
+                                                                data-toggle="modal"
+                                                                data-target="#delete_modal">حذف 
+                                                        </button>
                                                         </td>
                                                     </tr>
 
