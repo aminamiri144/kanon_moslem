@@ -55,52 +55,45 @@
                     <div class="row my-4">
                         <div class="col-md-12">
                             <!-- Small table -->
-                            <form class="needs-validation"
-                                  action="{% url 'group-term-karname' %}"
-                                  method="post"
-                                  autocomplete="off"
-                                  id="customer-form"
-                                  novalidate>
-                                {% csrf_token %}
-                                <div class="card shadow">
-                                    <div class="card-header">
-                                        <strong class="card-title"> کارنامه گروه {{ group_name }}</strong>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="table-responsive">
-                                            <table class="table table-hover text-nowrap">
-                                                <thead>
-                                                <tr>
-                                                    <th>نام و نام خانوادگی</th>
-                                                    {% for lesson in lessons %}
-                                                        <th title="{{ lesson }}">{{ lesson }}</th>
-                                                    {% endfor %}
-                                                    <th title="معدل">معدل</th>
 
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                {% for sg in students_grades %}
-                                                    <tr>
-                                                        <td class="amin-th"
-                                                            title="{{ sg.student.last_name }} {{ sg.student.first_name }}">{{ sg.student.last_name }} {{ sg.student.first_name }}</td>
-                                                        {% for grade in sg.grades %}
-                                                            <td>
-                                                                {{ grade.get_grade_display }}
-                                                            </td>
-                                                        {% endfor %}
-                                                        <td>
-                                                            ({{ sg.nt }}) {{ sg.average }}
-                                                        </td>
-                                                    </tr>
+                            <div class="card shadow">
+                                <div class="card-header">
+                                    <strong class="card-title"> کارنامه گروه {{ group_name }}</strong>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover text-nowrap">
+                                            <thead>
+                                            <tr>
+                                                <th>نام و نام خانوادگی</th>
+                                                {% for lesson in lessons %}
+                                                    <th title="{{ lesson }}">{{ lesson }}</th>
                                                 {% endfor %}
-                                                </tbody>
-                                            </table>
-                                            <button type="submit" class="btn btn-success">ثبت گزارش حلقه</button>
-                                        </div>
+                                                <th title="معدل">معدل</th>
+
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for sg in students_grades %}
+                                                <tr>
+                                                    <td class="amin-th"
+                                                        title="{{ sg.student.last_name }} {{ sg.student.first_name }}">{{ sg.student.last_name }} {{ sg.student.first_name }}</td>
+                                                    {% for grade in sg.grades %}
+                                                        <td>
+                                                            {{ grade.get_grade_display }}
+                                                        </td>
+                                                    {% endfor %}
+                                                    <td>
+                                                        ({{ sg.nt }}) {{ sg.average }}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
-                            </form>
+                            </div>
+                        
                         </div>
                     </div>
                     <!-- simple table -->
