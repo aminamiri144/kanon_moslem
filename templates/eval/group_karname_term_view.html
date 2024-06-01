@@ -28,6 +28,7 @@
                 min-width: 120px;
             }
         }
+
         .amin-th {
             white-space: nowrap;
             overflow: hidden;
@@ -63,14 +64,9 @@
                                 {% csrf_token %}
                                 <div class="card shadow">
                                     <div class="card-header">
-                                        <strong class="card-title">ثبت کارنامه گروه {{ group_name }}</strong>
+                                        <strong class="card-title"> کارنامه گروه {{ group_name }}</strong>
                                     </div>
                                     <div class="card-body">
-                                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                                            توجه : قبل از خروج از صفحه، نمرات وارد شده را ذخیره و ثبت کنید. توجه: نمره
-                                            انضباطی محاسبه شده، بدون احتساب نمرات مربوط به والدین می باشد. نمره انضباط و
-                                            و الدین از 20 می باشد.
-                                        </div>
                                         <div class="table-responsive">
                                             <table class="table table-hover text-nowrap">
                                                 <thead>
@@ -80,13 +76,14 @@
                                                         <th title="{{ lesson }}">{{ lesson }}</th>
                                                     {% endfor %}
                                                     <th title="معدل">معدل</th>
-                                            
+
                                                 </tr>
                                                 </thead>
                                                 <tbody>
                                                 {% for sg in students_grades %}
                                                     <tr>
-                                                        <td class="amin-th" title="{{ sg.student.last_name }} {{ sg.student.first_name }}">{{ sg.student.last_name }} {{ sg.student.first_name }}</td>
+                                                        <td class="amin-th"
+                                                            title="{{ sg.student.last_name }} {{ sg.student.first_name }}">{{ sg.student.last_name }} {{ sg.student.first_name }}</td>
                                                         {% for grade in sg.grades %}
                                                             <td>
                                                                 {{ grade.get_grade_display }}
