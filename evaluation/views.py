@@ -58,19 +58,18 @@ class GradeStudent(NoStudent, View, LoginRequiredMixin):
         desc = request.POST.getlist('description')
         result = list(zip(lesson, grade, desc))
         student = Student.objects.get(id=self.kwargs['pk'])
-
+        term = Term.objects.filter(id=self.request.session['term_id']).first()
         for g in result:
-            s = SelectedLesson.objects.get(student=student, lesson_id=g[0])
+            s = SelectedLesson.objects.get(student=student, lesson_id=g[0], term=term)
             s.grade = g[1]
             s.description = g[2]
             s.save()
-        term = Term.objects.filter(id=self.request.session['term_id']).first()
         grades = SelectedLesson.objects.filter(student=student, term=term)
+        messages.add_message(self.request, messages.SUCCESS,
+                             f'کارنامه {student.get_full_name()} با موفقیت ثبت و ویرایش شد.')
 
-        messages = [
-            {'message': ' نمرات با موفقیت ثبت و بروزرسانی شد.', 'tag': 'success', }]
-
-        return render(request, self.template_name, {"grades": grades, 'student': student, "messages": messages})
+        return render(request, self.template_name,
+                      {"grades": grades, 'student': student, 'term': self.request.session['term_title']})
 
 
 class GradesDetailView(AminView, LoginRequiredMixin):
