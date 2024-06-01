@@ -150,6 +150,8 @@ class GroupTermGrades(AminView, LoginRequiredMixin, NoStudent):
                     try:
                         if 'خانواد' in e.report.report_type.title:
                             family_nomre += float(e.grade)
+                        elif 'والدین' in e.report.report_type.title:
+                            family_nomre += float(e.grade)
                         elif 'فوق' in e.report.report_type.title:
                             fogh_nomre += float(e.grade)
                         else:
