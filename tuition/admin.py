@@ -1,3 +1,6 @@
 from django.contrib import admin
+from .models import TuitionTerm, Tuition, Payment
 
-# Register your models here.
+admin.site.register(TuitionTerm)
+admin.site.register(Tuition)
+admin.site.register(Payment)
