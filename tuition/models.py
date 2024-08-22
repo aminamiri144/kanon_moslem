@@ -12,7 +12,7 @@ class TuitionTerm(models.Model):
         verbose_name = 'شهریه ترم'
         verbose_name_plural = "شهریه ترم ها"
 
-    title = models.CharField(max_length=100, default="شهریه ترم ... دوره ...")
+    title = models.CharField(max_length=20, default="دوره ...", verbose_name="عنوان(دوره)")
     term = models.ForeignKey(Term, on_delete=models.CASCADE, verbose_name="ترم")
     price = models.BigIntegerField(verbose_name='مبلغ شهریه ترم', default=0)
     description = models.TextField(verbose_name='توضیحات', blank=True, null=True)
@@ -68,7 +68,10 @@ class Tuition(models.Model):
         if self.is_paid:
             return "شهریه کامل پرداخت شده"
         else:
-            return  "پرداخت نشده"
+            return "پرداخت نشده"
+    @property
+    def debt_amount_view(self):
+        return "{:,}".format(self.debt_amount)
 
     def save(self, *args, **kwargs):
         if self.debt_amount is None:
@@ -114,6 +117,10 @@ class Payment(models.Model):
             return pay_date
         except:
             return 'ثبت نشده!'
+
+    @property
+    def amount_view(self):
+        return "{:,}".format(self.amount)
 
     def __str__(self):
         return f"{self.student} | {self.amount} | {self.get_pay_type_display()} | {self.jd_pay_date}"

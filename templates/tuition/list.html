@@ -1,0 +1,35 @@
+{% load static %}
+<div class="row">
+    <div class="col-md-12">
+        <h4>{{ student }}</h4>
+
+        {% if payments %}
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>مبلغ پرداخت</th>
+                <th>نوع پرداخت</th>
+                <th>تاریخ پرداخت</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for pay in payments %}
+            <tr>
+               <td>{{ pay.amount_view }}</td>
+               <td>{{ pay.get_pay_type_display }}</td>
+               <td>{{ pay.jd_pay_date }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                             متربی({{ student }}) تاکنون پرداختی نداشته است.
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                <span aria-hidden="true">x</span>
+                                            </button>
+                                        </div>
+    {% endif %}
+    </div>
+</div>
+<script src="{% static '/js/jquery.min.js' %}"></script>

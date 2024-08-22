@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+{% load jformat %}
+{% block content %}
+    {% include 'base/navigator.html' %}
+    {% include 'base/aside.html' %}
+    <main role="main" class="main-content">
+        <div class="container-fluid">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-
+                            {% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show"
+                         role="alert">
+                        {{ message|safe }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">x</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <h2 class="mb-2 page-title">شهریه متربیان</h2>
+                    <p class="card-text">لیست شهریه متربیان کانون تربیتی حضرت مسلم ابن عقیل (ع)</p>
+                    <div class="row my-4">
+                        <!-- Small table -->
+                        <div class="col-md-12">
+                            <div class="accordion accordion-boxed" id="accordion2">
+                                <div class="card shadow">
+                                    <div class="card-header" id="headingOne">
+                                        <a role="button"
+                                           href="#collapseOne"
+                                           data-toggle="collapse"
+                                           data-target="#collapseOne"
+                                           aria-expanded="false"
+                                           aria-controls="collapseOne"
+                                           class="collapsed">
+                                            <strong>جستجو پرونده شهریه</strong>
+                                        </a>
+                                    </div>
+                                    <div class="collapse show"
+                                         aria-labelledby="headingOne"
+                                         data-parent="#accordion2"
+                                         id="collapseOne">
+                                        <div class="card-body">
+                                            <div class="toolbar row mb-3">
+                                                <div class="col">
+                                                    <form class="form-inline" action="" method="get">
+                                                        <div class="form-row">
+                                                            <div class="form-group col-auto">
+                                                                <label for="search">جستجو :</label>
+                                                                <input type="text"
+                                                                       class="form-control ml-2"
+                                                                       id="search"
+                                                                       name="q"
+                                                                       placeholder="مقدار مورد نظر را وارد کنید "
+                                                                       value="{{ request.GET.q }}"/>
+                                                                <label for="searchOption" class="ml-2">جستجو براساس
+                                                                    :</label>
+                                                                <select class="form-control my-1 mr-sm-2 ml-2"
+                                                                        id="searchOption"
+                                                                        name="option">
+                                                                    <option value="student__last_name"
+                                                                            {% if request.GET.option == "student_last_name" %}selected{% endif %}>
+                                                                        نام خانوادگی
+                                                                    </option>
+                                                                    <option value="tuition_term__title"
+                                                                            {% if request.GET.option == "tuition_term__title" %}selected{% endif %}>
+                                                                        دوره
+                                                                    </option>
+                                                                    <option value="student__clas__name"
+                                                                            {% if request.GET.option == "student__clas__name" %}selected{% endif %}>
+                                                                        گروه
+                                                                    </option>
+                                                                </select>
+                                                                <button type="submit" class="btn ml-2 btn-warning">
+                                                                    <span class="fe fe-search fe-14 mr-1"></span>جستجو
+                                                                </button>
+                                                                <a href="{% url 'tuition-list' %}"
+                                                                   class="btn btn-info ml-2">نمایش همه</a>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                {% comment %} <div class="col ml-auto">
+                                                    <a href="{% url 'request-create' %}" class="btn btn-success float-right ml-3" type="button">اضافه کردن +</a>
+                                                </div> {% endcomment %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="card">
+                                <div class="card-body">
+                                    {% if tuitions %}
+                                        <div class="table-responsive">
+                                            <table class="table table-hover text-nowrap">
+                                                <thead>
+                                                <tr>
+                                                    <th scope="col">متربی</th>
+                                                    <th scope="col">شهریه ترم</th>
+                                                    <th scope="col">وضعیت پرداخت</th>
+                                                    <th scope="col">مبلغ بدهی</th>
+                                                    <th scope="col">عملیات</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for tuition in tuitions %}
+                                                    <tr {% if tuition.is_paid %}class="table-success"
+                                                        {% else %}class="table-warning"{% endif %}>
+                                                        <td>{{ tuition.student.get_full_name }}</td>
+                                                        <td>{{ tuition.tuition_term.title }}</td>
+                                                        <td>{{ tuition.pay_status }}</td>
+                                                        <td>{% if tuition.debt_amount == 0 %}
+                                                            <span class="badge badge-pill badge-success">تسویه شده</span>
+                                                            {% else %}{{ tuition.debt_amount_view }} تومان{% endif %}
+                                                        </td>
+                                                        <td>
+                                                            {% comment %} <button type="button"
+                                                                        class="btn btn-warning btn-sm"
+                                                                        onclick="modal_url('/tuition/update/{{ tuition.id }}', 'update');"
+                                                                        data-toggle="modal"
+                                                                        data-target="#update_modal">ویرایش</button> {% endcomment %}
+                                                            <button onclick="modal_url('/tuition/payments/{{ tuition.student.id }}', 'detail');"
+                                                                    data-toggle="modal" data-target="#detail_modal"
+                                                                    class="btn btn-info btn-sm">مشاهده پرداخت ها
+                                                            </button>
+                                                            {% if not tuition.is_paid %}
+                                                                <button onclick="modal_url('/tuition/payments/add/{{ tuition.student.id }}', 'create');"
+                                                                        data-toggle="modal" data-target="#create_modal"
+                                                                        class="btn btn-success btn-sm">افزودن پرداخت
+                                                                    جدید
+                                                                </button>
+                                                            {% endif %}
+                                                            <a href=""
+                                                               class="btn btn-secondary btn-sm">پیامک ها</a>
+
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    {% else %}
+                                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                            هیچ نتیجه ای در جستجو یافت نشد! مجددا تلاش کنید.
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                <span aria-hidden="true">x</span>
+                                            </button>
+                                        </div>
+                                    {% endif %}
+                                    <div class="row">
+                                        <nav aria-label="">
+                                            <ul class="pagination">
+                                                {% if page_obj.has_previous %}
+                                                    <li class="page-item">
+                                                        <a class="page-link"
+                                                           href="?page={{ page_obj.previous_page_number }}"
+                                                           tabindex="-1">قبلی</a>
+                                                    </li>
+                                                {% else %}
+                                                    <li class="page-item disabled">
+                                                        <a class="page-link" href="">صفحه قبل</a>
+                                                    </li>
+                                                {% endif %}
+                                                <li class="page-item active">
+                                                    <a class="page-link" href="#">{{ page_obj.number }} <span
+                                                            class="sr-only">(صفحه فعلی)</span></a>
+                                                </li>
+                                                {% if page_obj.has_next %}
+                                                    <li class="page-item">
+                                                        <a class="page-link"
+                                                           href="?page={{ page_obj.next_page_number }}">صفحه بعد</a>
+                                                    </li>
+                                                {% else %}
+                                                    <li class="page-item disabled">
+                                                        <a class="page-link" href="">صفحه بعد</a>
+                                                    </li>
+                                                {% endif %}
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- simple table -->
+                </div>
+                <!-- end section -->
+            </div>
+            <!-- .col-12 -->
+        </div>
+        <!-- .row -->
+    </main>
+    {#    {% include 'base/updateModal.html' %}#}
+    {% include 'base/createModal.html' %}
+    {% include 'base/detailModal.html' %}
+{% endblock content %}
+{% block moreScript %}
+    <script src="{% static 'plugins/jalaliDatepicker/kamadatepicker.min.js' %}"></script>
+    <script>kamaDatepicker('id_register_date', {buttonsColor: "green", forceFarsiDigits: true});</script>
+    <script>
+        function modal_url(url, type) {
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (data) {
+                    $("#" + type + "_modal_body").html(data);
+                }
+            })
+        }
+    </script>
+{% endblock moreScript %}

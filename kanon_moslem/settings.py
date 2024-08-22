@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'education_management.apps.EducationManagementConfig',
     'django_jalali',
     'django_celery_beat',
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [

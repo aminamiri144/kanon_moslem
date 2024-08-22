@@ -30,6 +30,7 @@ urlpatterns = [
     path('m/', include("members.urls")),
     path('edu/', include("education_management.urls")),
     path('eval/', include("evaluation.urls")),
+    path('tuition/', include("tuition.urls")),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

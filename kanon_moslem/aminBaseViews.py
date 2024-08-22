@@ -143,7 +143,7 @@ class ListViewAmin(AminView, ListView):
 
 
 class BaseFormKanon(forms.ModelForm):
-    MODEL_VERBOSE_NAME = None
+    MODEL_VERBOSE_NAME = ''
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
