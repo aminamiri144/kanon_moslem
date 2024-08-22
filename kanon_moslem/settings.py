@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 import os
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 IS_IN_SERVER = False if os.getenv('IIS', 'false') == 'false' else True
@@ -35,7 +34,6 @@ if IS_IN_SERVER:
 else:
     ALLOWED_HOSTS = ['*']
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -51,6 +49,7 @@ INSTALLED_APPS = [
     'tuition.apps.TuitionConfig',
     'education_management.apps.EducationManagementConfig',
     'django_jalali',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -82,7 +81,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'kanon_moslem.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
@@ -125,13 +123,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
 LANGUAGE_CODE = 'fa'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Tehran'
 
 USE_I18N = True
 
@@ -139,13 +136,11 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'templates/static')]
-
 
 ASSETS_URL = '/assets/'
 ASSETS_ROOT = os.path.join(BASE_DIR, 'templates/assets')
@@ -155,3 +150,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/login'
 
 AUTH_USER_MODEL = 'members.Member'
+
+# celery Configs
+
+
+broker_url = os.getenv('BROKER_URL', 'redis://localhost:6379/0')
+
+CELERY_BROKER_URL = broker_url
+CELERY_RESULT_BACKEND = broker_url
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Tehran'
