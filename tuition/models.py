@@ -5,8 +5,6 @@ from members.models import Class, Student
 from django_jalali.db import models as jmodels
 
 
-# Create your models here.
-
 class TuitionTerm(models.Model):
     class Meta:
         verbose_name = 'شهریه ترم'
@@ -16,7 +14,7 @@ class TuitionTerm(models.Model):
     term = models.ForeignKey(Term, on_delete=models.CASCADE, verbose_name="ترم")
     price = models.BigIntegerField(verbose_name='مبلغ شهریه ترم', default=0)
     description = models.TextField(verbose_name='توضیحات', blank=True, null=True)
-    groups = models.ManyToManyField(Class, verbose_name="گروه ها")
+    groups = models.ManyToManyField(Class, verbose_name="گروه ها", blank=True, null=True)
 
     def __str__(self):
         return f"{self.title} | {self.price}"
@@ -35,33 +33,6 @@ class Tuition(models.Model):
     tuition_term = models.ForeignKey(TuitionTerm, on_delete=models.CASCADE, verbose_name="شهریه مرجع")
     is_paid = models.BooleanField(default=False, verbose_name="")
     debt_amount = models.BigIntegerField(verbose_name="میزان بدهی", default=None, blank=True, null=True)
-    pay_day_1 = jmodels.jDateField(verbose_name="موعد پرداخت اول", blank=True, null=True)
-    pay_day_2 = jmodels.jDateField(verbose_name="موعد پرداخت دوم", blank=True, null=True)
-    pay_day_3 = jmodels.jDateField(verbose_name="موعد پرداخت سوم", blank=True, null=True)
-
-    @property
-    def jd_pay_day_1(self):
-        pay_day_1 = str(self.pay_day_1).replace('-', '/')
-        try:
-            return pay_day_1
-        except:
-            return 'ثبت نشده!'
-
-    @property
-    def jd_pay_day_2(self):
-        pay_day_2 = str(self.pay_day_2).replace('-', '/')
-        try:
-            return pay_day_2
-        except:
-            return 'ثبت نشده!'
-
-    @property
-    def jd_pay_day_3(self):
-        pay_day_3 = str(self.pay_day_3).replace('-', '/')
-        try:
-            return pay_day_3
-        except:
-            return 'ثبت نشده!'
 
     @property
     def pay_status(self):
@@ -69,6 +40,7 @@ class Tuition(models.Model):
             return "شهریه کامل پرداخت شده"
         else:
             return "پرداخت نشده"
+
     @property
     def debt_amount_view(self):
         return "{:,}".format(self.debt_amount)
@@ -103,6 +75,7 @@ class Payment(models.Model):
     amount = models.BigIntegerField(verbose_name="مبلغ پرداخت", default=0)
     pay_date = jmodels.jDateField(verbose_name="زمان پرداخت", blank=True, null=True)
     pay_type = models.CharField(choices=PAY_TYPES, verbose_name="نوع پرداخت", default="2", max_length=20)
+    desc = models.CharField(max_length=200, verbose_name="توضیحات", blank=True, null=True)
 
     def save(self, *args, **kwargs):
         tuition = Tuition.objects.get(student=self.student, term=self.term)
@@ -124,3 +97,22 @@ class Payment(models.Model):
 
     def __str__(self):
         return f"{self.student} | {self.amount} | {self.get_pay_type_display()} | {self.jd_pay_date}"
+
+
+class PayDay(models.Model):
+    class Meta:
+        verbose_name = 'وعده پرداخت'
+        verbose_name_plural = 'وعده های پرداخت'
+
+    tuition = models.ForeignKey(Tuition, on_delete=models.CASCADE, verbose_name="شهریه")
+    pay_date = jmodels.jDateField(verbose_name="تاریخ وعده")
+    price = models.BigIntegerField(blank=True, null=True, verbose_name="مبلغ قابل پرداخت")
+    is_paid = models.BooleanField(default=False, verbose_name="وضعیت پرداخت")
+
+    @property
+    def price_view(self):
+        return "{:,}".format(self.price)
+
+
+    def __str__(self):
+        return f"{self.tuition.student.get_full_name()} | {self.pay_date} | {self.is_paid}"

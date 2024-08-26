@@ -10,6 +10,7 @@
                 <th>مبلغ پرداخت</th>
                 <th>نوع پرداخت</th>
                 <th>تاریخ پرداخت</th>
+                <th>توضیحات پرداخت</th>
             </tr>
             </thead>
             <tbody>
@@ -18,6 +19,7 @@
                <td>{{ pay.amount_view }}</td>
                <td>{{ pay.get_pay_type_display }}</td>
                <td>{{ pay.jd_pay_date }}</td>
+               <td>{{ pay.desc }}</td>
             </tr>
             {% endfor %}
             </tbody>

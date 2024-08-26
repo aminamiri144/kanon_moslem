@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+{% load jformat %}
+{% block content %}
+    {% include 'base/navigator.html' %}
+    {% include 'base/aside.html' %}
+    <main role="main" class="main-content">
+        <div class="container-fluid">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-
+                            {% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show"
+                         role="alert">
+                        {{ message|safe }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">x</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <h2 class="mb-2 page-title">ایجاد شهریه ترم</h2>
+                    <p class="card-text">ایجاد شهریه های متربیان برای ترم</p>
+                    <div class="row my-4">
+                        <!-- Small table -->
+                        <div class="col-md-12">
+                            <br/>
+                            <div class="card">
+                                <div class="card-body">
+                                       <div class="col-md-4">
+                                        <form class="needs-validation"
+                                              action="{{ action_url }}"
+                                              method="post"
+                                              autocomplete="off"
+                                              id="customer-form"
+                                              enctype="multipart/form-data"
+                                              novalidate>
+                                            {% csrf_token %}
+                                            {% for field in form %}
+                                                <div class="form-group row">
+                                                    <label class="col-form-label col-lg-3 col-sm-12">{{ field.label_tag }}</label>
+                                                    <div class="col-lg-9 col-md-9 col-sm-12">
+                                                        {{ field }}
+                                                        {% if form.errors.field %}<span class="text-danger">{{ form.errors.field.0 }}</span>{% endif %}
+                                                        <div class="invalid-feedback">مقدار مناسب را وارد کنید.</div>
+                                                        {% for error in field.errors %}<div class="feedbackinvalid">{{ error|escape }}</div>{% endfor %}
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                            <button type="submit" class="btn mb-2 btn-success btn-block">ایجاد شهریه ترم</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- simple table -->
+                </div>
+                <!-- end section -->
+            </div>
+            <!-- .col-12 -->
+        </div>
+        <!-- .row -->
+    </main>
+    {#    {% include 'base/updateModal.html' %}#}
+    {% include 'base/createModal.html' %}
+    {% include 'base/detailModal.html' %}
+{% endblock content %}
+{% block moreScript %}
+    <script src="{% static 'plugins/jalaliDatepicker/kamadatepicker.min.js' %}"></script>
+    <script>kamaDatepicker('id_register_date', {buttonsColor: "green", forceFarsiDigits: true});</script>
+    <script>
+        function modal_url(url, type) {
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (data) {
+                    $("#" + type + "_modal_body").html(data);
+                }
+            })
+        }
+    </script>
+{% endblock moreScript %}

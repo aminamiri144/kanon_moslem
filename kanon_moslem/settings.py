@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'members.apps.MembersConfig',
     'inventory.apps.InventoryConfig',
     'tuition.apps.TuitionConfig',
+    'sms_management.apps.SmsManagementConfig',
     'education_management.apps.EducationManagementConfig',
     'django_jalali',
     'django_celery_beat',

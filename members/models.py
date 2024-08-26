@@ -1,3 +1,4 @@
+from django.contrib.auth.hashers import make_password
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from .validators import *
@@ -78,9 +79,9 @@ class Member(AbstractUser):
     #     if not is_valid_codemeli(self.username):
     #         raise ValidationError("کدملی وارد شده معتبر نمی‌باشد")
 
-    # def save(self, *args, **kwargs):
-    #     self.full_clean()  # اعتبارسنجی قبل از ذخیره
-    #     super().save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        self.password = make_password(self.password)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.get_full_name()

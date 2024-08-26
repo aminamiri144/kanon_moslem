@@ -23,7 +23,10 @@
                 <div class="col-12">
                     <h2 class="mb-2 page-title">شهریه متربیان</h2>
                     <p class="card-text">لیست شهریه متربیان کانون تربیتی حضرت مسلم ابن عقیل (ع)</p>
+                    <a class="btn btn-sm btn-success" href="{% url "generate-term-tuitions" %}">ایجاد شهریه دوره های ترم
+                        فعلی</a>
                     <div class="row my-4">
+
                         <!-- Small table -->
                         <div class="col-md-12">
                             <div class="accordion accordion-boxed" id="accordion2">
@@ -65,14 +68,15 @@
                                                                             {% if request.GET.option == "student_last_name" %}selected{% endif %}>
                                                                         نام خانوادگی
                                                                     </option>
-                                                                    <option value="tuition_term__title"
-                                                                            {% if request.GET.option == "tuition_term__title" %}selected{% endif %}>
-                                                                        دوره
-                                                                    </option>
                                                                     <option value="student__clas__name"
                                                                             {% if request.GET.option == "student__clas__name" %}selected{% endif %}>
                                                                         گروه
                                                                     </option>
+                                                                    <option value="student__clas__dore"
+                                                                            {% if request.GET.option == "student__clas__dore" %}selected{% endif %}>
+                                                                        دوره
+                                                                    </option>
+
                                                                 </select>
                                                                 <button type="submit" class="btn ml-2 btn-warning">
                                                                     <span class="fe fe-search fe-14 mr-1"></span>جستجو
@@ -127,15 +131,24 @@
                                                                     data-toggle="modal" data-target="#detail_modal"
                                                                     class="btn btn-info btn-sm">مشاهده پرداخت ها
                                                             </button>
+                                                            <a href="{% url "payday-list" tuition.id %}"
+                                                               class="btn btn-info btn-sm">لیست مواعد پرداخت
+                                                            </a>
                                                             {% if not tuition.is_paid %}
                                                                 <button onclick="modal_url('/tuition/payments/add/{{ tuition.student.id }}', 'create');"
                                                                         data-toggle="modal" data-target="#create_modal"
                                                                         class="btn btn-success btn-sm">افزودن پرداخت
                                                                     جدید
                                                                 </button>
+                                                                <button onclick="modal_url('/tuition/payday/create/{{ tuition.id }}', 'create');"
+                                                                    data-toggle="modal" data-target="#create_modal"
+                                                                    class="btn btn-success btn-sm">افزودن موعد پرداخت
+                                                                </button>
                                                             {% endif %}
-                                                            <a href=""
-                                                               class="btn btn-secondary btn-sm">پیامک ها</a>
+                                                            {#                                                            <a href=""#}
+                                                            {#                                                               class="btn btn-secondary btn-sm">پیامک ها</a>#}
+                                                            
+                                                            
 
                                                         </td>
                                                     </tr>

@@ -1,10 +1,14 @@
-from django.shortcuts import render
-from django.urls import reverse
-from django.views.generic import View, ListView, CreateView
+import os
 
+import jdatetime
+from django.shortcuts import render, redirect
+from django.urls import reverse
+from django.views.generic import View, ListView, CreateView, UpdateView
+from django.contrib import messages
 from kanon_moslem.aminBaseViews import AminView, BaseCreateViewAmin
-from kanon_moslem.views import NoStudent, LoginRequiredMixin, SuccessMessageMixin
-from .forms import PaymentCreateForm
+from kanon_moslem.views import NoStudent, LoginRequiredMixin, SuccessMessageMixin, NoTeacher
+from sms_management.sms import SMS
+from .forms import PaymentCreateForm, TuitionForm, PayDateCreateForm
 from .models import *
 from django.db.models import Q
 
@@ -75,3 +79,84 @@ class CreatePaymentView(LoginRequiredMixin, NoStudent, SuccessMessageMixin, Crea
 
     def get_success_url(self):
         return reverse('tuition-list')
+
+
+class TuitionTermGenerate(AminView, LoginRequiredMixin, NoStudent, NoTeacher):
+    def get(self, request, *args, **kwargs):
+        form = TuitionForm()
+        return render(request, template_name='tuition/generate_term_dore_tuition.html', context={'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = TuitionForm(request.POST)
+        if form.is_valid():
+            tuition_amount = form.cleaned_data['tuition_amount']
+            term = form.cleaned_data['term']
+            dore = form.cleaned_data['dore']
+            title = form.cleaned_data['title']
+            desc = form.cleaned_data['desc']
+
+            dore_class = Class.objects.filter(dore__exact=str(dore))
+            if len(dore_class) == 0:
+                messages.add_message(self.request, messages.WARNING, 'دوره انتخاب شده اشتباه است')
+
+                return render(request, template_name='tuition/generate_term_dore_tuition.html', context={'form': form})
+
+            if type(tuition_amount) != int:
+                tuition_amount = int(tuition_amount)
+
+            tt = TuitionTerm()
+            tt.price = tuition_amount
+            tt.title = title
+            tt.description = desc
+            tt.term = term
+            tt.save()
+            tt.groups.set(dore_class)
+
+            for dc in dore_class:
+                students = Student.objects.filter(clas=dc)
+
+                for student in students:
+                    ts = Tuition()
+                    ts.student = student
+                    ts.term = term
+                    ts.tuition_term = tt
+                    ts.save()
+            messages.add_message(self.request, messages.SUCCESS,
+                                 f'شهریه های متربیان دوره {dore} ترم {term} با موفقیت ایجاد شد.')
+            return redirect('tuition-list')
+
+
+class PayDateCreate(LoginRequiredMixin, NoStudent, SuccessMessageMixin, CreateView):
+    model = PayDay
+    template_name = "tuition/create_modal.html"
+    form_class = PayDateCreateForm
+    success_message = "موعد پرداخت با موفقیت ایجاد شد."
+    success_url = '/tuition/list/'
+
+    def get_context_data(self, **kwargs):
+        context = super(PayDateCreate, self).get_context_data(**kwargs)
+        context['form'].fields['tuition'].choices.field.queryset = Tuition.objects.filter(
+            pk=self.kwargs['pk'])
+        return context
+
+    def get_initial(self):
+        tuition = self.kwargs['pk']
+        return {'tuition': tuition}
+
+
+class PayDayOfTuitionListView(LoginRequiredMixin, NoStudent, SuccessMessageMixin, AminView):
+    def get(self, request, pk, *args, **kwargs):
+        pds = PayDay.objects.filter(tuition__id=pk)
+        student = Tuition.objects.get(id=pk).student
+        context = {'pay_days': pds, 'student': student.get_full_name()}
+        return render(request, 'tuition/paydayslist.html', context=context)
+
+
+def pay_day_payed_make_true(request, pk, *args, **kwargs):
+    pd = PayDay.objects.get(id=pk)
+    pd.is_paid = True
+    pd.save()
+    messages.add_message(request, messages.SUCCESS, 'پرداخت با موفقیت ثبت شد.')
+    previous_url = request.META.get('HTTP_REFERER')
+    return redirect(previous_url)
+

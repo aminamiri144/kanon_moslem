@@ -17,11 +17,37 @@
                     <div class="col-lg-9 col-md-9 col-sm-12">{{ field }}</div>
                 </div>
             {% endfor %}
-            <button type="submit" class="btn btn-success">ثبت پرداخت</button>
+            <button type="submit" class="btn btn-success">ثبت</button>
             <button class="btn btn-danger" data-dismiss="modal">لغو عملیات</button>
         </form>
     </div>
 </div>
 <script src="{% static '/js/jquery.min.js' %}"></script>
-<script src="{% static 'plugins/jalaliDatepicker/kamadatepicker.min.js'%}"></script>
+<script src="{% static 'plugins/jalaliDatepicker/kamadatepicker.min.js' %}"></script>
 <script>kamaDatepicker('id_pay_date', {buttonsColor: "green", forceFarsiDigits: true});</script>
+
+
+<script>
+    $(document).ready(function () {
+        $('#id_price').on('input', function () {
+            var inputVal = $(this).val();
+            // حذف همه کاراکترهای غیر عددی
+            inputVal = inputVal.replace(/[^0-9]/g, '');
+            // افزودن جداکننده سه رقم سه رقم
+            var formattedInputVal = inputVal.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            // جایگزینی مقدار اینپوت با مقدار فرمت شده
+            $(this).val(formattedInputVal);
+        });
+        
+        $('#id_amount').on('input', function () {
+            var inputVal = $(this).val();
+            // حذف همه کاراکترهای غیر عددی
+            inputVal = inputVal.replace(/[^0-9]/g, '');
+            // افزودن جداکننده سه رقم سه رقم
+            var formattedInputVal = inputVal.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            // جایگزینی مقدار اینپوت با مقدار فرمت شده
+            $(this).val(formattedInputVal);
+        });
+    });
+</script>
+
