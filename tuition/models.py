@@ -4,6 +4,8 @@ from education_management.models import Term
 from members.models import Class, Student
 from django_jalali.db import models as jmodels
 
+from sms_management.models import SendedSMS
+
 
 class TuitionTerm(models.Model):
     class Meta:
@@ -108,11 +110,20 @@ class PayDay(models.Model):
     pay_date = jmodels.jDateField(verbose_name="تاریخ وعده")
     price = models.BigIntegerField(blank=True, null=True, verbose_name="مبلغ قابل پرداخت")
     is_paid = models.BooleanField(default=False, verbose_name="وضعیت پرداخت")
+    is_send_sms = models.BooleanField(default=False, verbose_name="وضعیت اطلاع رسانی")
+    sms = models.ForeignKey(SendedSMS, on_delete=models.DO_NOTHING, verbose_name="پیامک ارسالی", blank=True, null=True)
 
     @property
     def price_view(self):
         return "{:,}".format(self.price)
 
+    @property
+    def jd_pay_date(self):
+        pay_date = str(self.pay_date).replace('-', '/')
+        try:
+            return pay_date
+        except:
+            return 'ثبت نشده!'
 
     def __str__(self):
         return f"{self.tuition.student.get_full_name()} | {self.pay_date} | {self.is_paid}"

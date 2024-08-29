@@ -37,6 +37,7 @@
                                                     <th scope="col">تاریخ موعد پرداخت</th>
                                                     <th scope="col">مبلغ موعد</th>
                                                     <th scope="col">وضعیت پرداخت</th>
+                                                    <th scope="col">وضعیت ارسال پیامک</th>
                                                     <th scope="col">عملیات</th>
                                                 </tr>
                                                 </thead>
@@ -44,14 +45,33 @@
                                                 {% for pd in pay_days %}
                                                     <tr {% if pd.is_paid %}class="table-success"
                                                         {% else %}class="table-warning"{% endif %}>
-                                                        <td>{{ pd.pay_date }}</td>
-                                                        <td>{{ pd.price_view }}تومان </td>
-                                                        <td>{% if pd.is_paid%}
+                                                        <td>{{ pd.jd_pay_date }}</td>
+                                                        <td>{{ pd.price_view }}تومان</td>
+                                                        <td>{% if pd.is_paid %}
                                                             <span class="badge badge-pill badge-success">تسویه شده</span>
-                                                            {% else %} پرداخت نشده{% endif %}
+                                                        {% else %} پرداخت نشده{% endif %}
                                                         </td>
                                                         <td>
-                                                            <a href="{% url 'payday-payed' pd.id %}" class="btn btn-sm btn-success">پرداخت شد</a>
+                                                            {% if pd.is_send_sms %}
+                                                                <button type="button"
+                                                                        class="btn btn-sm rounded-pill btn-success pp"
+                                                                        data-container="body" data-toggle="popover"
+                                                                        data-placement="top"
+                                                                        data-content="{{ pd.sms }}">
+                                                                    ارسال موفق
+                                                                </button>
+                                                            {% else %}
+                                                                {% if not pd.sms %}
+                                                                    <span class="badge badge-pill badge-warning">ارسال نشده</span>
+                                                                {% else %}
+                                                                    <span class="badge badge-pill badge-danger">ارسال ناموفق</span>
+                                                                {% endif %}
+                                                            {% endif %}
+
+                                                        </td>
+                                                        <td>
+                                                            <a href="{% url 'payday-payed' pd.id %}"
+                                                               class="btn btn-sm btn-success">پرداخت شد</a>
                                                         </td>
                                                     </tr>
                                                 {% endfor %}
@@ -126,5 +146,11 @@
                 }
             })
         }
+
+        $(function () {
+            $('.pp').popover({
+                container: 'body'
+            })
+        })
     </script>
 {% endblock moreScript %}

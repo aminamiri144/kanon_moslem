@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import *
+from sms_management.tasks import payday_reminder_sms
 
 urlpatterns = [
     path('list/', TuitionMainView.as_view(), name='tuition-list'),
@@ -9,4 +10,5 @@ urlpatterns = [
     path('payday/list/<int:pk>', PayDayOfTuitionListView.as_view(), name='payday-list'),
     path('payday/payed/<int:pk>', pay_day_payed_make_true, name='payday-payed'),
     path('generate/', TuitionTermGenerate.as_view(), name='generate-term-tuitions'),
+    path('test/', payday_reminder_sms),
 ]

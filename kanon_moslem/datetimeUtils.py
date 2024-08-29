@@ -100,5 +100,4 @@ def change_date_to_persian(value):
     date = gregorian_to_jalali(int(year), int(month), int(day))
     string_date = "{stime} {y}/{m}/{d}".format(
         y=date[0], m=date[1], d=date[2], stime=stime)
-    print(string_date)
     return string_date
