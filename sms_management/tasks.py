@@ -15,10 +15,14 @@ def send_sms_reminder(student, month, payday):
     bodyID = int(os.getenv("BODY_ID_PAYDAY_REMINDER", '243281'))
     fullname = student.get_full_name()
     args = [month, fullname, payday.price_view]
+
     if student.father_phone is not None:
         phone_number = student.father_phone
+    elif student.mother_phone is not None:
+        phone_number = student.mather_phone
     else:
         phone_number = student.mobile
+
     try:
         sms = SMS()
         sms_response = sms.send_service_sms(body_id=bodyID, phone_number=phone_number, args=args)
@@ -37,8 +41,8 @@ def send_sms_reminder(student, month, payday):
             payday.sms = ss
             payday.save()
             return True
-    except:
-        pass
+    except Exception as e:
+        print(f"Error In send_sms_reminder: {e}")
     return False
 
 
@@ -50,4 +54,4 @@ def payday_reminder_sms():
     tomorrow_paydays = PayDay.objects.filter(pay_date=tomorrow, is_send_sms=False)
     jd_date = jdatetime.date(jalali_date[0], jalali_date[1], jalali_date[2])
     for payday in tomorrow_paydays:
-        send_sms_reminder(payday.tuition.student, jd_date.strftime('%b'), payday)
+        send_sms_reminder(payday.tuition.student, jd_date.strftime('%B'), payday)
