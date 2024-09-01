@@ -183,10 +183,11 @@ def update_student_debt(student):
     return account_balance
 
 
+
+
 def update_students_debt_view(request):
-    students = Student.objects.all()
-    for student in students:
-        update_student_debt(student)
+    from sms_management.tasks import update_student_debt_view_celery
+    update_student_debt_view_celery.delay()
     messages.add_message(request, messages.SUCCESS,
-                         f'مانده حساب کل متربیان با موفقیت بروز شد!')
+                         f'عملیات بروز رسانی شروع شد لطفا 5 دقیقه صبر کنید و مجددا صفحه را رفرش کنید.')
     return redirect(request.session['last_url'])

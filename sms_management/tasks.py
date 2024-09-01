@@ -1,14 +1,16 @@
 import os
 from celery import shared_task
 from datetime import datetime, timedelta
+
+from django.contrib import messages
 from django.db import transaction
 from django.db.models import Sum
 
+from members.models import Student
 from sms_management.sms import SMS
 from sms_management.models import SendedSMS
 from tuition.views import update_student_debt
 from tuition.models import PayDay
-
 
 def send_sms_reminder(student, debt_value, payday):
     bodyID = int(os.getenv("BODY_ID_PAYDAY_REMINDER", '245523'))
@@ -45,8 +47,8 @@ def send_sms_reminder(student, debt_value, payday):
     return False
 
 
-# @shared_task()
-def payday_reminder_sms(request):
+@shared_task()
+def payday_reminder_sms():
     today = datetime.today()
     tomorrow = today + timedelta(days=1)
     tomorrow_paydays = PayDay.objects.filter(pay_date=tomorrow, is_send_sms=False)
@@ -68,3 +70,11 @@ def payday_reminder_sms(request):
             debt_value = "{:,}".format(acc_balance - total_next_debts)
 
             send_sms_reminder(payday.tuition.student, debt_value, payday)
+
+
+
+@shared_task()
+def update_student_debt_view_celery():
+    students = Student.objects.all()
+    for student in students:
+        update_student_debt(student)
