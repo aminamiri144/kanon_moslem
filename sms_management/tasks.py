@@ -12,6 +12,7 @@ from sms_management.models import SendedSMS
 from tuition.views import update_student_debt
 from tuition.models import PayDay
 
+
 def send_sms_reminder(student, debt_value, payday):
     bodyID = int(os.getenv("BODY_ID_PAYDAY_REMINDER", '245523'))
     fullname = student.get_full_name()
@@ -52,25 +53,23 @@ def payday_reminder_sms():
     today = datetime.today()
     tomorrow = today + timedelta(days=1)
     tomorrow_paydays = PayDay.objects.filter(pay_date=tomorrow, is_send_sms=False)
-    with transaction.atomic():
-        for payday in tomorrow_paydays:
-            # مانده حساب متربی
-            acc_balance = update_student_debt(payday.tuition.student)
-            # تاریخ پس فردا
-            day_after_tomorrow = today + timedelta(days=2)
-            # موعد های پرداخت بعدی
-            next_paydays_date = PayDay.objects.filter(pay_date__gte=day_after_tomorrow, is_send_sms=False,
-                                                      tuition=payday.tuition)
-            # مجموع مبلغ قسط های بعدی (غیر فردا)
+    for payday in tomorrow_paydays:
+        # مانده حساب متربی
+        acc_balance = update_student_debt(payday.tuition.student)
+        # تاریخ پس فردا
+        day_after_tomorrow = today + timedelta(days=2)
+        # موعد های پرداخت بعدی
+        next_paydays_date = PayDay.objects.filter(pay_date__gte=day_after_tomorrow, is_send_sms=False,
+                                                  tuition=payday.tuition)
+        # مجموع مبلغ قسط های بعدی (غیر فردا)
 
-            total_next_debts = next_paydays_date.aggregate(total_next_debts=Sum('price'))['total_next_debts']
-            if total_next_debts is None:
-                total_next_debts = 0
-            # مقدار بدهی
-            debt_value = "{:,}".format(acc_balance - total_next_debts)
+        total_next_debts = next_paydays_date.aggregate(total_next_debts=Sum('price'))['total_next_debts']
+        if total_next_debts is None:
+            total_next_debts = 0
+        # مقدار بدهی
+        debt_value = "{:,}".format(acc_balance - total_next_debts)
 
-            send_sms_reminder(payday.tuition.student, debt_value, payday)
-
+        send_sms_reminder(payday.tuition.student, debt_value, payday)
 
 
 @shared_task()
