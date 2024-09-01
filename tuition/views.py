@@ -1,5 +1,4 @@
 import os
-
 import jdatetime
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -11,6 +10,7 @@ from sms_management.sms import SMS
 from .forms import PaymentCreateForm, TuitionForm, PayDateCreateForm
 from .models import *
 from django.db.models import Q
+from django.db.models import Sum
 
 
 class TuitionMainView(AminView, ListView, LoginRequiredMixin, NoStudent):
@@ -28,8 +28,8 @@ class TuitionMainView(AminView, ListView, LoginRequiredMixin, NoStudent):
             object_list = self.model.objects.filter(query)
             self.request.session['search'] = self.request.GET.get('q', '')
         else:
-
             object_list = self.model.objects.filter(term=term)
+        self.request.session['last_url'] = self.request.get_full_path()
         return object_list
 
     def get_initial(self):
@@ -78,7 +78,7 @@ class CreatePaymentView(LoginRequiredMixin, NoStudent, SuccessMessageMixin, Crea
         return {'student': student, 'term': int(self.request.session['term_id'])}
 
     def get_success_url(self):
-        return reverse('tuition-list')
+        return self.request.session['last_url']
 
 
 class TuitionTermGenerate(AminView, LoginRequiredMixin, NoStudent, NoTeacher):
@@ -121,6 +121,7 @@ class TuitionTermGenerate(AminView, LoginRequiredMixin, NoStudent, NoTeacher):
                     ts.term = term
                     ts.tuition_term = tt
                     ts.save()
+                    update_student_debt(student)
             messages.add_message(self.request, messages.SUCCESS,
                                  f'شهریه های متربیان دوره {dore} ترم {term} با موفقیت ایجاد شد.')
             return redirect('tuition-list')
@@ -131,7 +132,6 @@ class PayDateCreate(LoginRequiredMixin, NoStudent, SuccessMessageMixin, CreateVi
     template_name = "tuition/create_modal.html"
     form_class = PayDateCreateForm
     success_message = "موعد پرداخت با موفقیت ایجاد شد."
-    success_url = '/tuition/list/'
 
     def get_context_data(self, **kwargs):
         context = super(PayDateCreate, self).get_context_data(**kwargs)
@@ -143,12 +143,16 @@ class PayDateCreate(LoginRequiredMixin, NoStudent, SuccessMessageMixin, CreateVi
         tuition = self.kwargs['pk']
         return {'tuition': tuition}
 
+    def get_success_url(self):
+        return self.request.session['last_url']
+
 
 class PayDayOfTuitionListView(LoginRequiredMixin, NoStudent, SuccessMessageMixin, AminView):
     def get(self, request, pk, *args, **kwargs):
         pds = PayDay.objects.filter(tuition__id=pk)
         student = Tuition.objects.get(id=pk).student
-        context = {'pay_days': pds, 'student': student.get_full_name()}
+        context = {'pay_days': pds, 'student': student.get_full_name(),
+                   'last_url': self.request.session.get('last_url', '')}
         return render(request, 'tuition/paydayslist.html', context=context)
 
 
@@ -160,3 +164,29 @@ def pay_day_payed_make_true(request, pk, *args, **kwargs):
     previous_url = request.META.get('HTTP_REFERER')
     return redirect(previous_url)
 
+
+def update_student_debt(student):
+    """بروزرسانی مانده حساب(بدهی/بسانکاری) کل متربی"""
+    tuition_all = TuitionTerm.objects.filter(groups=student.clas)
+    # مجموع کل شهریه های متربی
+    total_debt = tuition_all.aggregate(total_debt=Sum('price'))['total_debt']
+
+    payments = Payment.objects.filter(student=student)
+    # مجموع کل پرداخت های متربی
+    total_pay = payments.aggregate(total_pay=Sum('amount'))['total_pay']
+    if total_pay is None:
+        total_pay = 0
+    account_balance = total_debt - total_pay
+    student.account_balance = account_balance
+    student.save()
+
+    return account_balance
+
+
+def update_students_debt_view(request):
+    students = Student.objects.all()
+    for student in students:
+        update_student_debt(student)
+    messages.add_message(request, messages.SUCCESS,
+                         f'مانده حساب کل متربیان با موفقیت بروز شد!')
+    return redirect(request.session['last_url'])

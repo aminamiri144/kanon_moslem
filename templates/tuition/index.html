@@ -25,6 +25,7 @@
                     <p class="card-text">لیست شهریه متربیان کانون تربیتی حضرت مسلم ابن عقیل (ع)</p>
                     <a class="btn btn-sm btn-success" href="{% url "generate-term-tuitions" %}">ایجاد شهریه دوره های ترم
                         فعلی</a>
+                    <a class="btn btn-sm btn-outline-warning" href="{% url "update-students-debts" %}">بروزرسانی مانده حساب کل متربیان</a>
                     <div class="row my-4">
 
                         <!-- Small table -->
@@ -106,7 +107,7 @@
                                                     <th scope="col">متربی</th>
                                                     <th scope="col">شهریه ترم</th>
                                                     <th scope="col">وضعیت پرداخت</th>
-                                                    <th scope="col">مبلغ بدهی</th>
+                                                    <th scope="col">مانده حساب(کل)</th>
                                                     <th scope="col">عملیات</th>
                                                 </tr>
                                                 </thead>
@@ -117,9 +118,8 @@
                                                         <td>{{ tuition.student.get_full_name }}</td>
                                                         <td>{{ tuition.tuition_term.title }}</td>
                                                         <td>{{ tuition.pay_status }}</td>
-                                                        <td>{% if tuition.debt_amount == 0 %}
-                                                            <span class="badge badge-pill badge-success">تسویه شده</span>
-                                                            {% else %}{{ tuition.debt_amount_view }} تومان{% endif %}
+                                                        <td>
+                                                              {{ tuition.student.account_balance_view }}  
                                                         </td>
                                                         <td>
                                                             {% comment %} <button type="button"
@@ -145,11 +145,6 @@
                                                                     class="btn btn-success btn-sm">افزودن موعد پرداخت
                                                                 </button>
                                                             {% endif %}
-                                                            {#                                                            <a href=""#}
-                                                            {#                                                               class="btn btn-secondary btn-sm">پیامک ها</a>#}
-                                                            
-                                                            
-
                                                         </td>
                                                     </tr>
                                                 {% endfor %}
@@ -170,7 +165,7 @@
                                                 {% if page_obj.has_previous %}
                                                     <li class="page-item">
                                                         <a class="page-link"
-                                                           href="?page={{ page_obj.previous_page_number }}"
+                                                           href="?q={{ request.GET.q }}&option={{ request.GET.option }}&page={{ page_obj.previous_page_number }}"
                                                            tabindex="-1">قبلی</a>
                                                     </li>
                                                 {% else %}
@@ -185,7 +180,7 @@
                                                 {% if page_obj.has_next %}
                                                     <li class="page-item">
                                                         <a class="page-link"
-                                                           href="?page={{ page_obj.next_page_number }}">صفحه بعد</a>
+                                                           href="?q={{ request.GET.q }}&option={{ request.GET.option }}&page={{ page_obj.next_page_number }}">صفحه بعد</a>
                                                     </li>
                                                 {% else %}
                                                     <li class="page-item disabled">

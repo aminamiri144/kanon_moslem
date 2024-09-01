@@ -29,7 +29,7 @@
                             <br/>
                             <div class="card">
                                 <div class="card-body">
-                                       <div class="col-md-4">
+                                    <div class="col-md-4">
                                         <form class="needs-validation"
                                               action="{{ action_url }}"
                                               method="post"
@@ -43,13 +43,17 @@
                                                     <label class="col-form-label col-lg-3 col-sm-12">{{ field.label_tag }}</label>
                                                     <div class="col-lg-9 col-md-9 col-sm-12">
                                                         {{ field }}
-                                                        {% if form.errors.field %}<span class="text-danger">{{ form.errors.field.0 }}</span>{% endif %}
+                                                        {% if form.errors.field %}
+                                                            <span class="text-danger">{{ form.errors.field.0 }}</span>{% endif %}
                                                         <div class="invalid-feedback">مقدار مناسب را وارد کنید.</div>
-                                                        {% for error in field.errors %}<div class="feedbackinvalid">{{ error|escape }}</div>{% endfor %}
+                                                        {% for error in field.errors %}
+                                                            <div class="feedbackinvalid">{{ error|escape }}</div>{% endfor %}
                                                     </div>
                                                 </div>
                                             {% endfor %}
-                                            <button type="submit" class="btn mb-2 btn-success btn-block">ایجاد شهریه ترم</button>
+                                            <button type="submit" class="btn mb-2 btn-success btn-block">ایجاد شهریه
+                                                ترم
+                                            </button>
                                         </form>
                                     </div>
                                 </div>
@@ -69,6 +73,19 @@
     {% include 'base/detailModal.html' %}
 {% endblock content %}
 {% block moreScript %}
+    <script>
+        $(document).ready(function () {
+            $('#id_tuition_amount').on('input', function () {
+            var inputVal = $(this).val();
+            // حذف همه کاراکترهای غیر عددی
+            inputVal = inputVal.replace(/[^0-9]/g, '');
+            // افزودن جداکننده سه رقم سه رقم
+            var formattedInputVal = inputVal.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            // جایگزینی مقدار اینپوت با مقدار فرمت شده
+            $(this).val(formattedInputVal);
+        });
+        });
+    </script>
     <script src="{% static 'plugins/jalaliDatepicker/kamadatepicker.min.js' %}"></script>
     <script>kamaDatepicker('id_register_date', {buttonsColor: "green", forceFarsiDigits: true});</script>
     <script>

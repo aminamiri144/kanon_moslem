@@ -12,7 +12,7 @@ class TuitionTerm(models.Model):
         verbose_name = 'شهریه ترم'
         verbose_name_plural = "شهریه ترم ها"
 
-    title = models.CharField(max_length=20, default="دوره ...", verbose_name="عنوان(دوره)")
+    title = models.CharField(max_length=255, default="دوره ...", verbose_name="عنوان(دوره)")
     term = models.ForeignKey(Term, on_delete=models.CASCADE, verbose_name="ترم")
     price = models.BigIntegerField(verbose_name='مبلغ شهریه ترم', default=0)
     description = models.TextField(verbose_name='توضیحات', blank=True, null=True)
@@ -33,30 +33,24 @@ class Tuition(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name='متربی')
     term = models.ForeignKey(Term, on_delete=models.CASCADE, verbose_name="ترم")
     tuition_term = models.ForeignKey(TuitionTerm, on_delete=models.CASCADE, verbose_name="شهریه مرجع")
-    is_paid = models.BooleanField(default=False, verbose_name="")
-    debt_amount = models.BigIntegerField(verbose_name="میزان بدهی", default=None, blank=True, null=True)
+    is_paid = models.BooleanField(default=False, verbose_name="وضعیت تسویه ترم")
 
     @property
     def pay_status(self):
         if self.is_paid:
-            return "شهریه کامل پرداخت شده"
+            return "تسویه شده"
         else:
-            return "پرداخت نشده"
-
-    @property
-    def debt_amount_view(self):
-        return "{:,}".format(self.debt_amount)
+            return "بدهکار"
 
     def save(self, *args, **kwargs):
-        if self.debt_amount is None:
-            self.debt_amount = self.tuition_term.price
-        if self.debt_amount <= 0:
+        from tuition.views import update_student_debt
+        debt = update_student_debt(self.student)
+        if debt <= 0:
             self.is_paid = True
-
         super(Tuition, self).save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.student} | {self.debt_amount} | {self.pay_status}"
+        return f"{self.student} | {self.student.account_balance} | {self.pay_status}"
 
 
 class Payment(models.Model):
@@ -80,10 +74,15 @@ class Payment(models.Model):
     desc = models.CharField(max_length=200, verbose_name="توضیحات", blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        tuition = Tuition.objects.get(student=self.student, term=self.term)
-        tuition.debt_amount = tuition.debt_amount - self.amount
-        tuition.save()
+        if self.desc is None:
+            self.desc = 'ندارد'
         super(Payment, self).save(*args, **kwargs)
+        from tuition.views import update_student_debt
+        acc_balance = update_student_debt(self.student)
+        student_tuition = Tuition.objects.get(student=self.student, term=self.term)
+        if acc_balance <= 0 and not student_tuition.is_paid:
+            student_tuition.is_paid = True
+            student_tuition.save()
 
     @property
     def jd_pay_date(self):
@@ -126,4 +125,4 @@ class PayDay(models.Model):
             return 'ثبت نشده!'
 
     def __str__(self):
-        return f"{self.tuition.student.get_full_name()} | {self.pay_date} | {self.is_paid}"
+        return f"{self.tuition.student.get_full_name()} | {self.jd_pay_date} | {self.is_paid}"

@@ -42,7 +42,8 @@ class PaymentCreateForm(BaseFormKanon):
 
 class TuitionForm(forms.Form):
     title = forms.CharField(max_length=255, label='عنوان')
-    tuition_amount = forms.IntegerField(label='مبلغ شهریه')
+    tuition_amount = forms.CharField(label='مبلغ شهریه',
+                                     widget=forms.TextInput(attrs={'placeholder': 'مبلغ شهریه ترم به تومان'}))
     term = forms.ModelChoiceField(queryset=Term.objects.all(), label='ترم')
     dore = forms.IntegerField(label='دوره')
     desc = forms.CharField(max_length=255, label='توضیحات')
@@ -51,6 +52,10 @@ class TuitionForm(forms.Form):
         super(TuitionForm, self).__init__(*args, **kwargs)
         for visible in self.visible_fields():
             visible.field.widget.attrs['class'] = 'form-control'
+
+    def clean_tuition_amount(self):
+        tuition_amount = self.cleaned_data['tuition_amount'].replace(',', '')
+        return int(tuition_amount)
 
 
 class PayDateCreateForm(forms.ModelForm):

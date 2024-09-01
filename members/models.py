@@ -128,6 +128,7 @@ class Student(Member):
     home_phone = models.CharField(max_length=11, verbose_name="تلفن منزل", blank=True, null=True)
     father_phone = models.CharField(max_length=11, verbose_name="شماره موبایل پدر", blank=True, null=True)
     mather_phone = models.CharField(max_length=11, verbose_name="شماره موبایل مادر", blank=True, null=True)
+    account_balance = models.BigIntegerField(verbose_name="مانده حساب کل", default=0)
 
     @property
     def jd_register_date(self):
@@ -136,6 +137,16 @@ class Student(Member):
             return jd_reg_date
         except:
             return 'ثبت نشده!'
+
+    @property
+    def account_balance_view(self):
+        balance = "{:,}".format(self.account_balance)
+
+        if self.account_balance < 0:
+            ac = self.account_balance * -1
+            ac = "{:,}".format(ac)
+            balance = f" {ac} تومان (بستانکار)"
+        return balance
 
     def __str__(self):
         return self.get_full_name()

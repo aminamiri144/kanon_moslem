@@ -43,7 +43,7 @@ class BaseCreateViewAmin(AminView, LoginRequiredMixin, SuccessMessageMixin, Crea
 
     def form_valid(self, form):
         try:
-            form.instance.password = make_password('12345')
+            form.instance.password = make_password(12345)
             form.instance.email = 'test@example.com'
             return super().form_valid(form)
         except:
