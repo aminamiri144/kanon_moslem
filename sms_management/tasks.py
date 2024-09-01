@@ -34,7 +34,10 @@ def send_sms_reminder(student, debt_value, payday):
             ss.student = student
             ss.last_status = res['status']
             ss.to_number = phone_number
-            ss.recId = res['recId']
+            try:
+                ss.recId = res['recId']
+            except Exception as e:
+                print(e)
             ss.pattern_id = bodyID
             ss.title = f'اطلاع رسانی وعده پرداخت {fullname} مقدار {debt_value}'
             ss.save()

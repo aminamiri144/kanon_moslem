@@ -29,7 +29,7 @@ class SendedSMS(models.Model):
     params = models.CharField(max_length=255, null=True, blank=True)
     send_date = models.DateTimeField(auto_now_add=True, verbose_name='زمان ارسال')
     student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name="متربی")
-    recId = models.IntegerField(verbose_name='شناسه ارسالی پیامک', default=0)
+    recId = models.CharField(verbose_name='شناسه ارسالی پیامک', default='-1', max_length=64)
 
 
     def __str__(self):
