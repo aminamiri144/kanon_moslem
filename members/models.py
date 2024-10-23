@@ -79,9 +79,6 @@ class Member(AbstractUser):
     #     if not is_valid_codemeli(self.username):
     #         raise ValidationError("کدملی وارد شده معتبر نمی‌باشد")
 
-    def save(self, *args, **kwargs):
-        self.password = make_password(self.password)
-        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.get_full_name()
