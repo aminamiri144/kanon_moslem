@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'tuition.apps.TuitionConfig',
     'sms_management.apps.SmsManagementConfig',
     'education_management.apps.EducationManagementConfig',
+    'logger.apps.LoggerConfig',
     'django_jalali',
     'django_celery_beat',
     'django.contrib.humanize',

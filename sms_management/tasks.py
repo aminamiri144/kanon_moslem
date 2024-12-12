@@ -1,7 +1,7 @@
 import os
 from celery import shared_task
 from datetime import datetime, timedelta
-
+from logger.views import log
 from django.contrib import messages
 from django.db import transaction
 from django.db.models import Sum
@@ -37,7 +37,7 @@ def send_sms_reminder(student, debt_value, payday):
             try:
                 ss.recId = res['recId']
             except Exception as e:
-                print(e)
+                log('SYSTEM', f'{e}', 'send_sms_reminder')
             ss.pattern_id = bodyID
             ss.title = f'اطلاع رسانی وعده پرداخت {fullname} مقدار {debt_value}'
             ss.save()
@@ -47,7 +47,7 @@ def send_sms_reminder(student, debt_value, payday):
             payday.save()
             return True
     except Exception as e:
-        print(f"Error In send_sms_reminder: {e}")
+        log('SYSTEM', f'{e}', 'send_sms_reminder')
     return False
 
 
@@ -71,8 +71,10 @@ def payday_reminder_sms():
             total_next_debts = 0
         # مقدار بدهی
         debt_value = "{:,}".format(acc_balance - total_next_debts)
-
-        send_sms_reminder(payday.tuition.student, debt_value, payday)
+        try:
+            send_sms_reminder(payday.tuition.student, debt_value, payday)
+        except Exception as e:
+            log('CELERY_BEAT', f'{e}', 'payday_reminder_sms')
 
 
 @shared_task()
