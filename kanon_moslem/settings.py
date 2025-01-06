@@ -34,7 +34,7 @@ if IS_IN_SERVER:
 else:
     ALLOWED_HOSTS = ['*']
 
-if IIS:
+if IS_IN_SERVER:
     CSRF_TRUSTED_ORIGINS = [
        'https://kanonmoslem.ir',
        'http://kanonmoslem.ir',
