@@ -22,7 +22,7 @@ ADMIN_URL = os.getenv('ADMIN_URL', 'admin')
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '_@9u$bl4vqbj%s10^h9sb=chzw6_0dym)g6m-%5s16v%s-reoj'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -34,6 +34,11 @@ if IS_IN_SERVER:
 else:
     ALLOWED_HOSTS = ['*']
 
+if IIS:
+    CSRF_TRUSTED_ORIGINS = [
+       'https://kanonmoslem.ir',
+       'http://kanonmoslem.ir',
+    ]
 # Application definition
 
 INSTALLED_APPS = [
@@ -97,7 +102,7 @@ if IS_IN_SERVER:
             'PASSWORD': os.getenv('DB_PASSWORD'),
             'HOST': os.getenv('DB_HOST'),
             'PORT': os.getenv('DB_PORT'),
-            'OPTIONS': {'autocommit': True} if IS_IN_SERVER else {}
+            # 'OPTIONS': {'autocommit': True} if IS_IN_SERVER else {}
         }
     }
 else:
@@ -148,6 +153,8 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'templates/static')]
 ASSETS_URL = '/assets/'
 ASSETS_ROOT = os.path.join(BASE_DIR, 'templates/assets')
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/login'
@@ -157,7 +164,7 @@ AUTH_USER_MODEL = 'members.Member'
 # celery Configs
 
 
-broker_url = os.getenv('BROKER_URL', 'redis://localhost:6379/0')
+broker_url = os.getenv('BROKER_URL')
 
 CELERY_BROKER_URL = broker_url
 CELERY_RESULT_BACKEND = broker_url
@@ -165,3 +172,7 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Tehran'
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+
