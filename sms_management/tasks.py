@@ -37,7 +37,7 @@ def send_sms_reminder(student, debt_value, payday):
             try:
                 ss.recId = res['recId']
             except Exception as e:
-                log('SYSTEM', f'{e}', 'send_sms_reminder')
+                log('SYSTEM', f'{e}', 'recId not exist')
             ss.pattern_id = bodyID
             ss.title = f'اطلاع رسانی وعده پرداخت {fullname} مقدار {debt_value}'
             ss.save()
@@ -70,11 +70,13 @@ def payday_reminder_sms():
         if total_next_debts is None:
             total_next_debts = 0
         # مقدار بدهی
-        debt_value = "{:,}".format(acc_balance - total_next_debts)
-        try:
-            send_sms_reminder(payday.tuition.student, debt_value, payday)
-        except Exception as e:
-            log('CELERY_BEAT', f'{e}', 'payday_reminder_sms')
+        debt = acc_balance - total_next_debts
+        if debt > 0:
+            debt_value = "{:,}".format(debt)
+            try:
+                send_sms_reminder(payday.tuition.student, debt_value, payday)
+            except Exception as e:
+                log('CELERY_BEAT', f'{e}', 'payday_reminder_sms')
 
 
 @shared_task()

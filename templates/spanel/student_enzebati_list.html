@@ -42,11 +42,10 @@
                                                 <tbody>
                                                     {% for d in sdg %}
                                                         <tr>
-                                                            <td>{{ d.discipline }}</td>
+                                                            <td><b style="background-color:greenyellow">{{ d.discipline }}</b> | {{ d.report.title }} | {{ d.report.report_type.title }}</td>
                                                             <td>{{ d.grade }}</td>
                                                             <td>{{ d.jd_created_date }}</td>
                                                             <td>{{ d.description }}</td>
-                                                           
                                                         </tr>
                                                                                                                    
                                                     {% endfor %}
