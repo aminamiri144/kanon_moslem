@@ -86,7 +86,7 @@ class SdgCreateView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, CreateVi
         """
         context = super(SdgCreateView, self).get_context_data(**kwargs)
         context['form'].fields['student'].choices.field.queryset = Student.objects.filter(
-            pk=self.kwargs['pk'])
+            pk=self.kwargs['pk'], is_active=True)
         context['form'].fields['term'].choices.field.queryset = Term.objects.filter(
             is_active=True)
         context['student_id'] = self.kwargs['pk']
@@ -120,7 +120,7 @@ class GroupReportCreateView(BaseTemplateViewAmin, LoginRequiredMixin, NoStudent)
         self.clas = Class.objects.get(id=self.kwargs['pk'])
         context['class_id'] = self.kwargs['pk']
         context['class_name'] = self.clas.name
-        context['students'] = Student.objects.filter(clas=self.clas)
+        context['students'] = Student.objects.filter(clas=self.clas, is_active=True)
         context['term'] = self.request.session['term_title']
         context['form'] = ReportHalgheForm()
         if more_data is not None:

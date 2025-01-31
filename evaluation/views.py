@@ -22,7 +22,7 @@ class SelectionLessonClass(View, NoStudent, LoginRequiredMixin):
             lesson = form.cleaned_data['lesson']
             term = Term.objects.filter(id=self.request.session['term_id']).first()
 
-            students = Student.objects.filter(clas=clas)
+            students = Student.objects.filter(clas=clas, is_active=True)
             try:
                 ControlSelection(clas=clas, term=term, lesson=lesson).save()
                 for student in students:
@@ -139,7 +139,7 @@ class GroupTermGrades(AminView, LoginRequiredMixin, NoStudent):
             lessons_selected_4clas = ControlSelection.objects.filter(clas_id=self.t_class.id, term=term)
             lessons = [l.lesson.title for l in lessons_selected_4clas]
             students_grades = []
-            for student in Student.objects.filter(clas_id=self.t_class.id):
+            for student in Student.objects.filter(clas_id=self.t_class.id, is_active=True):
                 grades = SelectedLesson.objects.filter(student=student, term=term)
                 enzebati = DisciplineGrade.objects.filter(student=student, term=term)
                 nomre = 20.0
@@ -180,7 +180,7 @@ class GroupTermGrades(AminView, LoginRequiredMixin, NoStudent):
         t_id = self.request.user.id
         t_class = Class.objects.get(teacher__id=t_id)
         term = Term.objects.get(id=self.request.session['term_id'])
-        students = Student.objects.filter(clas=t_class)
+        students = Student.objects.filter(clas=t_class, is_active=True)
         for student in students:
             grades = SelectedLesson.objects.filter(student=student, term=term)
             for grade in grades:
@@ -211,7 +211,7 @@ class GroupTermKarname(AminView, LoginRequiredMixin, NoStudent):
         lessons_selected_4clas = ControlSelection.objects.filter(clas_id=self.t_class.id, term=term)
         lessons = [l.lesson.title for l in lessons_selected_4clas]
         students_grades = []
-        for student in Student.objects.filter(clas_id=self.t_class.id):
+        for student in Student.objects.filter(clas_id=self.t_class.id, is_active=True):
             grades = SelectedLesson.objects.filter(student=student, term=term)
             sum_grades = 0
             lesson_count = 0

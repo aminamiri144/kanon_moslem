@@ -86,9 +86,9 @@ class StudentListView(AminView, NoStudent, LoginRequiredMixin, ListView):
                 t_id = self.request.user.id
                 teacher = Teacher.objects.get(id=t_id)
                 tc = teacher.clss
-                object_list = self.model.objects.filter(**query, clas=tc)
+                object_list = self.model.objects.filter(**query, clas=tc, is_active=True)
             else:
-                object_list = self.model.objects.filter(**query)
+                object_list = self.model.objects.filter(**query, is_active=True)
 
             self.request.session['search'] = self.request.GET.get('q', '')
         else:
@@ -96,10 +96,10 @@ class StudentListView(AminView, NoStudent, LoginRequiredMixin, ListView):
                 t_id = self.request.user.id
                 teacher = Teacher.objects.get(id=t_id)
                 tc = teacher.clss
-                object_list = self.model.objects.filter(clas_id=tc.id)
+                object_list = self.model.objects.filter(clas_id=tc.id, is_active=True)
                 self.template_name = 'teacher/student_list_4teacher.html'
             else:
-                object_list = self.model.objects.all()
+                object_list = self.model.objects.filter(is_active=True)
         return object_list
 
     def get_initial(self):

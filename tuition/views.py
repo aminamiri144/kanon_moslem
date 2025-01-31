@@ -64,7 +64,7 @@ class CreatePaymentView(LoginRequiredMixin, NoStudent, SuccessMessageMixin, Crea
         """
         context = super(CreatePaymentView, self).get_context_data(**kwargs)
         context['form'].fields['student'].choices.field.queryset = Student.objects.filter(
-            pk=self.kwargs['pk'])
+            pk=self.kwargs['pk'], is_active=True)
         context['form'].fields['term'].choices.field.queryset = Term.objects.filter(
             id=int(self.request.session['term_id']))
 
@@ -113,7 +113,7 @@ class TuitionTermGenerate(AminView, LoginRequiredMixin, NoStudent, NoTeacher):
             tt.groups.set(dore_class)
 
             for dc in dore_class:
-                students = Student.objects.filter(clas=dc)
+                students = Student.objects.filter(clas=dc, is_active=True)
 
                 for student in students:
                     ts = Tuition()
