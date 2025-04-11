@@ -229,7 +229,7 @@ class GroupReportDetailView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, 
 
 
 class GroupReportsListView(NoStudent, LoginRequiredMixin, ListView):
-    paginate_by = 1
+    paginate_by = 10
     model = GroupReport
     template_name = 'eval/group_reports_list.html'
 
@@ -247,8 +247,8 @@ class GroupReportsListView(NoStudent, LoginRequiredMixin, ListView):
 
 
         if hasattr(self.request.user, 'teacher'):
-            t_class = get_object_or_404(Class, teacher_id=self.request.user.id)
-            self.rgs = GroupReport.objects.filter(clas=t_class, term=term).order_by('-date')
+            self.teacher = get_object_or_404(Teacher, id=self.request.user.id)
+            self.rgs = GroupReport.objects.filter(clas=self.teacher.clss, term=term).order_by('-date')
             return self.rgs
         if value:
             self.rgs = GroupReport.objects.filter(**query, term=term).order_by('-date')
@@ -260,14 +260,14 @@ class GroupReportsListView(NoStudent, LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['rsg'] = self.rgs
         try:
-            context['title'] = f"گزارش های گروه {self.t_class} "
+            context['title'] = f"گزارش های گروه {self.teacher.clss} "
         except:
             context['title'] = f" گزارش های گروه ها"
 
         context['description'] = ""
         context['term'] = self.request.session['term_title']
         if hasattr(self.request.user, 'teacher'):
-            context['clas_id'] = self.t_class.id
+            context['clas_id'] = self.teacher.clss.id
 
         return context
 

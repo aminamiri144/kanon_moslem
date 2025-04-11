@@ -34,36 +34,42 @@
                             <div class="card">
                                 <div class="card-body">
                                     <div class="toolbar row mb-3">
-                                        <div class="col">
-                                            <form class="form-inline" action="" method="get">
-                                                <div class="form-row">
-                                                    <div class="form-group col-auto">
-                                                        <label for="search">جستجو :</label>
-                                                        <input type="text"
-                                                               class="form-control ml-2"
-                                                               id="search"
-                                                               name="q"
-                                                               placeholder="مقدار مورد نظر را وارد کنید "
-                                                               value="{{ request.GET.q }}"/>
-                                                        <label for="searchOption" class="ml-2">جستجو براساس
-                                                            :</label>
-                                                        <select class="form-control my-1 mr-sm-2 ml-2"
-                                                                id="searchOption"
-                                                                name="option">
-                                                            <option value="clas__name"
-                                                                    {% if request.GET.option == "clas__name" %}selected{% endif %}>
-                                                                گروه
-                                                            </option>
-                                                        </select>
-                                                        <button type="submit" class="btn ml-2 btn-warning">
-                                                            <span class="fe fe-search fe-14 mr-1"></span>جستجو
-                                                        </button>
-                                                        <a href="{% url 'group_reports_list' %}"
-                                                           class="btn btn-info ml-2">نمایش همه</a>
+                                        {% if user.teacher %}
+
+                                        {% else %}
+                                    
+
+                                            <div class="col">
+                                                <form class="form-inline" action="" method="get">
+                                                    <div class="form-row">
+                                                        <div class="form-group col-auto">
+                                                            <label for="search">جستجو :</label>
+                                                            <input type="text"
+                                                                   class="form-control ml-2"
+                                                                   id="search"
+                                                                   name="q"
+                                                                   placeholder="مقدار مورد نظر را وارد کنید "
+                                                                   value="{{ request.GET.q }}"/>
+                                                            <label for="searchOption" class="ml-2">جستجو براساس
+                                                                :</label>
+                                                            <select class="form-control my-1 mr-sm-2 ml-2"
+                                                                    id="searchOption"
+                                                                    name="option">
+                                                                <option value="clas__name"
+                                                                        {% if request.GET.option == "clas__name" %}selected{% endif %}>
+                                                                    گروه
+                                                                </option>
+                                                            </select>
+                                                            <button type="submit" class="btn ml-2 btn-warning">
+                                                                <span class="fe fe-search fe-14 mr-1"></span>جستجو
+                                                            </button>
+                                                            <a href="{% url 'group_reports_list' %}"
+                                                               class="btn btn-info ml-2">نمایش همه</a>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </form>
-                                        </div>
+                                                </form>
+                                            </div>
+                                        {% endif %}
                                         {% comment %} <div class="col ml-auto">
                                                     <a href="{% url 'request-create' %}" class="btn btn-success float-right ml-3" type="button">اضافه کردن +</a>
                                                 </div> {% endcomment %}
