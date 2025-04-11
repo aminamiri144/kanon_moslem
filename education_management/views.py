@@ -229,22 +229,32 @@ class GroupReportDetailView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, 
 
 
 class GroupReportsListView(NoStudent, LoginRequiredMixin, ListView):
-    paginate_by = 20
+    paginate_by = 1
     model = GroupReport
     template_name = 'eval/group_reports_list.html'
 
-    def get_queryset(self):
-        term = Term.objects.get(id=self.request.session['term_id'])
-        if hasattr(self.request.user, 'teacher'):
-            t_id = self.request.user.id
-            self.t_class = Class.objects.get(teacher__id=t_id)
+    def get_paginate_by(self, queryset):
+        per_page = self.request.GET.get('per_page')
+        return int(per_page) if per_page and per_page.isdigit() else 10  # مقدار پیش‌فرض ۱۰
 
-            self.rgs = GroupReport.objects.filter(
-                clas=self.t_class, term=term).order_by('-date')
+    def get_queryset(self):
+        term_id = self.request.session.get('term_id')
+        term = get_object_or_404(Term, id=term_id)
+
+        value = self.request.GET.get('q', '')
+        option = self.request.GET.get('option', '')
+        query = {f'{option}__icontains': value}
+
+
+        if hasattr(self.request.user, 'teacher'):
+            t_class = get_object_or_404(Class, teacher_id=self.request.user.id)
+            self.rgs = GroupReport.objects.filter(clas=t_class, term=term).order_by('-date')
             return self.rgs
+        if value:
+            self.rgs = GroupReport.objects.filter(**query, term=term).order_by('-date')
         else:
             self.rgs = GroupReport.objects.filter(term=term).order_by('-date')
-            return self.rgs
+        return self.rgs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

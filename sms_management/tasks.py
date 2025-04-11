@@ -55,7 +55,7 @@ def send_sms_reminder(student, debt_value, payday):
 def payday_reminder_sms():
     today = datetime.today()
     tomorrow = today + timedelta(days=1)
-    tomorrow_paydays = PayDay.objects.filter(pay_date=tomorrow, is_send_sms=False)
+    tomorrow_paydays = PayDay.objects.filter(pay_date=tomorrow, is_send_sms=False, is_paid=False)
     for payday in tomorrow_paydays:
         # مانده حساب متربی
         acc_balance = update_student_debt(payday.tuition.student)
