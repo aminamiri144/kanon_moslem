@@ -12,10 +12,33 @@
                         <strong>{{ error|escape }}</strong>
                     </div>
                 {% endfor %}
-                <div class="form-group row">
-                    <label class="col-form-label col-lg-3 col-sm-12">{{ field.label_tag }}</label>
-                    <div class="col-lg-9 col-md-9 col-sm-12">{{ field }}</div>
-                </div>
+                {% if field.name == "grade" %}
+
+                    <div class="form-group row align-items-center mb-3">
+                        <label for="id_grade" class="col-lg-3 col-form-label text-end">{{ field.label_tag }}</label>
+
+                        <div class="col-lg-9">
+                            <div class="input-group">
+                                <button class="btn btn-outline-danger" type="button" onclick="changeGrade(-0.25)">
+                                    <i class="bi bi-dash"></i>
+                                </button>
+
+                                <input type="number" name="grade" value="{{ field.value }}" step="any"
+                                       class="form-control text-center" placeholder="نمره را وارد کنید ..."
+                                       required id="id_grade" readonly>
+
+                                <button class="btn btn-outline-success" type="button" onclick="changeGrade(0.25)">
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="form-group row">
+                        <label class="col-form-label col-lg-3 col-sm-12">{{ field.label_tag }}</label>
+                        <div class="col-lg-9 col-md-9 col-sm-12">{{ field }}</div>
+                    </div>
+                {% endif %}
             {% endfor %}
             <button type="submit" class="btn btn-success">بروز رسانی</button>
             <button class="btn btn-danger" data-dismiss="modal">بستن</button>
@@ -23,5 +46,13 @@
     </div>
 </div>
 <script src="{% static 'js/jquery.min.js' %}"></script>
-<script src="{% static 'plugins/jalaliDatepicker/kamadatepicker.min.js'%}"></script>
+<script src="{% static 'plugins/jalaliDatepicker/kamadatepicker.min.js' %}"></script>
 <script>kamaDatepicker('id_created', {buttonsColor: "green", forceFarsiDigits: true});</script>
+<script>
+    function changeGrade(amount) {
+        const input = document.getElementById("id_grade");
+        let currentValue = parseFloat(input.value) || 0;
+        currentValue += amount;
+        input.value = currentValue.toFixed(2);
+    }
+</script>

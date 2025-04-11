@@ -7,7 +7,7 @@
         <div class="container-fluid">
             <div class="row justify-content-center">
                 <div class="col-12">
-                    <h2 class="mb-2 page-title"> </h2>
+                    <h2 class="mb-2 page-title"></h2>
                     <p class="card-text"></p>
                     <div class="row my-4">
                         <!-- Small table -->
@@ -23,14 +23,44 @@
                                               novalidate>
                                             {% csrf_token %}
                                             {% for field in form %}
-                                                <div class="form-group row">
-                                                    <label class="col-form-label col-lg-3 col-sm-12">{{ field.label_tag }}</label>
-                                                    <div class="col-lg-9 col-md-9 col-sm-12">
-                                                        {{ field }}
-                                                        <div class="invalid-feedback">مقدار مناسب را وارد کنید.</div>
-                                                        {% for error in field.errors %}<div class="feedbackinvalid">{{ error|escape }}</div>{% endfor %}
+                                                {% if field.name == "grade" %}
+                                                    <div class="form-group row align-items-center mb-3">
+                                                        <label for="id_grade"
+                                                               class="col-lg-3 col-form-label text-end">{{ field.label_tag }}</label>
+
+                                                        <div class="col-lg-9">
+                                                            <div class="input-group">
+                                                                <button class="btn btn-outline-danger" type="button"
+                                                                        onclick="changeGrade(-0.25)">
+                                                                    <i class="bi bi-dash"></i>
+                                                                </button>
+
+                                                                <input type="number" name="grade"
+                                                                       value="{{ field.value }}"
+                                                                       step="any"
+                                                                       class="form-control text-center"
+                                                                       placeholder="نمره را وارد کنید ..."
+                                                                       required id="id_grade" readonly>
+
+                                                                <button class="btn btn-outline-success" type="button"
+                                                                        onclick="changeGrade(0.25)">
+                                                                    <i class="bi bi-plus"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                {% else %}
+                                                    <div class="form-group row">
+                                                        <label class="col-form-label col-lg-3 col-sm-12">{{ field.label_tag }}</label>
+                                                        <div class="col-lg-9 col-md-9 col-sm-12">
+                                                            {{ field }}
+                                                            <div class="invalid-feedback">مقدار مناسب را وارد کنید.
+                                                            </div>
+                                                            {% for error in field.errors %}
+                                                                <div class="feedbackinvalid">{{ error|escape }}</div>{% endfor %}
+                                                        </div>
+                                                    </div>
+                                                {% endif %}
                                             {% endfor %}
                                             <button type="submit" class="btn btn-success">ثبت مورد انضباطی</button>
                                         </form>
@@ -50,33 +80,41 @@
 {% endblock content %}
 {% block moreScript %}
     <script>
-    kamaDatepicker('id_created', {buttonsColor: "green", forceFarsiDigits: true});
+        kamaDatepicker('id_created', {buttonsColor: "green", forceFarsiDigits: true});
 
-    $('#id_customer').select2({
-        ajax: {
-          url: 'https://api.github.com/search/repositories',
-          dataType: 'json'
-        }
-      });   
-
-
-    // Example starter JavaScript for disabling form submissions if there are invalid fields
-    (function() {
-      'use strict';
-      window.addEventListener('load', function() {
-        // Fetch all the forms we want to apply custom Bootstrap validation styles to
-        var forms = document.getElementsByClassName('needs-validation');
-        // Loop over them and prevent submission
-        var validation = Array.prototype.filter.call(forms, function(form) {
-          form.addEventListener('submit', function(event) {
-            if (form.checkValidity() === false) {
-              event.preventDefault();
-              event.stopPropagation();
+        $('#id_customer').select2({
+            ajax: {
+                url: 'https://api.github.com/search/repositories',
+                dataType: 'json'
             }
-            form.classList.add('was-validated');
-          }, false);
         });
-      }, false);
-    })();
+
+
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = document.getElementsByClassName('needs-validation');
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+    </script>
+    <script>
+        function changeGrade(amount) {
+            const input = document.getElementById("id_grade");
+            let currentValue = parseFloat(input.value) || 0;
+            currentValue += amount;
+            input.value = currentValue.toFixed(2);
+        }
     </script>
 {% endblock moreScript %}

@@ -90,7 +90,7 @@ class SdgCreateView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, CreateVi
         context['form'].fields['term'].choices.field.queryset = Term.objects.filter(
             is_active=True)
         context['student_id'] = self.kwargs['pk']
-
+        context['term'] = self.request.session['term_title']
         return context
 
     def get_initial(self):
