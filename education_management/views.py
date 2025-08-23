@@ -284,7 +284,7 @@ class GroupReportDeleteView(AminView, LoginRequiredMixin, NoStudent, SuccessMess
         report = GroupReport.objects.get(pk=report_id)
         report.delete()
         messages.add_message(self.request, messages.SUCCESS, 'گزارش با موفقیت حذف شد')
-        return redirect('/')
+        return redirect(reverse('group_reports_list'))
 
 
 class GroupReportUpdateView(UpdateView, NoStudent, LoginRequiredMixin):

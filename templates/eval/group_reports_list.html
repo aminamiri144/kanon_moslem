@@ -37,7 +37,7 @@
                                         {% if user.teacher %}
 
                                         {% else %}
-                                    
+
 
                                             <div class="col">
                                                 <form class="form-inline" action="" method="get">
@@ -101,7 +101,11 @@
                                                             <a href="{% url 'rg-detail' d.id %}"
                                                                class="btn btn-info btn-sm">مشاهده</a>
                                                             {% comment %} <a href="{% url 'rg-update' d.id %}" class="btn btn-outline-warning btn-sm">ویرایش</a> {% endcomment %}
-                                                            <a href="#" class="btn btn-outline-danger btn-sm">حذف</a>
+                                                            <button type="button" class="btn my-2 btn-outline-danger btn-sm"
+                                                                    onclick="modal_url('/edu/report/delete/{{ d.id }}', 'delete');"
+                                                                    data-toggle="modal" data-target="#delete_modal">حذف
+                                                                گزارش
+                                                            </button>
                                                         </td>
                                                     </tr>
                                                 {% endfor %}

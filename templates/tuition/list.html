@@ -11,6 +11,7 @@
                 <th>نوع پرداخت</th>
                 <th>تاریخ پرداخت</th>
                 <th>توضیحات پرداخت</th>
+                <th>ترم</th>
             </tr>
             </thead>
             <tbody>
@@ -20,6 +21,7 @@
                <td>{{ pay.get_pay_type_display }}</td>
                <td>{{ pay.jd_pay_date }}</td>
                <td>{{ pay.desc }}</td>
+               <td>{{ pay.term }}</td>
             </tr>
             {% endfor %}
             </tbody>
