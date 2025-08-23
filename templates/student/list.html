@@ -8,7 +8,8 @@
         <div class="container-fluid">
             {% if messages %}
                 {% for message in messages %}
-                    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show"
+                    <div class="alert alert-
+                            {% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show"
                          role="alert">
                         {{ message|safe }}
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -53,8 +54,9 @@
                                                                        id="search"
                                                                        name="q"
                                                                        placeholder="مقدار مورد نظر را وارد کنید "
-                                                                       value="{{ request.GET.q }}" />
-                                                                <label for="searchOption" class="ml-2">جستجو براساس :</label>
+                                                                       value="{{ request.GET.q }}"/>
+                                                                <label for="searchOption" class="ml-2">جستجو براساس
+                                                                    :</label>
                                                                 <select class="form-control my-1 mr-sm-2 ml-2"
                                                                         id="searchOption"
                                                                         name="option">
@@ -70,7 +72,8 @@
                                                                 <button type="submit" class="btn ml-2 btn-warning">
                                                                     <span class="fe fe-search fe-14 mr-1"></span>جستجو
                                                                 </button>
-                                                                <a href="{% url 'student-view' %}" class="btn btn-info ml-2">نمایش همه</a>
+                                                                <a href="{% url 'student-view' %}"
+                                                                   class="btn btn-info ml-2">نمایش همه</a>
                                                             </div>
                                                         </div>
                                                     </form>
@@ -83,47 +86,48 @@
                                     </div>
                                 </div>
                             </div>
-                            <br />
+                            <br/>
                             <div class="card">
                                 <div class="card-body">
                                     {% if students %}
                                         <div class="table-responsive">
                                             <table class="table table-hover text-nowrap">
                                                 <thead>
-                                                    <tr>
-                                                        <th scope="col">نام و نام خانوادگی</th>
-                                                        <th scope="col">گروه</th>
-                                                        <th scope="col">شماره تماس</th>
-                                                        <th scope="col">کد ملی</th>
-                                                        <th scope="col">عملیات</th>
-                                                    </tr>
+                                                <tr>
+                                                    <th scope="col">نام و نام خانوادگی</th>
+                                                    <th scope="col">گروه</th>
+                                                    <th scope="col">شماره تماس</th>
+                                                    <th scope="col">کد ملی</th>
+                                                    <th scope="col">عملیات</th>
+                                                </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {% for student in students %}
-                                                        <tr>
-                                                            <td>{{ student.get_full_name }}</td>
-                                                            <td>{{ student.clas }}</td>
-                                                            <td>{{ student.mobile }}</td>
-                                                            <td>{{ student.username }}</td>
-                                                            <td>
-                                                                {% comment %} <button type="button"
+                                                {% for student in students %}
+                                                    <tr>
+                                                        <td>{{ student.get_full_name }}</td>
+                                                        <td>{{ student.clas }}</td>
+                                                        <td>{{ student.mobile }}</td>
+                                                        <td>{{ student.username }}</td>
+                                                        <td>
+                                                            {% comment %} <button type="button"
                                                                         class="btn btn-warning btn-sm"
                                                                         onclick="modal_url('/student/update/{{ student.id }}', 'update');"
                                                                         data-toggle="modal"
                                                                         data-target="#update_modal">ویرایش</button> {% endcomment %}
-                                                                <a href="{% url 'student-detail' student.id %}"
-                                                                   class="btn btn-outline-info btn-sm">اطلاعات کامل</a>
-                                                                <a href="{% url 'sdg-list' student.id %}"
-                                                                   class="btn btn-outline-warning btn-sm">مواردانضباطی</a>
-                                                                <a href="{% url 'grade-student-add' student.id %}"
-                                                                   class="btn btn-outline-secondary btn-sm">نمرات دروس ترم</a>
-                                                                   <a href="{% url 'student-term-karname' student.id %}"
-                                                                   class="btn btn-info btn-sm">کارنامه ترم</a>
-                                                                <a href="{% url 'student-update' student.id %}"
-                                                                   class="btn btn-outline-warning btn-sm">ویرایش</a>
-                                                            </td>
-                                                        </tr>
-                                                    {% endfor %}
+                                                            <a href="{% url 'student-detail' student.id %}"
+                                                               class="btn btn-outline-info btn-sm">اطلاعات کامل</a>
+                                                            <a href="{% url 'sdg-list' student.id %}"
+                                                               class="btn btn-outline-warning btn-sm">مواردانضباطی</a>
+                                                            <a href="{% url 'grade-student-add' student.id %}"
+                                                               class="btn btn-outline-secondary btn-sm">نمرات دروس
+                                                                ترم</a>
+                                                            <a href="{% url 'student-term-karname' student.id %}"
+                                                               class="btn btn-info btn-sm">کارنامه ترم</a>
+                                                            <a href="{% url 'student-update' student.id %}"
+                                                               class="btn btn-outline-warning btn-sm">ویرایش</a>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
                                                 </tbody>
                                             </table>
                                         </div>
@@ -136,33 +140,46 @@
                                         </div>
                                     {% endif %}
                                     <div class="row">
-                                        <nav aria-label="">
+                                        <nav aria-label="pagination">
                                             <ul class="pagination">
+
+                                                {# صفحه قبل #}
                                                 {% if page_obj.has_previous %}
-                                                    <li class="page-item">
-                                                        <a class="page-link"
-                                                           href="?page={{ page_obj.previous_page_number }}"
-                                                           tabindex="-1">قبلی</a>
+                                                    <li class="page-item active">
+                                                        <a class="page-link bg-warning"
+                                                           href="/m/student/?page={{ page_obj.previous_page_number }}{% if querystring %}&{{ querystring }}{% endif %}"
+                                                           aria-label="صفحه قبل">صفحه قبل</a>
                                                     </li>
                                                 {% else %}
                                                     <li class="page-item disabled">
-                                                        <a class="page-link" href="">صفحه قبل</a>
+                                                        <span class="page-link">صفحه قبل</span>
                                                     </li>
                                                 {% endif %}
-                                                <li class="page-item active">
-                                                    <a class="page-link" href="#">{{ page_obj.number }} <span class="sr-only">(صفحه فعلی)</span></a>
+
+                                                {# شماره صفحه فعلی #}
+                                                <li class="page-item active" aria-current="page">
+                                                    <span class="page-link">
+                                                      {{ page_obj.number }}
+                                                      <span class="sr-only">(صفحه فعلی)</span>
+                                                    </span>
                                                 </li>
+
+                                                {# صفحه بعد #}
                                                 {% if page_obj.has_next %}
-                                                    <li class="page-item">
-                                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">صفحه بعد</a>
+                                                    <li class="page-item active">
+                                                        <a class="page-link bg-success"
+                                                           href="/m/student/?page={{ page_obj.next_page_number }}{% if querystring %}&{{ querystring }}{% endif %}"
+                                                           aria-label="صفحه بعد">صفحه بعد</a>
                                                     </li>
                                                 {% else %}
                                                     <li class="page-item disabled">
-                                                        <a class="page-link" href="">صفحه بعد</a>
+                                                        <span class="page-link">صفحه بعد</span>
                                                     </li>
                                                 {% endif %}
+
                                             </ul>
                                         </nav>
+
                                     </div>
                                 </div>
                             </div>
@@ -180,17 +197,17 @@
     {% include 'base/detailModal.html' %}
 {% endblock content %}
 {% block moreScript %}
-    <script src="{% static 'plugins/jalaliDatepicker/kamadatepicker.min.js'%}"></script>
+    <script src="{% static 'plugins/jalaliDatepicker/kamadatepicker.min.js' %}"></script>
     <script>kamaDatepicker('id_register_date', {buttonsColor: "green", forceFarsiDigits: true});</script>
     <script>
-function modal_url(url, type) {
-    $.ajax({
-        url: url,
-        type: 'GET',
-        success: function (data) {
-            $("#"+ type +"_modal_body").html(data);
+        function modal_url(url, type) {
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (data) {
+                    $("#" + type + "_modal_body").html(data);
+                }
+            })
         }
-    })
-}
     </script>
 {% endblock moreScript %}

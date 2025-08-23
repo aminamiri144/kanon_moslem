@@ -110,6 +110,13 @@ class StudentListView(AminView, NoStudent, LoginRequiredMixin, ListView):
             option = self.kwargs['option']
             return {'option': option}
 
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        params = self.request.GET.copy()
+        params.pop('page', None)  # حذف page قبلی
+        ctx['querystring'] = params.urlencode()  # مثل: q=...&option=...
+        return ctx
+
 
 class StudentUpdateView(NoStudent, LoginRequiredMixin, UpdateView):
     model = Student

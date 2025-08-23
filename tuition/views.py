@@ -23,12 +23,12 @@ class TuitionMainView(AminView, ListView, LoginRequiredMixin, NoStudent):
         value = self.request.GET.get('q', '')
         option = self.request.GET.get('option', '')
         term = Term.objects.get(id=int(self.request.session['term_id']))
-        query = Q(**{f'{option}__icontains': value}) & Q(term=term)
+        query = Q(**{f'{option}__icontains': value}) & Q(term=term) & Q(**{f'student__is_active': True})
         if value:
             object_list = self.model.objects.filter(query)
             self.request.session['search'] = self.request.GET.get('q', '')
         else:
-            object_list = self.model.objects.filter(term=term)
+            object_list = self.model.objects.filter(Q(term=term) & Q(**{f'student__is_active': True}))
         self.request.session['last_url'] = self.request.get_full_path()
         return object_list
 
