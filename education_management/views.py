@@ -229,7 +229,7 @@ class GroupReportDetailView(NoStudent, LoginRequiredMixin, SuccessMessageMixin, 
 
 
 class GroupReportsListView(NoStudent, LoginRequiredMixin, ListView):
-    paginate_by = 10
+    paginate_by = 2
     model = GroupReport
     template_name = 'eval/group_reports_list.html'
 

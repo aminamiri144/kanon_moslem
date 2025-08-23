@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load pagination_tags %}
 {% load jformat %}
 {% block content %}
     {% include 'base/navigator.html' %}
@@ -140,46 +141,107 @@
                                         </div>
                                     {% endif %}
                                     <div class="row">
-                                        <nav aria-label="pagination">
+                                        <nav aria-label="">
                                             <ul class="pagination">
+                                                {% smart_pagination page_obj 2 1 as pages_to_show %}
 
-                                                {# صفحه قبل #}
                                                 {% if page_obj.has_previous %}
-                                                    <li class="page-item active">
-                                                        <a class="page-link bg-warning"
-                                                           href="/m/student/?page={{ page_obj.previous_page_number }}{% if querystring %}&{{ querystring }}{% endif %}"
-                                                           aria-label="صفحه قبل">صفحه قبل</a>
+                                                    <li class="page-item">
+                                                        <a class="page-link"
+                                                           href="{% page_url page_obj.previous_page_number %}">قبلی</a>
                                                     </li>
                                                 {% else %}
-                                                    <li class="page-item disabled">
-                                                        <span class="page-link">صفحه قبل</span>
+                                                    <li class="page-item disabled"><span class="page-link">قبلی</span>
                                                     </li>
                                                 {% endif %}
 
-                                                {# شماره صفحه فعلی #}
-                                                <li class="page-item active" aria-current="page">
-                                                    <span class="page-link">
-                                                      {{ page_obj.number }}
-                                                      <span class="sr-only">(صفحه فعلی)</span>
-                                                    </span>
-                                                </li>
+                                                {% for page in pages_to_show %}
+                                                    {% if page %}
+                                                        {% if page == page_obj.number %}
+                                                            <li class="page-item active"><span
+                                                                    class="page-link">{{ page }}</span></li>
+                                                        {% else %}
+                                                            <li class="page-item">
+                                                                <a class="page-link"
+                                                                   href="{% page_url page %}">{{ page }}</a>
+                                                            </li>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <li class="page-item disabled"><span class="page-link">…</span>
+                                                        </li>
+                                                    {% endif %}
+                                                {% endfor %}
 
-                                                {# صفحه بعد #}
                                                 {% if page_obj.has_next %}
-                                                    <li class="page-item active">
-                                                        <a class="page-link bg-success"
-                                                           href="/m/student/?page={{ page_obj.next_page_number }}{% if querystring %}&{{ querystring }}{% endif %}"
-                                                           aria-label="صفحه بعد">صفحه بعد</a>
+                                                    <li class="page-item">
+                                                        <a class="page-link"
+                                                           href="{% page_url page_obj.next_page_number %}">بعدی</a>
                                                     </li>
                                                 {% else %}
-                                                    <li class="page-item disabled">
-                                                        <span class="page-link">صفحه بعد</span>
+                                                    <li class="page-item disabled"><span class="page-link">بعدی</span>
                                                     </li>
                                                 {% endif %}
-
                                             </ul>
-                                        </nav>
 
+                                        </nav>
+                                        <div class="col-md-2">
+                                            <!-- فرم برای وارد کردن شماره صفحه -->
+                                            <form id="goToPageForm" method="get">
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control" name="page" id="pageInput"
+                                                           placeholder="شماره صفحه" min="1"
+                                                           max="{{ page_obj.paginator.num_pages }}">
+                                                    <button class="btn btn-sm btn-primary" type="submit">برو به صفحه
+                                                    </button>
+                                                </div>
+
+                                                {# پارامترهای جستجو را هم نگه دار #}
+                                                {% if request.GET.q %}
+                                                    <input type="hidden" name="q" value="{{ request.GET.q }}">
+                                                {% endif %}
+                                                {% if request.GET.option %}
+                                                    <input type="hidden" name="option" value="{{ request.GET.option }}">
+                                                {% endif %}
+                                                {% if request.GET.per_page %}
+                                                    <input type="hidden" name="per_page"
+                                                           value="{{ request.GET.per_page }}">
+                                                {% endif %}
+                                            </form>
+
+
+                                        </div>
+                                        <div class="col-md-3 ">
+                                            <form method="get" id="perPageForm" class="form-inline">
+                                                <label for="perPageSelect">تعداد در هر صفحه:</label>
+                                                <select name="per_page" id="perPageSelect" class="form-control"
+                                                        onchange="document.getElementById('perPageForm').submit();">
+                                                    <option value="10"
+                                                            {% if request.GET.per_page == '10' %}selected{% endif %}>10
+                                                    </option>
+                                                    <option value="25"
+                                                            {% if request.GET.per_page == '25' %}selected{% endif %}>25
+                                                    </option>
+                                                    <option value="50"
+                                                            {% if request.GET.per_page == '50' %}selected{% endif %}>50
+                                                    </option>
+                                                    <option value="100"
+                                                            {% if request.GET.per_page == '100' %}selected{% endif %}>
+                                                        100
+                                                    </option>
+                                                </select>
+
+                                                {# فیلترها و صفحه فعلی را نگه دار #}
+                                                {% if request.GET.q %}
+                                                    <input type="hidden" name="q" value="{{ request.GET.q }}">
+                                                {% endif %}
+                                                {% if request.GET.option %}
+                                                    <input type="hidden" name="option" value="{{ request.GET.option }}">
+                                                {% endif %}
+                                                
+                                            </form>
+
+
+                                        </div>
                                     </div>
                                 </div>
                             </div>

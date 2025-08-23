@@ -72,10 +72,14 @@ class TeacherDetailView(NoStudent, BaseDetailViewAmin):
 
 
 class StudentListView(AminView, NoStudent, LoginRequiredMixin, ListView):
-    paginate_by = 20
+    paginate_by = 1
     model = Student
     context_object_name = 'students'
     template_name = 'student/list.html'
+
+    def get_paginate_by(self, queryset):
+        per_page = self.request.GET.get('per_page')
+        return int(per_page) if per_page and per_page.isdigit() else 1  # مقدار پیش‌فرض ۱۰
 
     def get_queryset(self):
         value = self.request.GET.get('q', '')
