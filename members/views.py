@@ -18,6 +18,11 @@ class TeacherCreateView(NoStudent, BaseCreateViewAmin):
     DATE_FIELD_ID = 'id_birth_date'
     SUCCESS_URL = 'teacher-detail'
 
+    def form_valid(self, form):
+        form.instance.role = "teacher"
+        return super().form_valid(form)
+
+
 
 class StudentCreateView(NoStudent, BaseCreateViewAmin):
     model = Student

@@ -50,6 +50,12 @@ class StudyField(models.Model):
 class Member(AbstractUser):
     mobile_validator = UnicodeIranMobileValidator()
 
+    ROLE_CHOICES = (
+        ('manager', 'مدیر'),
+        ('teacher', 'سرگروه'),
+        ('student', 'متربی'),
+    )
+
     username = models.CharField(max_length=10, blank=True, verbose_name="کد ملی",
                                 unique=True,
                                 error_messages={
@@ -65,6 +71,8 @@ class Member(AbstractUser):
     address = models.CharField(max_length=250, blank=True, verbose_name="آدرس منزل")
 
     birth_date = jmodels.jDateField(verbose_name="تاریخ تولد", blank=True, null=True)
+
+    role = models.CharField(max_length=16, choices=ROLE_CHOICES, default='student', verbose_name='نقش کاربر')
 
     @property
     def jd_birth_date(self):

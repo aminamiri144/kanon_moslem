@@ -98,7 +98,7 @@ class SelectedLesson(models.Model):
     grade = models.CharField(choices=GradeChoice, default='n', max_length=10, blank=True, null=True,
                              verbose_name="نمره‌")
     description = models.CharField(blank=True, null=True, verbose_name="توضیحات", default="توضیحات", max_length=255)
-
+    manager_confirm = models.BooleanField(default=False, verbose_name="تاییدیه مدیریت")
     unique_together = ('student', 'lesson', 'term',)
 
     def __str__(self):
