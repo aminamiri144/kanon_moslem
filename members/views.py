@@ -35,6 +35,16 @@ class StudentCreateView(NoStudent, BaseCreateViewAmin):
     SUCCESS_URL = 'student-detail'
 
 
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        if not self.object.pk or not self.object.has_usable_password():
+            self.object.set_password("12345")
+        self.object.role = 'student'
+        self.object.save()
+        form.save_m2m()
+        return super().form_valid(form)
+
+
 class StudentDetailView(NoStudent, BaseDetailViewAmin):
     PAGE_TITLE = 'مشخصات متربی'
     PAGE_DESCRIPTION = ''
