@@ -248,6 +248,7 @@ def resend_sms_tuition(request, pk, *args, **kwargs):
 def sms_history_modal(request, pk, *args, **kwargs):
     """نمایش تاریخچه پیامک های ارسالی برای شهریه"""
     from sms_management.models import SendedSMS
+    from django.utils import timezone
     
     try:
         tuition = Tuition.objects.get(id=pk)
@@ -259,10 +260,14 @@ def sms_history_modal(request, pk, *args, **kwargs):
             tuition_term=tuition.tuition_term
         ).order_by('-send_date')
         
+        # اضافه کردن اطلاعات زمان برای دیباگ
+        current_time = timezone.now()
+        current_time_local = timezone.localtime(current_time)
+        
         context = {
             'student': student,
             'tuition': tuition,
-            'sent_sms': sent_sms
+            'sent_sms': sent_sms,
         }
         
         return render(request, 'tuition/sms_history_modal.html', context)

@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django_jalali.db import models as jmodels
 
 from members.models import Student
@@ -42,7 +43,7 @@ class SendedSMS(models.Model):
     pattern_id = models.IntegerField(verbose_name="کد پترن خدماتی", blank=True, null=True)
     last_status = models.CharField(max_length=100, verbose_name="پیغام آخرین وضعیت ارسال")
     params = models.CharField(max_length=255, null=True, blank=True)
-    send_date = jmodels.jDateTimeField(auto_now_add=True, verbose_name='زمان ارسال')
+    send_date = models.DateTimeField(default=timezone.now, verbose_name='زمان ارسال')
     student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name="متربی")
     recId = models.CharField(verbose_name='شناسه ارسالی پیامک', default='-1', max_length=64)
     tuition_term = models.ForeignKey('tuition.TuitionTerm', on_delete=models.CASCADE, verbose_name="شهریه ترم", null=True, blank=True)
@@ -53,9 +54,20 @@ class SendedSMS(models.Model):
     def jd_send_date(self):
         """تاریخ ارسال به صورت شمسی"""
         try:
-            return self.send_date.strftime('%Y/%m/%d %H:%M')
-        except:
-            return 'ثبت نشده!'
+            import jdatetime
+            # تبدیل زمان UTC به زمان محلی تهران
+            if timezone.is_aware(self.send_date):
+                # اگر زمان timezone-aware است، آن را به زمان محلی تبدیل کن
+                local_time = timezone.localtime(self.send_date, timezone.get_current_timezone())
+            else:
+                # اگر زمان naive است، مستقیماً استفاده کن
+                local_time = self.send_date
+            
+            # تبدیل تاریخ میلادی به شمسی
+            jalali_date = jdatetime.datetime.fromgregorian(datetime=local_time)
+            return jalali_date.strftime('%Y/%m/%d %H:%M')
+        except Exception as e:
+            return f'خطا در تبدیل تاریخ: {str(e)}'
 
     @property
     def status_display(self):
@@ -93,6 +105,12 @@ class SendedSMS(models.Model):
         """آیا ارسال با خطا مواجه شده است؟"""
         error_codes = ['-10', '-7', '-6', '-5', '-4', '-3', '-2', '-1', '0', '2', '6', '7', '10', '11', '12', '16', '17', '35']
         return self.last_status in error_codes
+
+    def save(self, *args, **kwargs):
+        """Override save to ensure timezone-aware datetime"""
+        if not self.pk and not self.send_date:
+            self.send_date = timezone.now()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"به: {self.student} | شماره: {self.to_number} | وضعیت: {self.last_status} | توضیحات: {self.title}"
