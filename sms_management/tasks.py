@@ -13,7 +13,7 @@ from tuition.views import update_student_debt
 from tuition.models import PayDay
 
 
-def send_sms_reminder(student, debt_value, payday):
+def send_sms_reminder(student, debt_value, payday=None, tuition=None):
     bodyID = int(os.getenv("BODY_ID_PAYDAY_REMINDER", '245523'))
     fullname = student.get_full_name()
     args = [fullname, debt_value]
@@ -32,19 +32,47 @@ def send_sms_reminder(student, debt_value, payday):
             res = sms_response.json()
             ss = SendedSMS()
             ss.student = student
-            ss.last_status = res['status']
             ss.to_number = phone_number
-            try:
-                ss.recId = res['recId']
-            except Exception as e:
-                log('SYSTEM', f'{e}', 'recId not exist')
             ss.pattern_id = bodyID
-            ss.title = f'اطلاع رسانی وعده پرداخت {fullname} مقدار {debt_value}'
-            ss.save()
+            ss.title = f'مبلغ بدهی {debt_value}'
+            
+            # تعیین وضعیت بر اساس پاسخ API
+            if 'recId' in res and res['recId']:
+                try:
+                    rec_id = str(res['recId'])
+                    # اگر recId یک عدد بیش از 15 رقم باشد، ارسال موفق است
+                    if rec_id.isdigit() and len(rec_id) > 15:
+                        ss.last_status = 'success'
+                        ss.recId = rec_id
+                    else:
+                        # در غیر این صورت، recId همان کد خطا است
+                        ss.last_status = rec_id
+                        ss.recId = rec_id
+                except Exception as e:
+                    log('SYSTEM', f'{e}', 'recId processing error')
+                    ss.last_status = '0'  # خطای نامشخص
+                    ss.recId = '-1'
+            else:
+                # اگر recId وجود نداشته باشد، از status استفاده کن
+                ss.last_status = str(res.get('status', '0'))
+                ss.recId = '-1'
+            
+            # اضافه کردن اطلاعات شهریه ترم
+            if hasattr(payday, 'tuition') and payday.tuition:
+                ss.tuition_term = payday.tuition.tuition_term
+                ss.term = payday.tuition.term
 
-            payday.is_send_sms = True
-            payday.sms = ss
-            payday.save()
+            if tuition:
+                ss.tuition_term = tuition.tuition_term
+                ss.term = tuition.term 
+
+            ss.save()
+            
+            # فقط در صورت ارسال موفق، وضعیت payday را تغییر بده
+            if payday:
+                payday.is_send_sms = True
+                payday.sms = ss
+                payday.save()
             return True
     except Exception as e:
         log('SYSTEM', f'{e}', 'send_sms_reminder')

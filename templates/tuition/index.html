@@ -145,6 +145,11 @@
                                                                     class="btn btn-success btn-sm">افزودن موعد پرداخت
                                                                 </button>
                                                             {% endif %}
+                                                            <a href="{% url 'resend-sms-tuition' tuition.id %}"
+                                                               class="btn btn-info btn-sm">ارسال دستی پیامک</a>
+                                                            <button onclick="modal_url('/tuition/sms-history/{{ tuition.id }}', 'detail');"
+                                                                    data-toggle="modal" data-target="#detail_modal"
+                                                                    class="btn btn-warning btn-sm">پیامک های ارسالی</button>
                                                         </td>
                                                     </tr>
                                                 {% endfor %}

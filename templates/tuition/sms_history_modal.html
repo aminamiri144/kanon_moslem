@@ -1,0 +1,67 @@
+{% load static %}
+{% load humanize %}
+
+<div class="modal-header">
+    <h5 class="modal-title">تاریخچه پیامک های ارسالی</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="modal-body">
+    {% if error %}
+        <div class="alert alert-danger">
+            {{ error }}
+        </div>
+    {% else %}
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <strong>متربی:</strong> {{ student.get_full_name }}
+            </div>
+            <div class="col-md-6">
+                <strong>شهریه ترم:</strong> {{ tuition.tuition_term.title }}
+            </div>
+        </div>
+        
+        {% if sent_sms %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>تاریخ ارسال</th>
+                            <th>شماره مقصد</th>
+                            <th>وضعیت</th>
+                            <th>عنوان پیامک</th>
+                            </tr>
+                    </thead>
+                    <tbody>
+                        {% for sms in sent_sms %}
+                            <tr>
+                                <td>{{ sms.jd_send_date }}</td>
+                                <td>{{ sms.to_number }}</td>
+                                 <td>
+                                     {% if sms.is_success %}
+                                         <span class="badge badge-success">{{ sms.status_display }}</span>
+                                     {% elif sms.is_error %}
+                                         <span class="badge badge-danger">{{ sms.status_display }}</span>
+                                     {% else %}
+                                         <span class="badge badge-warning">{{ sms.status_display }}</span>
+                                     {% endif %}
+                                 </td>
+                                <td>{{ sms.title }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                هیچ پیامکی برای این شهریه ارسال نشده است.
+            </div>
+        {% endif %}
+    {% endif %}
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
+</div>

@@ -191,3 +191,85 @@ def update_students_debt_view(request):
     messages.add_message(request, messages.SUCCESS,
                          f'عملیات بروز رسانی شروع شد لطفا 5 دقیقه صبر کنید و مجددا صفحه را رفرش کنید.')
     return redirect(request.session['last_url'])
+
+
+
+def resend_sms_tuition(request, pk, *args, **kwargs):
+    """ارسال مجدد پیامک برای شهریه ترم"""
+    from sms_management.tasks import send_sms_reminder
+    from django.db.models import Sum
+    
+    try:
+        tuition = Tuition.objects.get(id=pk)
+        student = tuition.student
+        
+        # محاسبه مانده حساب متربی
+        acc_balance = update_student_debt(student)
+        
+        # محاسبه مجموع موعدهای پرداخت بعدی
+        today = jdatetime.datetime.now().date()
+        next_paydays_date = PayDay.objects.filter(
+            pay_date__gte=today, 
+            is_send_sms=False,
+            tuition=tuition
+        )
+        
+        total_next_debts = next_paydays_date.aggregate(total_next_debts=Sum('price'))['total_next_debts']
+        if total_next_debts is None:
+            total_next_debts = 0
+            
+        # مقدار بدهی
+        debt = acc_balance - total_next_debts
+        
+        if debt > 0:
+            debt_value = "{:,}".format(debt)
+            debt_value = f"{debt_value} تومان"
+                
+            # ارسال پیامک
+            if send_sms_reminder(student, debt_value, tuition=tuition):
+                messages.add_message(request, messages.SUCCESS, 
+                                   f'پیامک برای {student.get_full_name()} با موفقیت ارسال شد.')
+            else:
+                messages.add_message(request, messages.ERROR, 
+                                   f'خطا در ارسال پیامک برای {student.get_full_name()}.')
+        else:
+            messages.add_message(request, messages.WARNING, 
+                               f'متربی {student.get_full_name()} بدهی ندارد.')
+            
+    except Tuition.DoesNotExist:
+        messages.add_message(request, messages.ERROR, 'شهریه مورد نظر یافت نشد.')
+    except Exception as e:
+        messages.add_message(request, messages.ERROR, f'خطا در ارسال پیامک: {str(e)}')
+    
+    previous_url = request.META.get('HTTP_REFERER')
+    return redirect(previous_url)
+
+
+def sms_history_modal(request, pk, *args, **kwargs):
+    """نمایش تاریخچه پیامک های ارسالی برای شهریه"""
+    from sms_management.models import SendedSMS
+    
+    try:
+        tuition = Tuition.objects.get(id=pk)
+        student = tuition.student
+        
+        # دریافت پیامک های ارسالی برای این شهریه ترم
+        sent_sms = SendedSMS.objects.filter(
+            student=student,
+            tuition_term=tuition.tuition_term
+        ).order_by('-send_date')
+        
+        context = {
+            'student': student,
+            'tuition': tuition,
+            'sent_sms': sent_sms
+        }
+        
+        return render(request, 'tuition/sms_history_modal.html', context)
+        
+    except Tuition.DoesNotExist:
+        return render(request, 'tuition/sms_history_modal.html', 
+                     {'error': 'شهریه مورد نظر یافت نشد.'})
+    except Exception as e:
+        return render(request, 'tuition/sms_history_modal.html', 
+                     {'error': f'خطا در دریافت اطلاعات: {str(e)}'})
