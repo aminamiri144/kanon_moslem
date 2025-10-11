@@ -1,0 +1,392 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    {% include 'base/navigator.html' %}
+    {% include 'base/aside.html' %}
+    <main role="main" class="main-content">
+        <div class="container-fluid">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show"
+                         role="alert">
+                        {{ message|safe }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <div class="row justify-content-center">
+                <div class="col-12 col-xl-10">
+                    <!-- Page Header -->
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap">
+                            <div class="mb-3 mb-md-0">
+                                <h2 class="mb-1 page-title">
+                                    <i class="fe fe-user text-primary"></i>
+                                    مشخصات متربی
+                                </h2>
+                                <p class="text-muted mb-0">
+                                    <span class="badge badge-lg badge-primary">{{ student.get_full_name }}</span>
+                                    <span class="badge badge-lg badge-info mr-2">{{ student.clas }}</span>
+                                </p>
+                            </div>
+                            <div>
+                                <a href="{% url 'student-update' student.pk %}" class="btn btn-warning mr-2">
+                                    <i class="fe fe-edit"></i>
+                                    ویرایش اطلاعات
+                                </a>
+                                <a href="{% url 'student-view' %}" class="btn btn-outline-secondary">
+                                    <i class="fe fe-arrow-right ml-2"></i>
+                                    بازگشت به لیست
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- اطلاعات شخصی -->
+                        <div class="col-12 col-lg-6 mb-4">
+                            <div class="card shadow-sm border-0 h-100">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0">
+                                        <i class="fe fe-user"></i>
+                                        اطلاعات شخصی
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-3">
+                                        <div class="col-5">
+                                            <strong class="text-muted">
+                                                <i class="fe fe-user text-primary"></i>
+                                                نام:
+                                            </strong>
+                                        </div>
+                                        <div class="col-7">
+                                            <span class="text-dark">{{ student.first_name|default:"-" }}</span>
+                                        </div>
+                                    </div>
+                                    <hr class="my-2">
+
+                                    <div class="row mb-3">
+                                        <div class="col-5">
+                                            <strong class="text-muted">
+                                                <i class="fe fe-user text-primary"></i>
+                                                نام خانوادگی:
+                                            </strong>
+                                        </div>
+                                        <div class="col-7">
+                                            <span class="text-dark">{{ student.last_name|default:"-" }}</span>
+                                        </div>
+                                    </div>
+                                    <hr class="my-2">
+
+                                    <div class="row mb-3">
+                                        <div class="col-5">
+                                            <strong class="text-muted">
+                                                <i class="fe fe-credit-card text-primary"></i>
+                                                کد ملی:
+                                            </strong>
+                                        </div>
+                                        <div class="col-7">
+                                            <span class="badge badge-soft-primary p-2">{{ student.username|default:"-" }}</span>
+                                        </div>
+                                    </div>
+                                    <hr class="my-2">
+
+                                    <div class="row mb-3">
+                                        <div class="col-5">
+                                            <strong class="text-muted">
+                                                <i class="fe fe-calendar text-primary"></i>
+                                                تاریخ تولد:
+                                            </strong>
+                                        </div>
+                                        <div class="col-7">
+                                            <span class="text-dark">{{ student.jd_birth_date|default:"-" }}</span>
+                                        </div>
+                                    </div>
+                                    <hr class="my-2">
+
+                                    <div class="row mb-0">
+                                        <div class="col-5">
+                                            <strong class="text-muted">
+                                                <i class="fe fe-users text-primary"></i>
+                                                گروه:
+                                            </strong>
+                                        </div>
+                                        <div class="col-7">
+                                            <span class="badge badge-info p-2">{{ student.clas|default:"-" }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- اطلاعات تماس -->
+                        <div class="col-12 col-lg-6 mb-4">
+                            <div class="card shadow-sm border-0 h-100">
+                                <div class="card-header bg-success text-white">
+                                    <h5 class="mb-0">
+                                        <i class="fe fe-phone"></i>
+                                        اطلاعات تماس
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-3">
+                                        <div class="col-5">
+                                            <strong class="text-muted">
+                                                <i class="fe fe-smartphone text-success"></i>
+                                                موبایل:
+                                            </strong>
+                                        </div>
+                                        <div class="col-7">
+                                            <a href="tel:{{ student.mobile }}" class="text-success">
+                                                {{ student.mobile|default:"-" }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <hr class="my-2">
+
+                                    <div class="row mb-3">
+                                        <div class="col-5">
+                                            <strong class="text-muted">
+                                                <i class="fe fe-phone text-success"></i>
+                                                تلفن منزل:
+                                            </strong>
+                                        </div>
+                                        <div class="col-7">
+                                            <a href="tel:{{ student.home_phone }}" class="text-success">
+                                                {{ student.home_phone|default:"-" }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <hr class="my-2">
+
+                                    <div class="row mb-3">
+                                        <div class="col-5">
+                                            <strong class="text-muted">
+                                                <i class="fe fe-smartphone text-success"></i>
+                                                موبایل پدر:
+                                            </strong>
+                                        </div>
+                                        <div class="col-7">
+                                            <a href="tel:{{ student.father_phone }}" class="text-success">
+                                                {{ student.father_phone|default:"-" }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <hr class="my-2">
+
+                                    <div class="row mb-3">
+                                        <div class="col-5">
+                                            <strong class="text-muted">
+                                                <i class="fe fe-smartphone text-success"></i>
+                                                موبایل مادر:
+                                            </strong>
+                                        </div>
+                                        <div class="col-7">
+                                            <a href="tel:{{ student.mather_phone }}" class="text-success">
+                                                {{ student.mather_phone|default:"-" }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <hr class="my-2">
+
+                                    <div class="row mb-0">
+                                        <div class="col-12">
+                                            <strong class="text-muted">
+                                                <i class="fe fe-map-pin text-success"></i>
+                                                آدرس:
+                                            </strong>
+                                            <p class="mt-2 mb-0 text-dark">{{ student.address|default:"-" }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- اطلاعات خانوادگی و تحصیلی -->
+                        <div class="col-12 mb-4">
+                            <div class="card shadow-sm border-0">
+                                <div class="card-header bg-info text-white">
+                                    <h5 class="mb-0">
+                                        <i class="fe fe-book"></i>
+                                        اطلاعات خانوادگی و تحصیلی
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-12 col-md-4 mb-3 mb-md-0">
+                                            <div class="border-right pr-md-3">
+                                                <strong class="text-muted">
+                                                    <i class="fe fe-user text-info"></i>
+                                                    نام پدر:
+                                                </strong>
+                                                <p class="mt-2 mb-0 text-dark">{{ student.father_name|default:"-" }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-4 mb-3 mb-md-0">
+                                            <div class="border-right pr-md-3">
+                                                <strong class="text-muted">
+                                                    <i class="fe fe-user text-info"></i>
+                                                    نام مادر:
+                                                </strong>
+                                                <p class="mt-2 mb-0 text-dark">{{ student.mather_name|default:"-" }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-4">
+                                            <strong class="text-muted">
+                                                <i class="fe fe-book text-info"></i>
+                                                نام مدرسه:
+                                            </strong>
+                                            <p class="mt-2 mb-0 text-dark">{{ student.school_name|default:"-" }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- اطلاعات مالی و سیستمی -->
+                        <div class="col-12 mb-4">
+                            <div class="card shadow-sm border-0">
+                                <div class="card-header bg-warning text-dark">
+                                    <h5 class="mb-0">
+                                        <i class="fe fe-dollar-sign"></i>
+                                        اطلاعات مالی و سیستمی
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-12 col-md-4 mb-3 mb-md-0">
+                                            <div class="border-right pr-md-3">
+                                                <strong class="text-muted">
+                                                    <i class="fe fe-dollar-sign text-warning"></i>
+                                                    مانده حساب:
+                                                </strong>
+                                                <p class="mt-2 mb-0">
+                                                    <span class="badge {% if student.account_balance > 0 %}badge-danger{% elif student.account_balance < 0 %}badge-success{% else %}badge-info{% endif %} p-2 h6 mb-0">
+                                                        {{ student.account_balance_view }}
+                                                    </span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-4 mb-3 mb-md-0">
+                                            <div class="border-right pr-md-3">
+                                                <strong class="text-muted">
+                                                    <i class="fe fe-calendar text-warning"></i>
+                                                    تاریخ ثبت نام:
+                                                </strong>
+                                                <p class="mt-2 mb-0 text-dark h6">{{ student.jd_register_date|default:"-" }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-4">
+                                            <strong class="text-muted">
+                                                <i class="fe fe-toggle-right text-warning"></i>
+                                                وضعیت:
+                                            </strong>
+                                            <p class="mt-2 mb-0">
+                                                {% if student.is_active %}
+                                                    <span class="badge badge-success p-2 h6 mb-0">
+                                                        <i class="fe fe-check-circle"></i>
+                                                        فعال
+                                                    </span>
+                                                {% else %}
+                                                    <span class="badge badge-danger p-2 h6 mb-0">
+                                                        <i class="fe fe-x-circle"></i>
+                                                        غیرفعال
+                                                    </span>
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- دکمه‌های عملیات -->
+                        <div class="col-12">
+                            <div class="card shadow-sm border-0 bg-light">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                        <!-- <div class="mb-2 mb-md-0">
+                                            <a href="{% url 'payments-list' student.pk %}" class="btn btn-success mr-2 mb-2">
+                                                <i class="fe fe-list"></i>
+                                                لیست پرداخت‌ها
+                                            </a>
+                                            <a href="{% url 'add-payment' student.pk %}" class="btn btn-primary mr-2 mb-2">
+                                                <i class="fe fe-plus"></i>
+                                                ثبت پرداخت جدید
+                                            </a>
+                                        </div> -->
+                                        <div>
+                                            <a href="{% url 'student-update' student.pk %}" class="btn btn-warning mb-2">
+                                                <i class="fe fe-edit"></i>
+                                                ویرایش اطلاعات
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock content %}
+
+{% block moreScript %}
+    <style>
+        .card {
+            transition: all 0.3s ease;
+            overflow: visible !important;
+            font-size: 1rem !important;
+        }
+        .card-body {
+            overflow: visible !important;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        .card-header {
+            border-radius: 0.5rem 0.5rem 0 0 !important;
+            padding: 1rem 1.5rem;
+        }
+        .badge-lg {
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+        }
+        .badge-soft-primary {
+            background-color: rgba(78, 115, 223, 0.1);
+            color: #4e73df;
+            font-weight: 600;
+        }
+        hr {
+            border-top: 1px solid rgba(0,0,0,.05);
+        }
+        .row .col-md-4 .border-right {
+            border-right: 1px solid rgba(0,0,0,.1) !important;
+        }
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 1.5rem;
+            }
+            .card-body {
+                padding: 1rem;
+            }
+            .row .col-md-4 .border-right {
+                border-right: none !important;
+                border-bottom: 1px solid rgba(0,0,0,.1);
+                padding-bottom: 1rem;
+                margin-bottom: 1rem;
+            }
+            .row .col-md-4:last-child .border-right {
+                border-bottom: none;
+                padding-bottom: 0;
+                margin-bottom: 0;
+            }
+        }
+    </style>
+{% endblock moreScript %}
+

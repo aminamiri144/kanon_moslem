@@ -14,4 +14,9 @@ urlpatterns = [
     path('sms-history/<int:pk>', sms_history_modal, name='sms-history-tuition'),
     path('generate/', TuitionTermGenerate.as_view(), name='generate-term-tuitions'),
     path('usd/', update_students_debt_view, name='update-students-debts'),
+    
+    # Student Financial Status - فقط برای متربیان
+    path('my-financial/', StudentFinancialStatusView.as_view(), name='student-financial'),
+    path('api/my-status/', student_financial_status_api, name='student-financial-status-api'),
+    path('api/my-payments/', student_payments_list_api, name='student-payments-list-api'),
 ]

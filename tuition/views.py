@@ -4,6 +4,8 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.generic import View, ListView, CreateView, UpdateView
 from django.contrib import messages
+from django.http import JsonResponse
+from django.core.paginator import Paginator
 from kanon_moslem.aminBaseViews import AminView, BaseCreateViewAmin
 from kanon_moslem.views import NoStudent, LoginRequiredMixin, SuccessMessageMixin, NoTeacher
 from sms_management.sms import SMS
@@ -278,3 +280,127 @@ def sms_history_modal(request, pk, *args, **kwargs):
     except Exception as e:
         return render(request, 'tuition/sms_history_modal.html', 
                      {'error': f'خطا در دریافت اطلاعات: {str(e)}'})
+
+
+# ==================== Student Financial Status API ====================
+
+class StudentFinancialStatusView(LoginRequiredMixin, View):
+    """نمایش صفحه وضعیت مالی برای متربیان"""
+    
+    def get(self, request, *args, **kwargs):
+        # بررسی دسترسی - فقط متربیان
+        if not hasattr(request.user, 'student'):
+            messages.add_message(request, messages.WARNING, 'فقط متربیان به این صفحه دسترسی دارند')
+            return redirect('panel')
+        
+        context = {
+            'page_title': 'وضعیت مالی من',
+            'page_description': 'مشاهده بدهی/طلب و پرداخت‌های انجام شده',
+            'term': self.request.session['term_title']
+        }
+        return render(request, 'tuition/student_financial.html', context)
+
+
+def student_financial_status_api(request):
+    """API برای دریافت وضعیت مالی فعلی متربی"""
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'لطفا وارد حساب کاربری خود شوید'}, status=401)
+    
+    if not hasattr(request.user, 'student'):
+        return JsonResponse({'error': 'دسترسی غیرمجاز'}, status=403)
+    
+    try:
+        student = request.user.student
+        
+        # بروزرسانی بدهی دانش‌آموز
+        account_balance = update_student_debt(student)
+        
+        # تشخیص بدهی یا طلب
+        status_type = 'بدهکار' if account_balance > 0 else ('بستانکار' if account_balance < 0 else 'تسویه شده')
+        amount = abs(account_balance)
+        amount_formatted = "{:,}".format(amount)
+        
+        # محاسبه مجموع کل شهریه‌ها
+        tuition_all = TuitionTerm.objects.filter(groups=student.clas)
+        total_debt = tuition_all.aggregate(total_debt=Sum('price'))['total_debt'] or 0
+        
+        # محاسبه مجموع کل پرداخت‌ها
+        payments = Payment.objects.filter(student=student)
+        total_pay = payments.aggregate(total_pay=Sum('amount'))['total_pay'] or 0
+        
+        # تعداد پرداخت‌ها
+        payments_count = payments.count()
+        
+        data = {
+            'status': 'success',
+            'account_balance': account_balance,
+            'amount': amount,
+            'amount_formatted': amount_formatted,
+            'status_type': status_type,
+            'total_debt': total_debt,
+            'total_debt_formatted': "{:,}".format(total_debt),
+            'total_pay': total_pay,
+            'total_pay_formatted': "{:,}".format(total_pay),
+            'payments_count': payments_count,
+            'student_name': student.get_full_name(),
+        }
+        
+        return JsonResponse(data)
+        
+    except Exception as e:
+        return JsonResponse({'error': f'خطا در دریافت اطلاعات: {str(e)}'}, status=500)
+
+
+def student_payments_list_api(request):
+    """API برای دریافت لیست پرداخت‌های متربی با صفحه‌بندی"""
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'لطفا وارد حساب کاربری خود شوید'}, status=401)
+    
+    if not hasattr(request.user, 'student'):
+        return JsonResponse({'error': 'دسترسی غیرمجاز'}, status=403)
+    
+    try:
+        student = request.user.student
+        
+        # دریافت شماره صفحه از query parameter
+        page_number = request.GET.get('page', 1)
+        per_page = request.GET.get('per_page', 10)
+        
+        # دریافت تمام پرداخت‌های دانش‌آموز
+        payments = Payment.objects.filter(student=student).order_by('-pay_date', '-id')
+        
+        # صفحه‌بندی
+        paginator = Paginator(payments, per_page)
+        page_obj = paginator.get_page(page_number)
+        
+        # آماده‌سازی داده‌های پرداخت‌ها
+        payments_data = []
+        for payment in page_obj:
+            payments_data.append({
+                'id': payment.id,
+                'amount': payment.amount,
+                'amount_formatted': payment.amount_view,
+                'pay_date': payment.jd_pay_date,
+                'pay_type': payment.get_pay_type_display(),
+                'term': str(payment.term),
+                'description': payment.desc or 'ندارد'
+            })
+        
+        data = {
+            'status': 'success',
+            'payments': payments_data,
+            'pagination': {
+                'current_page': page_obj.number,
+                'total_pages': paginator.num_pages,
+                'total_count': paginator.count,
+                'has_next': page_obj.has_next(),
+                'has_previous': page_obj.has_previous(),
+                'next_page': page_obj.next_page_number() if page_obj.has_next() else None,
+                'previous_page': page_obj.previous_page_number() if page_obj.has_previous() else None,
+            }
+        }
+        
+        return JsonResponse(data)
+        
+    except Exception as e:
+        return JsonResponse({'error': f'خطا در دریافت اطلاعات: {str(e)}'}, status=500)
