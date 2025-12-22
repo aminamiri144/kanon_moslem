@@ -21,18 +21,64 @@ class TuitionMainView(AminView, ListView, LoginRequiredMixin, NoStudent):
     context_object_name = 'tuitions'
     template_name = "tuition/index.html"
 
+    def get_paginate_by(self, queryset):
+        """تعیین تعداد آیتم‌های هر صفحه"""
+        per_page = self.request.GET.get('per_page')
+        if per_page and per_page.isdigit():
+            return int(per_page)
+        return self.paginate_by
+
     def get_queryset(self):
-        value = self.request.GET.get('q', '')
-        option = self.request.GET.get('option', '')
         term = Term.objects.get(id=int(self.request.session['term_id']))
-        query = Q(**{f'{option}__icontains': value}) & Q(term=term) & Q(**{f'student__is_active': True})
-        if value:
-            object_list = self.model.objects.filter(query)
-            self.request.session['search'] = self.request.GET.get('q', '')
+        query = Q(term=term) & Q(student__is_active=True)
+        
+        # جستجو بر اساس نام و نام خانوادگی
+        search_value = self.request.GET.get('q', '').strip()
+        if search_value:
+            query &= (Q(student__first_name__icontains=search_value) | Q(student__last_name__icontains=search_value))
+            self.request.session['search'] = search_value
+        
+        # فیلتر بر اساس نام گروه
+        class_name = self.request.GET.get('class_name', '').strip()
+        if class_name:
+            query &= Q(student__clas__id=class_name)
+        
+        # فیلتر بر اساس دوره
+        dore = self.request.GET.get('dore', '').strip()
+        if dore:
+            query &= Q(student__clas__dore=dore)
+        
+        object_list = self.model.objects.filter(query)
+        
+        # مرتب‌سازی بر اساس وضعیت
+        sort_by = self.request.GET.get('sort_by', '').strip()
+        if sort_by == 'account_balance_desc':
+            # بدهکار (زیاد به کم)
+            object_list = object_list.order_by('-student__account_balance', 'student__last_name')
+        elif sort_by == 'account_balance_asc':
+            # بستانکار (زیاد به کم - منفی به صفر)
+            object_list = object_list.order_by('student__account_balance', 'student__last_name')
+        elif sort_by == 'account_balance_zero':
+            # حساب صاف اول
+            object_list = object_list.order_by('student__account_balance', 'student__last_name')
+        elif sort_by == 'name_asc':
+            # نام الفبایی
+            object_list = object_list.order_by('student__last_name', 'student__first_name')
+        elif sort_by == 'name_desc':
+            # نام معکوس
+            object_list = object_list.order_by('-student__last_name', '-student__first_name')
         else:
-            object_list = self.model.objects.filter(Q(term=term) & Q(**{f'student__is_active': True}))
+            # پیش‌فرض: بدهکار اول
+            object_list = object_list.order_by('-student__account_balance', 'student__last_name')
+        
         self.request.session['last_url'] = self.request.get_full_path()
         return object_list
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        from members.models import Class
+        context['classes'] = Class.objects.all().order_by('name')
+        return context
 
     def get_initial(self):
         """
@@ -47,10 +93,19 @@ class PaymentsOfStudentListView(View, NoStudent, LoginRequiredMixin):
 
     def get(self, request, *args, **kwargs):
         student = Student.objects.get(id=self.kwargs['pk'])
-        payments = Payment.objects.filter(student=student)
+        payments = Payment.objects.filter(student=student).order_by('-pay_date', '-id')
+        # حفظ last_url قبلی برای بازگشت
+        previous_url = request.session.get('last_url', request.META.get('HTTP_REFERER', '/tuition/list/'))
+        # ذخیره URL فعلی برای استفاده در صورت نیاز
+        request.session['payments_list_url'] = request.get_full_path()
 
         return render(self.request, 'tuition/list.html',
-                      context={'payments': payments, 'student': student.get_full_name()})
+                      context={
+                          'payments': payments, 
+                          'student': student.get_full_name(), 
+                          'student_obj': student,
+                          'previous_url': previous_url
+                      })
 
 
 class CreatePaymentView(LoginRequiredMixin, NoStudent, SuccessMessageMixin, CreateView):
@@ -81,6 +136,45 @@ class CreatePaymentView(LoginRequiredMixin, NoStudent, SuccessMessageMixin, Crea
 
     def get_success_url(self):
         return self.request.session['last_url']
+
+
+class UpdatePaymentView(LoginRequiredMixin, NoStudent, SuccessMessageMixin, UpdateView):
+    model = Payment
+    template_name = "tuition/create_modal.html"
+    form_class = PaymentCreateForm
+    success_message = "پرداخت با موفقیت ویرایش شد."
+
+    def get_success_url(self):
+        return self.request.session.get('payments_list_url', self.request.session.get('last_url', '/'))
+
+
+class DeletePaymentView(LoginRequiredMixin, NoStudent, View):
+    """حذف پرداخت"""
+    
+    def get(self, request, *args, **kwargs):
+        """نمایش فرم تایید حذف"""
+        try:
+            payment = Payment.objects.get(pk=self.kwargs['pk'])
+            return render(request, 'tuition/payment_delete.html', {'payment': payment})
+        except Payment.DoesNotExist:
+            messages.add_message(request, messages.ERROR, 'پرداخت مورد نظر یافت نشد.')
+            return redirect('tuition-list')
+    
+    def post(self, request, *args, **kwargs):
+        """حذف پرداخت"""
+        try:
+            payment = Payment.objects.get(pk=self.kwargs['pk'])
+            student_id = payment.student.id
+            payment.delete()
+            # بروزرسانی بدهی متربی
+            from tuition.views import update_student_debt
+            update_student_debt(payment.student)
+            messages.add_message(request, messages.SUCCESS, 'پرداخت با موفقیت حذف شد.')
+            # بازگشت به لیست پرداخت‌های همان متربی
+            return redirect('payments-list', pk=student_id)
+        except Payment.DoesNotExist:
+            messages.add_message(request, messages.ERROR, 'پرداخت مورد نظر یافت نشد.')
+            return redirect('tuition-list')
 
 
 class TuitionTermGenerate(AminView, LoginRequiredMixin, NoStudent, NoTeacher):

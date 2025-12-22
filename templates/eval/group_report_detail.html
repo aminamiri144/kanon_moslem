@@ -5,129 +5,390 @@
     {% include 'base/aside.html' %}
     <main role="main" class="main-content">
         <div class="container-fluid">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show"
+                         role="alert">
+                        {{ message|safe }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
             <div class="row justify-content-center">
-                <div class="col-12">
-                    <h2 class="mb-2 page-title">گزارش گروه</h2>
-                    <div class="row my-4">
-                        <!-- Small table -->
-                        <div class="col-md-12">
-                            <div class="card shadow">
-                                <div class="card-header">
-                                    <strong class="card-title">سربرگ گزارش</strong>
-                                </div>
-                                <div class="card-body">
-                                    <div class="form-group row">
-                                        {% for field in fields_info %}
-                                            <div class="col-md-2 mb-3">
-                                                <span class="mb-0 text-muted">{{ field.verbosename }}:</span> {{ field.value }}
-                                            </div>
-                                        {% endfor %}
-                                        <div class="col-md-1">
-                                            <button type="button"
-                                                    class="btn my-2 btn-outline-warning"
-                                                    onclick="modal_url('/edu/report/update/{{ more_context.pk }}', 'update');"
-                                                    data-toggle="modal"
-                                                    data-target="#update_modal">ویرایش گزارش
-                                            </button>
-                                        </div>
-                                        <div class="col-md-1">
-                                            <button type="button"
-                                                    class="btn my-2 btn-outline-danger"
-                                                    onclick="modal_url('/edu/report/delete/{{ more_context.pk }}', 'delete');"
-                                                    data-toggle="modal"
-                                                    data-target="#delete_modal">حذف گزارش
-                                            </button>
-                                        </div>
-                                    </div>
-
-
-                                </div>
-                                <!-- /. card-body -->
+                <div class="col-12 col-xl-10">
+                    <!-- Page Header -->
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap">
+                            <div class="mb-3 mb-md-0">
+                                <h2 class="mb-1 page-title">
+                                    <i class="fe fe-file-text text-primary"></i>
+                                    جزئیات گزارش گروه
+                                </h2>
+                                <p class="text-muted mb-0">
+                                    {% if more_context.sdgs %}
+                                        <span class="badge badge-lg badge-info">{{ more_context.sdgs.0.report.clas|default:"-" }}</span>
+                                        <span class="badge badge-lg badge-secondary mr-2">{{ more_context.sdgs.0.report.term|default:"-" }}</span>
+                                    {% endif %}
+                                </p>
                             </div>
-                            <br>
-                            <div class="card shadow">
-                                <div class="card-header">
-                                    <strong class="card-title">موارد انضباطی متربیان</strong>
+                            <div>
+                                <a href="{% url 'group_reports_list' %}" class="btn btn-outline-secondary">
+                                    <i class="fe fe-arrow-right ml-2"></i>
+                                    بازگشت به لیست
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- اطلاعات گزارش -->
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                <h5 class="mb-0">
+                                    <i class="fe fe-info"></i>
+                                    اطلاعات گزارش
+                                </h5>
+                                <div>
+                                    <button type="button"
+                                            class="btn btn-sm btn-warning text-white"
+                                            onclick="modal_url('/edu/report/update/{{ more_context.pk }}', 'update');"
+                                            data-toggle="modal"
+                                            data-target="#update_modal">
+                                        <i class="fe fe-edit"></i>
+                                        ویرایش
+                                    </button>
+                                    <button type="button"
+                                            class="btn btn-sm btn-danger ml-2"
+                                            onclick="modal_url('/edu/report/delete/{{ more_context.pk }}', 'delete');"
+                                            data-toggle="modal"
+                                            data-target="#delete_modal">
+                                        <i class="fe fe-trash-2"></i>
+                                        حذف
+                                    </button>
                                 </div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-hover text-nowrap">
-                                            <thead>
-                                            <tr>
-                                                <th>نام و نام خانوادگی</th>
-                                                <th>مورد انضباطی</th>
-                                                <th>توضیحات</th>
-                                                <th>عملیات</th>
-
-
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            {% for s in more_context.sdgs %}
-                                                <tr>
-                                                    <td>
-                                                        <p>{{ s.student }}</p>
-                                                    </td>
-                                                    <td>
-                                                        <p>{{ s.discipline }}</p>
-                                                    </td>
-                                                    <td>
-                                                        <p>{{ s.description }}</p>
-                                                    </td>
-                                                    <td>
-
-                                                        <button type="button"
-                                                                class="btn mr-2 btn-warning btn-sm"
-                                                                onclick="modal_url('/edu/sdg/update/{{ s.id }}', 'update');"
-                                                                data-toggle="modal"
-                                                                data-target="#update_modal">ویرایش
-                                                        </button>
-                                                        <button type="button"
-                                                                class="btn mr-2 btn-outline-danger btn-sm"
-                                                                onclick="modal_url('/edu/sdg/delete/{{ s.id }}?next={{ request.path }}', 'delete');"
-                                                                data-toggle="modal"
-                                                                data-target="#delete_modal">حذف 
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            {% endfor %}
-                                            </tbody>
-                                        </table>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                {% for field in fields_info %}
+                                    <div class="col-12 col-md-6 col-lg-4 mb-3">
+                                        <div class="d-flex align-items-start">
+                                            <div class="info-icon mr-3">
+                                                <i class="fe fe-info text-primary"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <label class="text-muted small mb-1 d-block">{{ field.verbosename }}</label>
+                                                <p class="mb-0 font-weight-bold">{{ field.value|default:"-" }}</p>
+                                            </div>
+                                        </div>
                                     </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- آمار کلی -->
+                    <div class="row mb-4">
+                        <div class="col-12 col-md-4 mb-3">
+                            <div class="card shadow-sm border-0 h-100">
+                                <div class="card-body text-center">
+                                    <div class="stat-icon bg-danger text-white mb-3">
+                                        <i class="fe fe-x-circle"></i>
+                                    </div>
+                                    <h3 class="mb-1 text-danger">{{ more_context.absence_count|default:0 }}</h3>
+                                    <p class="text-muted mb-0">غیبت</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4 mb-3">
+                            <div class="card shadow-sm border-0 h-100">
+                                <div class="card-body text-center">
+                                    <div class="stat-icon bg-warning text-white mb-3">
+                                        <i class="fe fe-clock"></i>
+                                    </div>
+                                    <h3 class="mb-1 text-warning">{{ more_context.delay_count|default:0 }}</h3>
+                                    <p class="text-muted mb-0">تاخیر</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4 mb-3">
+                            <div class="card shadow-sm border-0 h-100">
+                                <div class="card-body text-center">
+                                    <div class="stat-icon bg-info text-white mb-3">
+                                        <i class="fe fe-list"></i>
+                                    </div>
+                                    <h3 class="mb-1 text-info">{{ more_context.total_count|default:0 }}</h3>
+                                    <p class="text-muted mb-0">کل موارد</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!-- simple table -->
+
+                    <!-- لیست موارد انضباطی -->
+                    <div class="card shadow-sm border-0">
+                        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="fe fe-list"></i>
+                                موارد انضباطی متربیان
+                            </h5>
+                            <span class="badge badge-light badge-lg">
+                                {{ more_context.sdgs|length }} مورد
+                            </span>
+                        </div>
+                        <div class="card-body p-0">
+                            <!-- فیلتر جستجو -->
+                            <div class="p-3 border-bottom bg-light">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <i class="fe fe-search"></i>
+                                        </span>
+                                    </div>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="searchDiscipline" 
+                                           placeholder="جستجوی متربی یا مورد انضباطی...">
+                                </div>
+                            </div>
+
+                            <!-- لیست موارد -->
+                            <div class="disciplines-list" id="disciplinesList">
+                                {% if more_context.sdgs %}
+                                    {% for s in more_context.sdgs %}
+                                        <div class="discipline-card border-bottom" 
+                                             data-student-name="{{ s.student.get_full_name|lower }}"
+                                             data-discipline-name="{{ s.discipline.title|lower }}">
+                                            <div class="p-3">
+                                                <div class="row align-items-center">
+                                                    <!-- اطلاعات متربی -->
+                                                    <div class="col-12 col-md-3 mb-2 mb-md-0">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="student-avatar-small mr-3">
+                                                                <i class="fe fe-user"></i>
+                                                            </div>
+                                                            <div class="flex-grow-1">
+                                                                <h6 class="mb-0 font-weight-bold">{{ s.student.get_full_name }}</h6>
+                                                                <small class="text-muted">{{ s.student.clas }}</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- مورد انضباطی -->
+                                                    <div class="col-12 col-md-2 mb-2 mb-md-0">
+                                                        <label class="text-muted small mb-1 d-block">مورد انضباطی:</label>
+                                                        <span class="badge 
+                                                            {% if 'غیبت' in s.discipline.title %}
+                                                                {% if s.grade == more_context.sdgs.0.report.report_type.grade1 %}
+                                                                    badge-warning
+                                                                {% else %}
+                                                                    badge-danger
+                                                                {% endif %}
+                                                            {% elif 'تاخیر' in s.discipline.title %}
+                                                                {% if s.grade == more_context.sdgs.0.report.report_type.grade3 %}
+                                                                    badge-warning
+                                                                {% else %}
+                                                                    badge-danger
+                                                                {% endif %}
+                                                            {% else %}
+                                                                badge-secondary
+                                                            {% endif %} p-2">
+                                                            <i class="fe 
+                                                                {% if 'غیبت' in s.discipline.title %}
+                                                                    fe-x-circle
+                                                                {% elif 'تاخیر' in s.discipline.title %}
+                                                                    fe-clock
+                                                                {% else %}
+                                                                    fe-alert-triangle
+                                                                {% endif %}"></i>
+                                                            {{ s.discipline.title }}
+                                                        </span>
+                                                    </div>
+
+                                                    <!-- نمره -->
+                                                    <div class="col-12 col-md-1 mb-2 mb-md-0">
+                                                        <label class="text-muted small mb-1 d-block">نمره:</label>
+                                                        <span class="badge badge-info p-2 font-weight-bold">
+                                                            <i class="fe fe-award"></i>
+                                                            {{ s.grade|floatformat:"2" }}
+                                                        </span>
+                                                    </div>
+
+                                                    <!-- توضیحات -->
+                                                    <div class="col-12 col-md-2 mb-2 mb-md-0">
+                                                        <label class="text-muted small mb-1 d-block">توضیحات:</label>
+                                                        <p class="mb-0 text-dark">
+                                                            {% if s.description %}
+                                                                {{ s.description }}
+                                                            {% else %}
+                                                                <span class="text-muted">-</span>
+                                                            {% endif %}
+                                                        </p>
+                                                    </div>
+
+                                                    <!-- عملیات -->
+                                                    <div class="col-12 col-md-1 text-center text-md-right">
+                                                        <div class="btn-group-vertical btn-group-sm w-100 w-md-auto" role="group">
+                                                            <button type="button"
+                                                                    class="btn btn-warning mb-2"
+                                                                    onclick="modal_url('/edu/sdg/update/{{ s.id }}', 'update');"
+                                                                    data-toggle="modal"
+                                                                    data-target="#update_modal">
+                                                                <i class="fe fe-edit"></i>
+                                                                <span class="d-none d-md-inline">ویرایش</span>
+                                                            </button>
+                                                            <button type="button"
+                                                                    class="btn btn-outline-danger"
+                                                                    onclick="modal_url('/edu/sdg/delete/{{ s.id }}?next={{ request.path }}', 'delete');"
+                                                                    data-toggle="modal"
+                                                                    data-target="#delete_modal">
+                                                                <i class="fe fe-trash-2"></i>
+                                                                <span class="d-none d-md-inline">حذف</span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="text-center py-5">
+                                        <i class="fe fe-inbox" style="font-size: 4rem; opacity: 0.2;"></i>
+                                        <p class="text-muted mt-3">مورد انضباطی ثبت نشده است</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <!-- end section -->
             </div>
-            <!-- .col-12 -->
         </div>
-        <!-- .row -->
     </main>
+    
+    {% include 'base/updateModal.html' %}
+    {% include 'base/delete_modal.html' %}
 {% endblock content %}
+
 {% block moreScript %}
     <script>
-        kamaDatepicker('id_date', {buttonsColor: "green", forceFarsiDigits: true});
-
-
-        (function () {
-            'use strict';
-            window.addEventListener('load', function () {
-                // Fetch all the forms we want to apply custom Bootstrap validation styles to
-                var forms = document.getElementsByClassName('needs-validation');
-                // Loop over them and prevent submission
-                var validation = Array.prototype.filter.call(forms, function (form) {
-                    form.addEventListener('submit', function (event) {
-                        if (form.checkValidity() === false) {
-                            event.preventDefault();
-                            event.stopPropagation();
-                        }
-                        form.classList.add('was-validated');
-                    }, false);
+        // جستجوی موارد انضباطی
+        const searchInput = document.getElementById('searchDiscipline');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const disciplineCards = document.querySelectorAll('.discipline-card');
+                
+                disciplineCards.forEach(function(card) {
+                    const studentName = card.getAttribute('data-student-name');
+                    const disciplineName = card.getAttribute('data-discipline-name');
+                    
+                    if (studentName.includes(searchTerm) || disciplineName.includes(searchTerm)) {
+                        card.style.display = '';
+                    } else {
+                        card.style.display = 'none';
+                    }
                 });
-            }, false);
-        })();
+            });
+        }
     </script>
+
+    <style>
+        .card {
+            transition: all 0.3s ease;
+            overflow: visible !important;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        .card-header {
+            border-radius: 0.5rem 0.5rem 0 0 !important;
+            padding: 1rem 1.5rem;
+        }
+        .form-control, .form-select, select {
+            border-radius: 0.5rem;
+            border: 1px solid #dee2e6;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #4e73df;
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        }
+        
+        .info-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(78, 115, 223, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .discipline-card {
+            transition: all 0.2s ease;
+        }
+        .discipline-card:hover {
+            background-color: #f8f9fc;
+        }
+        
+        .student-avatar-small {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .badge-lg {
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 1.5rem;
+            }
+            .card-body {
+                padding: 1rem;
+            }
+            .discipline-card .row > div {
+                margin-bottom: 1rem;
+            }
+            .discipline-card .row > div:last-child {
+                margin-bottom: 0;
+            }
+            .btn-group-vertical {
+                width: 100% !important;
+            }
+            .btn-group-vertical .btn {
+                width: 100%;
+            }
+            .stat-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+            h3 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
 {% endblock moreScript %}

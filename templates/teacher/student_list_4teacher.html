@@ -12,153 +12,259 @@
                          role="alert">
                         {{ message|safe }}
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">x</span>
+                            <span aria-hidden="true">×</span>
                         </button>
                     </div>
                 {% endfor %}
             {% endif %}
+            
             <div class="row justify-content-center">
-                <div class="col-12">
-                    <h2 class="mb-2 page-title">متربیان</h2>
-                    <p class="card-text">لیست متربیان کانون تربیتی حضرت مسلم ابن عقیل (ع)</p>
-                    <div class="row my-4">
-                        <!-- Small table -->
-                        <div class="col-md-12">
-                            <div class="accordion accordion-boxed" id="accordion2">
-                                <div class="card shadow">
-                                    <div class="card-header" id="headingOne">
-                                        <a role="button"
-                                           href="#collapseOne"
-                                           data-toggle="collapse"
-                                           data-target="#collapseOne"
-                                           aria-expanded="false"
-                                           aria-controls="collapseOne"
-                                           class="collapsed">
-                                            <strong>جستجو متربی</strong>
-                                        </a>
-                                    </div>
-                                    <div class="collapse show"
-                                         aria-labelledby="headingOne"
-                                         data-parent="#accordion2"
-                                         id="collapseOne">
-                                        <div class="card-body">
-                                            <div class="toolbar row mb-3">
-                                                <div class="col">
-                                                    <form class="form-inline" action="" method="get">
-                                                        <div class="form-row">
-                                                            <div class="form-group col-auto">
-                                                                <label for="search">جستجو :</label>
-                                                                <input type="text"
-                                                                       class="form-control ml-2"
-                                                                       id="search"
-                                                                       name="q"
-                                                                       placeholder="مقدار مورد نظر را وارد کنید "
-                                                                       value="{{ request.GET.q }}" />
-                                                                <label for="searchOption" class="ml-2">جستجو براساس :</label>
-                                                                <select class="form-control my-1 mr-sm-2 ml-2"
-                                                                        id="searchOption"
-                                                                        name="option">
-                                                                    <option value="last_name"
-                                                                            {% if request.GET.option == "last_name" %}selected{% endif %}>
-                                                                        نام خانوادگی
-                                                                    </option>
-                                                                    <option value="clas__name"
-                                                                            {% if request.GET.option == "clas__name" %}selected{% endif %}>
-                                                                        گروه
-                                                                    </option>
-                                                                </select>
-                                                                <button type="submit" class="btn ml-2 btn-warning">
-                                                                    <span class="fe fe-search fe-14 mr-1"></span>جستجو
-                                                                </button>
-                                                                <a href="{% url 'student-view' %}" class="btn btn-info ml-2">نمایش همه</a>
-                                                            </div>
-                                                        </div>
-                                                    </form>
+                <div class="col-12 col-xl-10">
+                    <!-- Page Header -->
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap">
+                            <div class="mb-3 mb-md-0">
+                                <h2 class="mb-1 page-title">
+                                    <i class="fe fe-users text-primary"></i>
+                                    لیست متربیان
+                                </h2>
+                                <p class="text-muted mb-0">نمایش متربیان کلاس شما</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- جستجو -->
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-info text-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="fe fe-search"></i>
+                                    جستجو متربی
+                                </h5>
+                                <button class="btn btn-sm btn-light" 
+                                        type="button" 
+                                        data-toggle="collapse" 
+                                        data-target="#searchCollapse"
+                                        aria-expanded="true"
+                                        aria-controls="searchCollapse">
+                                    <i class="fe fe-chevron-down" id="searchIcon"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="collapse show" id="searchCollapse">
+                            <div class="card-body">
+                                <form method="get" action="" id="searchForm">
+                                    <div class="row">
+                                        <div class="col-12 col-md-5 mb-3 mb-md-0">
+                                            <label for="search" class="form-label font-weight-bold">متن جستجو:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">
+                                                        <i class="fe fe-search"></i>
+                                                    </span>
                                                 </div>
-                                                {% comment %} <div class="col ml-auto">
-                                                    <a href="{% url 'request-create' %}" class="btn btn-success float-right ml-3" type="button">اضافه کردن +</a>
-                                                </div> {% endcomment %}
+                                                <input type="text"
+                                                       class="form-control"
+                                                       id="search"
+                                                       name="q"
+                                                       placeholder="نام یا گروه را وارد کنید"
+                                                       value="{{ request.GET.q }}">
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <br />
-                            <div class="card">
-                                <div class="card-body">
-                                    {% if students %}
-                                        <div class="table-responsive">
-                                            <table class="table table-hover text-nowrap">
-                                                <thead>
-                                                    <tr>
-                                                        <th scope="col">نام و نام خانوادگی</th>
-                                                        <th scope="col">گروه</th>
-                                                        <th scope="col">شماره تماس</th>
-                                                        <th scope="col">کد ملی</th>
-                                                        <th scope="col">عملیات</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {% for student in students %}
-                                                        <tr>
-                                                            <td>{{ student.get_full_name }}</td>
-                                                            <td>{{ student.clas }}</td>
-                                                            <td>{{ student.mobile }}</td>
-                                                            <td>{{ student.username }}</td>
-                                                            <td>
-                                                                {% comment %} <button type="button"
-                                                                        class="btn btn-warning btn-sm"
-                                                                        onclick="modal_url('/student/update/{{ student.id }}', 'update');"
-                                                                        data-toggle="modal"
-                                                                        data-target="#update_modal">ویرایش</button> {% endcomment %}
-                                                                <a href="{% url 'student-detail' student.id %}"
-                                                                   class="btn btn-outline-info btn-sm">اطلاعات کامل</a>
-                                                                <a href="{% url 'sdg-list' student.id %}"
-                                                                   class="btn btn-outline-warning btn-sm">مواردانضباطی</a>
-                                                                <a href="{% url 'grade-student-add' student.id %}"
-                                                                   class="btn btn-outline-secondary btn-sm">نمرات دروس ترم</a>
-                                                                   <a href="{% url 'student-term-karname' student.id %}"
-                                                                   class="btn btn-info btn-sm">کارنامه ترم</a>
-                                                                <a href="{% url 'student-update' student.id %}"
-                                                                   class="btn btn-outline-warning btn-sm">ویرایش</a>
-                                                            </td>
-                                                        </tr>
-                                                    {% endfor %}
-                                                </tbody>
-                                            </table>
+                                        <div class="col-12 col-md-4 mb-3 mb-md-0">
+                                            <label for="searchOption" class="form-label font-weight-bold">جستجو بر اساس:</label>
+                                            <select class="form-control" id="searchOption" name="option">
+                                                <option value="last_name" {% if request.GET.option == "last_name" %}selected{% endif %}>
+                                                    نام خانوادگی
+                                                </option>
+                                                <option value="clas__name" {% if request.GET.option == "clas__name" %}selected{% endif %}>
+                                                    گروه
+                                                </option>
+                                            </select>
                                         </div>
-                                    {% else %}
-                                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                                            هیچ نتیجه ای در جستجو یافت نشد! مجددا تلاش کنید.
-                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                                <span aria-hidden="true">x</span>
+                                        <div class="col-12 col-md-3 d-flex align-items-end mb-3 mb-md-0">
+                                            <button type="submit" class="btn btn-warning w-100 mr-2">
+                                                <i class="fe fe-search"></i>
+                                                جستجو
                                             </button>
+                                            <a href="{% url 'student-view' %}" class="btn btn-outline-secondary w-100">
+                                                <i class="fe fe-x"></i>
+                                                پاک کردن
+                                            </a>
                                         </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- لیست متربیان -->
+                    <div class="card shadow-sm border-0">
+                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="fe fe-users"></i>
+                                متربیان
+                            </h5>
+                            <div class="d-flex align-items-center">
+                                <span class="badge badge-light badge-lg mr-3">
+                                    {% if page_obj %}{{ page_obj.paginator.count }}{% else %}{{ students|length }}{% endif %} نفر
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            {% if students %}
+                                <div class="students-list">
+                                    {% for student in students %}
+                                        <div class="student-item border-bottom">
+                                            <div class="p-3">
+                                                <div class="row align-items-center">
+                                                    <!-- اطلاعات متربی -->
+                                                    <div class="col-12 col-md-4 mb-3 mb-md-0">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="student-avatar mr-3">
+                                                                <i class="fe fe-user"></i>
+                                                            </div>
+                                                            <div class="flex-grow-1">
+                                                                <h6 class="mb-1 font-weight-bold">{{ student.get_full_name }}</h6>
+                                                                <div class="d-flex flex-wrap">
+                                                                    <span class="badge badge-info mr-2 mb-1">
+                                                                        <i class="fe fe-users"></i>
+                                                                        {{ student.clas }}
+                                                                    </span>
+                                                                    {% if student.mobile %}
+                                                                        <a href="tel:{{ student.mobile }}" class="badge badge-success mr-2 mb-1">
+                                                                            <i class="fe fe-phone"></i>
+                                                                            {{ student.mobile }}
+                                                                        </a>
+                                                                    {% endif %}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- کد ملی -->
+                                                    <div class="col-12 col-md-2 mb-3 mb-md-0">
+                                                        <label class="text-muted small mb-1 d-block">کد ملی:</label>
+                                                        <span class="badge badge-soft-primary p-2">
+                                                            {{ student.username }}
+                                                        </span>
+                                                    </div>
+
+                                                    <!-- عملیات -->
+                                                    <div class="col-12 col-md-6">
+                                                        <div class="d-flex flex-wrap gap-2">
+                                                            <a href="{% url 'student-detail' student.id %}" 
+                                                               class="btn btn-sm btn-outline-info mb-2">
+                                                                <i class="fe fe-eye"></i>
+                                                                <span class="d-none d-md-inline">جزئیات</span>
+                                                            </a>
+                                                            <a href="{% url 'sdg-list' student.id %}" 
+                                                               class="btn btn-sm btn-outline-warning mb-2">
+                                                                <i class="fe fe-list"></i>
+                                                                <span class="d-none d-md-inline">موارد انضباطی</span>
+                                                            </a>
+                                                            <a href="{% url 'grade-student-add' student.id %}" 
+                                                               class="btn btn-sm btn-outline-secondary mb-2">
+                                                                <i class="fe fe-clipboard"></i>
+                                                                <span class="d-none d-md-inline">نمرات ترم</span>
+                                                            </a>
+                                                            <a href="{% url 'student-term-karname' student.id %}" 
+                                                               class="btn btn-sm btn-info mb-2">
+                                                                <i class="fe fe-award"></i>
+                                                                <span class="d-none d-md-inline">کارنامه</span>
+                                                            </a>
+                                                            <a href="{% url 'student-update' student.id %}" 
+                                                               class="btn btn-sm btn-warning mb-2">
+                                                                <i class="fe fe-edit"></i>
+                                                                <span class="d-none d-md-inline">ویرایش</span>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="text-center py-5">
+                                    <i class="fe fe-inbox" style="font-size: 4rem; opacity: 0.2;"></i>
+                                    <p class="text-muted mt-3">متربی یافت نشد</p>
+                                    {% if request.GET.q %}
+                                        <a href="{% url 'student-view' %}" class="btn btn-primary mt-2">
+                                            <i class="fe fe-refresh-cw"></i>
+                                            نمایش همه متربیان
+                                        </a>
                                     {% endif %}
-                                    <div class="row">
-                                        <nav aria-label="">
-                                            <ul class="pagination">
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Pagination -->
+                        {% if page_obj and page_obj.paginator.num_pages > 1 %}
+                            <div class="card-footer bg-white">
+                                <div class="row align-items-center">
+                                    <div class="col-12 col-md-6 mb-2 mb-md-0">
+                                        <p class="text-muted mb-0 small">
+                                            نمایش 
+                                            {% if page_obj.has_previous %}
+                                                {{ page_obj.start_index }}
+                                            {% else %}
+                                                1
+                                            {% endif %}
+                                            تا 
+                                            {% if page_obj.has_next %}
+                                                {{ page_obj.end_index }}
+                                            {% else %}
+                                                {{ page_obj.paginator.count }}
+                                            {% endif %}
+                                            از 
+                                            {{ page_obj.paginator.count }} متربی
+                                        </p>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <nav>
+                                            <ul class="pagination pagination-sm justify-content-end mb-0">
                                                 {% if page_obj.has_previous %}
                                                     <li class="page-item">
-                                                        <a class="page-link"
-                                                           href="?page={{ page_obj.previous_page_number }}"
-                                                           tabindex="-1">قبلی</a>
+                                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                                                            <i class="fe fe-chevron-right"></i>
+                                                            قبلی
+                                                        </a>
                                                     </li>
                                                 {% else %}
                                                     <li class="page-item disabled">
-                                                        <a class="page-link" href="">صفحه قبل</a>
+                                                        <span class="page-link">
+                                                            <i class="fe fe-chevron-right"></i>
+                                                            قبلی
+                                                        </span>
                                                     </li>
                                                 {% endif %}
-                                                <li class="page-item active">
-                                                    <a class="page-link" href="#">{{ page_obj.number }} <span class="sr-only">(صفحه فعلی)</span></a>
-                                                </li>
+                                                
+                                                {% for num in page_obj.paginator.page_range %}
+                                                    {% if page_obj.number == num %}
+                                                        <li class="page-item active">
+                                                            <span class="page-link">{{ num }}</span>
+                                                        </li>
+                                                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                                        </li>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                
                                                 {% if page_obj.has_next %}
                                                     <li class="page-item">
-                                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">صفحه بعد</a>
+                                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                                                            بعدی
+                                                            <i class="fe fe-chevron-left"></i>
+                                                        </a>
                                                     </li>
                                                 {% else %}
                                                     <li class="page-item disabled">
-                                                        <a class="page-link" href="">صفحه بعد</a>
+                                                        <span class="page-link">
+                                                            بعدی
+                                                            <i class="fe fe-chevron-left"></i>
+                                                        </span>
                                                     </li>
                                                 {% endif %}
                                             </ul>
@@ -166,31 +272,106 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        {% endif %}
                     </div>
-                    <!-- simple table -->
                 </div>
-                <!-- end section -->
             </div>
-            <!-- .col-12 -->
         </div>
-        <!-- .row -->
     </main>
-    {% include 'base/updateModal.html' %}
-    {% include 'base/detailModal.html' %}
 {% endblock content %}
+
 {% block moreScript %}
-    <script src="{% static 'plugins/jalaliDatepicker/kamadatepicker.min.js'%}"></script>
-    <script>kamaDatepicker('id_register_date', {buttonsColor: "green", forceFarsiDigits: true});</script>
     <script>
-function modal_url(url, type) {
-    $.ajax({
-        url: url,
-        type: 'GET',
-        success: function (data) {
-            $("#"+ type +"_modal_body").html(data);
-        }
-    })
-}
+        // Toggle search collapse icon
+        $('#searchCollapse').on('show.bs.collapse', function () {
+            $('#searchIcon').removeClass('fe-chevron-down').addClass('fe-chevron-up');
+        });
+        
+        $('#searchCollapse').on('hide.bs.collapse', function () {
+            $('#searchIcon').removeClass('fe-chevron-up').addClass('fe-chevron-down');
+        });
     </script>
+
+    <style>
+        .card {
+            transition: all 0.3s ease;
+            overflow: visible !important;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        .card-header {
+            border-radius: 0.5rem 0.5rem 0 0 !important;
+            padding: 1rem 1.5rem;
+        }
+        .form-control, .form-select, select {
+            border-radius: 0.5rem;
+            border: 1px solid #dee2e6;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #4e73df;
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        }
+        
+        .student-item {
+            transition: all 0.2s ease;
+        }
+        .student-item:hover {
+            background-color: #f8f9fc;
+        }
+        
+        .student-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        
+        .badge-lg {
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+        }
+        
+        .badge-soft-primary {
+            background-color: rgba(78, 115, 223, 0.1);
+            color: #4e73df;
+            font-weight: 600;
+        }
+        
+        .gap-2 {
+            gap: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 1.5rem;
+            }
+            .card-body {
+                padding: 1rem;
+            }
+            .student-item .row > div {
+                margin-bottom: 1rem;
+            }
+            .student-item .row > div:last-child {
+                margin-bottom: 0;
+            }
+            .student-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+            .d-flex.gap-2 {
+                flex-direction: column;
+            }
+            .d-flex.gap-2 .btn {
+                width: 100%;
+            }
+        }
+    </style>
 {% endblock moreScript %}

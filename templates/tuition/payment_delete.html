@@ -1,0 +1,33 @@
+{% load static %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="row align-items-center">
+            <div class="col-11">
+                <p class="card-text" style="color: darkred;">
+                    <i class="fe fe-alert-triangle"></i>
+                    آیا از حذف این پرداخت اطمینان دارید؟
+                </p>
+                <p class="text-muted small">این عمل غیرقابل بازگشت است.</p>
+            </div>
+        </div>
+        <hr>
+        <form action="{{ request.path }}"
+              method="POST"
+              autocomplete="off"
+              id="delete_payment_form">
+            {% csrf_token %}
+            <div class="d-flex justify-content-center">
+                <button class="btn mr-3 btn-success" type="button" data-dismiss="modal">
+                    <i class="fe fe-x"></i>
+                    خیر، لغو عملیات
+                </button>
+                <button type="submit" class="btn btn-outline-danger">
+                    <i class="fe fe-trash-2"></i>
+                    بله، حذف شود
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="{% static '/js/jquery.min.js' %}"></script>
+

@@ -12,10 +12,35 @@
                         <strong>{{ error|escape }}</strong>
                     </div>
                 {% endfor %}
-                <div class="form-group row">
-                    <label class="col-form-label col-lg-3 col-sm-12">{{ field.label_tag }}</label>
-                    <div class="col-lg-9 col-md-9 col-sm-12">{{ field }}</div>
-                </div>
+                {% if field.name == "is_debt" %}
+                    <div class="form-group row align-items-center mb-3">
+                        <label class="col-form-label col-lg-3 col-sm-12">{{ field.label_tag }}</label>
+                        <div class="col-lg-9 col-md-9 col-sm-12">
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox" 
+                                       class="custom-control-input" 
+                                       id="id_is_debt" 
+                                       name="is_debt"
+                                       {% if field.value %}checked{% endif %}>
+                                <label class="custom-control-label" for="id_is_debt" id="is_debt_label">
+                                    {% if field.value %}
+                                        <span class="text-danger font-weight-bold">بدهی</span>
+                                    {% else %}
+                                        <span class="text-success">بستانکاری</span>
+                                    {% endif %}
+                                </label>
+                            </div>
+                            {% if field.help_text %}
+                                <small class="form-text text-muted">{{ field.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="form-group row">
+                        <label class="col-form-label col-lg-3 col-sm-12">{{ field.label_tag }}</label>
+                        <div class="col-lg-9 col-md-9 col-sm-12">{{ field }}</div>
+                    </div>
+                {% endif %}
             {% endfor %}
             <button type="submit" class="btn btn-success">ثبت</button>
             <button class="btn btn-danger" data-dismiss="modal">لغو عملیات</button>
@@ -48,6 +73,20 @@
             // جایگزینی مقدار اینپوت با مقدار فرمت شده
             $(this).val(formattedInputVal);
         });
+
+        // به‌روزرسانی متن سوییچ is_debt
+        function updateIsDebtLabel() {
+            const label = $('#is_debt_label');
+            if ($('#id_is_debt').is(':checked')) {
+                label.html('<span class="text-danger font-weight-bold">بدهی</span>');
+            } else {
+                label.html('<span class="text-success">بستانکاری</span>');
+            }
+        }
+
+        $('#id_is_debt').on('change', updateIsDebtLabel);
+        // به‌روزرسانی اولیه
+        updateIsDebtLabel();
     });
 </script>
 

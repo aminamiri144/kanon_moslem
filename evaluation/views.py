@@ -1,8 +1,7 @@
 from .forms import LessonClassSelectionForm
-from education_management.models import SelectedLesson, ControlSelection
+from education_management.models import SelectedLesson, ControlSelection, DisciplineGrade, GroupReport
 from kanon_moslem.views import *
 from kanon_moslem.aminBaseViews import *
-from education_management.models import DisciplineGrade
 
 
 class SelectionLessonClass(View, NoStudent, LoginRequiredMixin):
@@ -139,30 +138,116 @@ class GroupTermGrades(AminView, LoginRequiredMixin, NoStudent):
             lessons_selected_4clas = ControlSelection.objects.filter(clas_id=self.t_class.id, term=term)
             lessons = [l.lesson.title for l in lessons_selected_4clas]
             students_grades = []
+            
+            # دریافت تمام گزارشات برای این گروه و ترم بر اساس نوع
+            parent_meeting_reports = GroupReport.objects.filter(
+                clas=self.t_class,
+                term=term,
+                report_type__title__contains='والدین'
+            )
+            fogh_reports = GroupReport.objects.filter(
+                clas=self.t_class,
+                term=term,
+                report_type__title__contains='فوق برنامه'
+            )
+            # گزارشات حضور غیاب گروه (روز گروه) - نه فوق برنامه
+            group_attendance_reports = GroupReport.objects.filter(
+                clas=self.t_class,
+                term=term
+            ).exclude(
+                report_type__title__contains='فوق برنامه'
+            ).exclude(
+                report_type__title__contains='والدین'
+            ).exclude(
+                report_type__title__contains='اردو'
+            ).exclude(
+                report_type__title__contains='خانواد'
+            )
+            erdo_reports = GroupReport.objects.filter(
+                clas=self.t_class,
+                term=term,
+                report_type__title__contains='اردو'
+            )
+            
+            total_parent_meetings = parent_meeting_reports.count()
+            total_fogh_meetings = fogh_reports.count()
+            total_group_attendance_meetings = group_attendance_reports.count()
+            total_erdo_meetings = erdo_reports.count()
+            
             for student in Student.objects.filter(clas_id=self.t_class.id, is_active=True):
                 grades = SelectedLesson.objects.filter(student=student, term=term)
                 enzebati = DisciplineGrade.objects.filter(student=student, term=term)
-                nomre = 20.0
-                family_nomre = 20.0
-                fogh_nomre = 20.0
+                
+                # محاسبه مجموع نمرات برای هر نوع گزارش
+                nomre_enzebati_sum = 0.0
+                family_nomre_sum = 0.0
+                fogh_nomre_sum = 0.0
+                group_attendance_nomre_sum = 0.0
+                erdo_nomre_sum = 0.0
+                
+                # محاسبه نمرات انضباطی
                 for e in enzebati:
                     try:
-                        if 'خانواد' in e.report.report_type.title:
-                            family_nomre += float(e.grade)
-                        elif 'والدین' in e.report.report_type.title:
-                            family_nomre += float(e.grade)
-                        elif 'فوق' in e.report.report_type.title:
-                            fogh_nomre += float(e.grade)
+                        if e.report:
+                            report_type_title = e.report.report_type.title
+                            if 'والدین' in report_type_title or 'خانواد' in report_type_title:
+                                family_nomre_sum += float(e.grade)
+                            elif 'فوق برنامه' in report_type_title:
+                                fogh_nomre_sum += float(e.grade)
+                            elif 'اردو' in report_type_title:
+                                erdo_nomre_sum += float(e.grade)
+                            elif 'گروه' in report_type_title and 'فوق برنامه' not in report_type_title:
+                                # روز گروه (حضور غیاب گروه) - نه فوق برنامه
+                                group_attendance_nomre_sum += float(e.grade)
+                                nomre_enzebati_sum += float(e.grade)
+                            else:
+                                # سایر موارد انضباطی
+                                nomre_enzebati_sum += float(e.grade)
                         else:
-                            nomre += float(e.grade)
+                            # موارد انضباطی بدون گزارش
+                            nomre_enzebati_sum += float(e.grade)
                     except:
-                        nomre += float(e.grade)
+                        nomre_enzebati_sum += float(e.grade)
+                
+                # تابع محاسبه حضور
+                def calculate_attendance(reports):
+                    attendance = 0
+                    for report in reports:
+                        absence_in_report = DisciplineGrade.objects.filter(
+                            student=student,
+                            report=report,
+                            discipline__title__contains='غیبت'
+                        ).exists()
+                        if not absence_in_report:
+                            attendance += 1
+                    return attendance
+                
+                # محاسبه تعداد حضور برای هر نوع گزارش
+                parent_meeting_attendance = calculate_attendance(parent_meeting_reports)
+                fogh_attendance = calculate_attendance(fogh_reports)
+                group_attendance = calculate_attendance(group_attendance_reports)
+                erdo_attendance = calculate_attendance(erdo_reports)
+                
                 sg = {
                     'student': student,
                     'grades': grades,
-                    'nomre_enzebati': nomre,
-                    'nomre_family': family_nomre,
-                    'nomre_fogh': fogh_nomre,
+                    'nomre_enzebati_sum': nomre_enzebati_sum,
+                    'family_nomre_sum': family_nomre_sum,
+                    'fogh_nomre_sum': fogh_nomre_sum,
+                    'group_attendance_nomre_sum': group_attendance_nomre_sum,
+                    'erdo_nomre_sum': erdo_nomre_sum,
+                    # حضور والدین
+                    'parent_meeting_attendance': parent_meeting_attendance,
+                    'total_parent_meetings': total_parent_meetings,
+                    # حضور فوق برنامه
+                    'fogh_attendance': fogh_attendance,
+                    'total_fogh_meetings': total_fogh_meetings,
+                    # حضور گروه
+                    'group_attendance': group_attendance,
+                    'total_group_attendance_meetings': total_group_attendance_meetings,
+                    # حضور اردو
+                    'erdo_attendance': erdo_attendance,
+                    'total_erdo_meetings': total_erdo_meetings,
                 }
                 students_grades.append(sg)
             context = {

@@ -5,123 +5,411 @@
     {% include 'base/aside.html' %}
     <main role="main" class="main-content">
         <div class="container-fluid">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show"
+                         role="alert">
+                        {{ message|safe }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
             <div class="row justify-content-center">
-                <div class="col-12">
-                    <h2 class="mb-2 page-title"> گزارش گروه {{ class_name }} </h2>
-                    <div class="row my-4">
-                        <!-- Small table -->
-                        <div class="col-md-12">
-                            <form class="needs-validation"
-                                  action="{% url 'rg-add' class_id %}"
-                                  method="post"
-                                  autocomplete="off"
-                                  id="customer-form"
-                                  novalidate>
-                                {% csrf_token %}
-                                <div class="card shadow">
-                                    <div class="card-header">
-                                        <strong class="card-title">ثبت گزارش گروه {{ class_name }}</strong>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="form-group row">
-                                            {% for field in form %}
-                                                <div class="col-md-2 mb-3">
-                                                    {{ field.label_tag }}
-                                                    {{ field }}
-                                                    <div class="invalid-feedback">مقدار مناسب را وارد کنید.</div>
-                                                    {% for error in field.errors %}
-                                                        <div class="feedbackinvalid">{{ error|escape }}</div>{% endfor %}
-                                                </div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                    <!-- /. card-body -->
-                                </div>
-                                <br>
-                                <div class="card shadow">
-                                    <div class="card-header">
-                                        <strong class="card-title">متربیان</strong>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="table-responsive">
-                                            <table class="table table-hover text-nowrap">
-                                                <thead>
-                                                <tr>
-                                                    <th>نام و نام خانوادگی</th>
-                                                    <th>حضور و غیاب</th>
-                                                    <th>توضیحات</th>
-                                                    <th>تاخیر</th>
-                                                    <th>توضیحات</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                {% for s in students %}
-                                                    <tr>
-                                                        <td>
-                                                            <select name="student_id" class="form-control" required=""
-                                                                    readonly="">
-                                                                <option value="{{ s.id }}"
-                                                                        selected="">{{ s.get_full_name }}</option>
-                                                            </select>
-                                                        </td>
-                                                        <td>
-                                                            <select class="form-control" name="hozor" id="id_grade">
-                                                                <option value="2" selected="">حاضر</option>
-                                                                <option value="1">غیبت موجه</option>
-                                                                <option value="0">غیبت غیرموجه</option>
-                                                            </select>
-                                                        </td>
-                                                        <td>
-                                                            <input name="description1"
-                                                                   class="form-control"
-                                                                   id="id_description1"
-                                                                   placeholder="توضیحات حضور غیاب">
-                                                        </td>
-                                                        <td>
-                                                            <select class="form-control" name="takhir">
-                                                                <option value="2" selected="">بدون تاخیر</option>
-                                                                <option value="1">تاخیر موجه</option>
-                                                                <option value="0">تاخیر غیرموجه</option>
-                                                            </select>
-                                                        </td>
-                                                        <td>
-                                                            <input name="description2"
-                                                                   class="form-control"
-                                                                   id="id_description2"
-                                                                   placeholder="توضیحات تاخیر">
-                                                        </td>
-                                                    </tr>
-                                                {% endfor %}
-                                                </tbody>
-                                            </table>
-                                            <button type="submit" class="btn btn-success">ثبت گزارش حلقه</button>
-                            </form>
+                <div class="col-12 col-xl-10">
+                    <!-- Page Header -->
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap">
+                            <div class="mb-3 mb-md-0">
+                                <h2 class="mb-1 page-title">
+                                    <i class="fe fe-file-text text-primary"></i>
+                                    ثبت گزارش گروه
+                                </h2>
+                                <p class="text-muted mb-0">
+                                    <span class="badge badge-lg badge-info">{{ class_name }}</span>
+                                    <span class="badge badge-lg badge-secondary mr-2">{{ term }}</span>
+                                </p>
+                            </div>
+                            <a href="{% url 'group_reports_list' %}" class="btn btn-outline-secondary">
+                                <i class="fe fe-arrow-right ml-2"></i>
+                                بازگشت
+                            </a>
                         </div>
                     </div>
+
+                    <form class="needs-validation"
+                          action="{% url 'rg-add' class_id %}"
+                          method="post"
+                          autocomplete="off"
+                          id="group-report-form"
+                          novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- فرم اطلاعات گزارش -->
+                        <div class="card shadow-sm border-0 mb-4">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">
+                                    <i class="fe fe-info"></i>
+                                    اطلاعات گزارش
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12 col-md-4 mb-3">
+                                        <label class="form-label font-weight-bold">
+                                            {{ form.title.label }}
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        {{ form.title }}
+                                        {% if form.title.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.title.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-12 col-md-4 mb-3">
+                                        <label class="form-label font-weight-bold">
+                                            {{ form.report_type.label }}
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        {{ form.report_type }}
+                                        {% if form.report_type.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.report_type.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-12 col-md-4 mb-3">
+                                        <label class="form-label font-weight-bold">
+                                            {{ form.date.label }}
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="fe fe-calendar"></i>
+                                                </span>
+                                            </div>
+                                            {{ form.date }}
+                                        </div>
+                                        {% if form.date.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.date.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- لیست متربیان -->
+                        <div class="card shadow-sm border-0 mb-4">
+                            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="fe fe-users"></i>
+                                    حضور و غیاب متربیان
+                                </h5>
+                                <span class="badge badge-light badge-lg">
+                                    <span id="studentsCount">{{ students|length }}</span> نفر
+                                </span>
+                            </div>
+                            <div class="card-body p-0">
+                                <!-- فیلتر جستجو -->
+                                <div class="p-3 border-bottom bg-light">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <i class="fe fe-search"></i>
+                                            </span>
+                                        </div>
+                                        <input type="text" 
+                                               class="form-control" 
+                                               id="searchStudent" 
+                                               placeholder="جستجوی متربی...">
+                                    </div>
+                                </div>
+
+                                <!-- لیست متربیان -->
+                                <div class="students-list" id="studentsList">
+                                    {% for s in students %}
+                                        <div class="student-card border-bottom" data-student-name="{{ s.get_full_name|lower }}">
+                                            <div class="p-3">
+                                                <div class="row align-items-center">
+                                                    <!-- نام متربی -->
+                                                    <div class="col-12 col-md-3 mb-3 mb-md-0">
+                                                        <div class="d-flex align-items-center d-md-flex d-block text-center text-md-left">
+                                                            
+                                                            <div class="w-100">
+                                                                <h5 class="mb-0 font-weight-bold student-name-mobile ">{{ s.get_full_name }}</h5>
+                                                                <small class="text-muted d-none d-md-inline">{{ s.clas }}</small>
+                                                            </div>
+                                                        </div>
+                                                        <input type="hidden" name="student_id" value="{{ s.id }}">
+                                                    </div>
+
+                                                    <!-- وضعیت حضور/غیاب -->
+                                                    <div class="col-12 col-md-3 mb-3 mb-md-0">
+                                                        <label class="form-label small font-weight-bold mb-2 d-block">
+                                                            وضعیت حضور:
+                                                        </label>
+                                                        <div class="btn-group btn-group-toggle w-100" data-toggle="buttons">
+                                                            <label class="btn btn-outline-success active attendance-btn" data-value="2">
+                                                                <input type="radio" name="hozor_{{ s.id }}" value="2" checked>
+                                                                <i class="fe fe-check-circle"></i>
+                                                                حاضر
+                                                            </label>
+                                                            <label class="btn btn-outline-warning attendance-btn" data-value="1">
+                                                                <input type="radio" name="hozor_{{ s.id }}" value="1">
+                                                                <i class="fe fe-alert-circle"></i>
+                                                                غیبت موجه
+                                                            </label>
+                                                            <label class="btn btn-outline-danger attendance-btn" data-value="0">
+                                                                <input type="radio" name="hozor_{{ s.id }}" value="0">
+                                                                <i class="fe fe-x-circle"></i>
+                                                                غیبت غیرموجه
+                                                            </label>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- وضعیت تاخیر (فقط برای حاضر) -->
+                                                    <div class="col-12 col-md-3 mb-3 mb-md-0 delay-section">
+                                                        <label class="form-label small font-weight-bold mb-2 d-block">
+                                                            تاخیر:
+                                                        </label>
+                                                        <div class="btn-group btn-group-toggle w-100" data-toggle="buttons">
+                                                            <label class="btn btn-outline-secondary active delay-btn" data-value="2">
+                                                                <input type="radio" name="takhir_{{ s.id }}" value="2" checked>
+                                                                <i class="fe fe-check"></i>
+                                                                بدون تاخیر
+                                                            </label>
+                                                            <label class="btn btn-outline-warning delay-btn" data-value="1">
+                                                                <input type="radio" name="takhir_{{ s.id }}" value="1">
+                                                                <i class="fe fe-clock"></i>
+                                                                موجه
+                                                            </label>
+                                                            <label class="btn btn-outline-danger delay-btn" data-value="0">
+                                                                <input type="radio" name="takhir_{{ s.id }}" value="0">
+                                                                <i class="fe fe-alert-triangle"></i>
+                                                                غیرموجه
+                                                            </label>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- توضیحات -->
+                                                    <div class="col-12 col-md-3 mb-3 mb-md-0">
+                                                        <!-- توضیحات غیبت (فقط برای غیبت) -->
+                                                        <div class="absence-description" style="display: none;">
+                                                            <label class="form-label small font-weight-bold mb-2 d-block">
+                                                                توضیحات غیبت:
+                                                            </label>
+                                                            <input type="text" 
+                                                                   class="form-control form-control-sm" 
+                                                                   name="description1_{{ s.id }}" 
+                                                                   placeholder="توضیحات غیبت"
+                                                                   data-student-id="{{ s.id }}">
+                                                        </div>
+                                                        
+                                                        <!-- توضیحات تاخیر (فقط برای حاضر) -->
+                                                        <div class="delay-description">
+                                                            <label class="form-label small font-weight-bold mb-2 d-block">
+                                                                توضیحات تاخیر:
+                                                            </label>
+                                                            <input type="text" 
+                                                                   class="form-control form-control-sm" 
+                                                                   name="description2_{{ s.id }}" 
+                                                                   placeholder="توضیحات تاخیر"
+                                                                   data-student-id="{{ s.id }}">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- دکمه ثبت -->
+                        <div class="card shadow-sm border-0">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                    <small class="text-muted mb-2 mb-md-0">
+                                        <i class="fe fe-info"></i>
+                                        پس از بررسی اطلاعات، گزارش را ثبت کنید.
+                                    </small>
+                                    <button type="submit" class="btn btn-success btn-lg">
+                                        <i class="fe fe-save"></i>
+                                        ثبت گزارش
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
-        <!-- simple table -->
-        </div>
-        <!-- end section -->
-        </div>
-        <!-- .col-12 -->
-        </div>
-        <!-- .row -->
     </main>
 {% endblock content %}
+
 {% block moreScript %}
+    <script src="{% static 'customers/plugins/jalaliDatepicker/kamadatepicker.min.js' %}"></script>
     <script>
-        kamaDatepicker('id_date', {buttonsColor: "green", forceFarsiDigits: true});
-        (function () {
+        kamaDatepicker('id_date', {
+            buttonsColor: "green", 
+            forceFarsiDigits: true,
+            zIndex: 99999
+        });
+        
+        // اطمینان از overflow visible برای کارت‌هایی که تقویم دارند
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInput = document.getElementById('id_date');
+            if (dateInput) {
+                const card = dateInput.closest('.card');
+                const cardBody = dateInput.closest('.card-body');
+                if (card) {
+                    card.style.overflow = 'visible';
+                    card.style.zIndex = '100';
+                }
+                if (cardBody) {
+                    cardBody.style.overflow = 'visible';
+                }
+                
+                // وقتی روی فیلد تاریخ کلیک می‌شود
+                dateInput.addEventListener('focus', function() {
+                    if (card) {
+                        card.style.overflow = 'visible';
+                        card.style.zIndex = '1000';
+                    }
+                });
+            }
+        });
+
+        // مدیریت سوییچ‌های داینامیک
+        document.addEventListener('DOMContentLoaded', function() {
+            // مدیریت تغییر وضعیت حضور/غیاب
+            document.querySelectorAll('.attendance-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    const value = this.getAttribute('data-value');
+                    const studentCard = this.closest('.student-card');
+                    const delaySection = studentCard.querySelector('.delay-section');
+                    const absenceDescription = studentCard.querySelector('.absence-description');
+                    const delayDescription = studentCard.querySelector('.delay-description');
+                    
+                    // اگر غیبت انتخاب شد
+                    if (value === '0' || value === '1') {
+                        if (delaySection) delaySection.style.display = 'none';
+                        if (absenceDescription) absenceDescription.style.display = 'block';
+                        if (delayDescription) delayDescription.style.display = 'none';
+                    } 
+                    // اگر حاضر انتخاب شد
+                    else if (value === '2') {
+                        if (delaySection) delaySection.style.display = 'block';
+                        if (absenceDescription) absenceDescription.style.display = 'none';
+                        if (delayDescription) delayDescription.style.display = 'block';
+                    }
+                });
+            });
+
+            // جستجوی متربیان
+            const searchInput = document.getElementById('searchStudent');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const studentCards = document.querySelectorAll('.student-card');
+                    
+                    studentCards.forEach(function(card) {
+                        const studentName = card.getAttribute('data-student-name');
+                        if (studentName.includes(searchTerm)) {
+                            card.style.display = '';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                    
+                    // به‌روزرسانی تعداد نمایش داده شده
+                    const visibleCount = document.querySelectorAll('.student-card[style=""]').length + 
+                                       document.querySelectorAll('.student-card:not([style*="display: none"])').length;
+                    document.getElementById('studentsCount').textContent = visibleCount;
+                });
+            }
+
+            // قبل از ارسال فرم، تبدیل داده‌ها به فرمت مورد نیاز
+            document.getElementById('group-report-form').addEventListener('submit', function(e) {
+                // حذف input های مخفی قبلی (اگر وجود داشته باشند)
+                document.querySelectorAll('input[name="hozor"], input[name="takhir"], input[name="description1"], input[name="description2"]').forEach(function(input) {
+                    if (input.type === 'hidden') {
+                        input.remove();
+                    }
+                });
+                
+                const studentCards = document.querySelectorAll('.student-card');
+                const form = this;
+                
+                studentCards.forEach(function(card) {
+                    // اگر کارت مخفی است، از آن صرف نظر کن
+                    if (card.style.display === 'none') {
+                        return;
+                    }
+                    
+                    const studentId = card.querySelector('input[name^="student_id"]').value;
+                    
+                    // دریافت وضعیت حضور/غیاب - جستجو در تمام radio های مربوط به این دانش‌آموز
+                    const attendanceRadio = card.querySelector('input[type="radio"][name^="hozor"]:checked');
+                    let hozorValue = '2'; // پیش‌فرض: حاضر
+                    if (attendanceRadio) {
+                        hozorValue = attendanceRadio.value;
+                    }
+                    
+                    // ایجاد input مخفی برای hozor
+                    const hozorInput = document.createElement('input');
+                    hozorInput.type = 'hidden';
+                    hozorInput.name = 'hozor';
+                    hozorInput.value = hozorValue;
+                    form.appendChild(hozorInput);
+                    
+                    // دریافت توضیحات حضور/غیاب
+                    const desc1Input = card.querySelector('input[name^="description1"]');
+                    const desc1 = document.createElement('input');
+                    desc1.type = 'hidden';
+                    desc1.name = 'description1';
+                    desc1.value = desc1Input ? desc1Input.value : '';
+                    form.appendChild(desc1);
+                    
+                    // دریافت وضعیت تاخیر (فقط اگر حاضر باشد)
+                    let takhirValue = '2'; // پیش‌فرض: بدون تاخیر
+                    if (hozorValue === '2') {
+                        const delayRadio = card.querySelector('input[type="radio"][name^="takhir"]:checked');
+                        if (delayRadio) {
+                            takhirValue = delayRadio.value;
+                        }
+                    }
+                    
+                    const takhirInput = document.createElement('input');
+                    takhirInput.type = 'hidden';
+                    takhirInput.name = 'takhir';
+                    takhirInput.value = takhirValue;
+                    form.appendChild(takhirInput);
+                    
+                    // دریافت توضیحات تاخیر
+                    const desc2Input = card.querySelector('input[name^="description2"]');
+                    const desc2 = document.createElement('input');
+                    desc2.type = 'hidden';
+                    desc2.name = 'description2';
+                    desc2.value = desc2Input ? desc2Input.value : '';
+                    form.appendChild(desc2);
+                });
+            });
+        });
+
+        // Form validation
+        (function() {
             'use strict';
-            window.addEventListener('load', function () {
-                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            window.addEventListener('load', function() {
                 var forms = document.getElementsByClassName('needs-validation');
-                // Loop over them and prevent submission
-                var validation = Array.prototype.filter.call(forms, function (form) {
-                    form.addEventListener('submit', function (event) {
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
                         if (form.checkValidity() === false) {
                             event.preventDefault();
                             event.stopPropagation();
@@ -132,4 +420,117 @@
             }, false);
         })();
     </script>
+
+    <style>
+        .card {
+            transition: all 0.3s ease;
+            overflow: visible !important;
+            position: relative;
+        }
+        .card-body {
+            overflow: visible !important;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        .card-header {
+            border-radius: 0.5rem 0.5rem 0 0 !important;
+            padding: 1rem 1.5rem;
+        }
+        
+        /* فیکس برای تقویم جلالی - z-index بالاتر */
+        .pmd-datepicker, 
+        .datepicker-wrapper,
+        .kamadatepicker-container,
+        .kdp-calendar {
+            z-index: 99999 !important;
+            position: absolute !important;
+        }
+        
+        /* اطمینان از اینکه تقویم روی همه چیز نمایش داده می‌شود */
+        .ui-datepicker,
+        .datepicker-dropdown {
+            z-index: 99999 !important;
+            position: absolute !important;
+        }
+        .form-control, .form-select, select {
+            border-radius: 0.5rem;
+            border: 1px solid #dee2e6;
+
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #4e73df;
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        }
+        
+        .student-card {
+            transition: all 0.2s ease;
+        }
+        .student-card:hover {
+            background-color: #f8f9fc;
+        }
+        
+        .student-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .btn-group-toggle .btn {
+            font-size: 0.85rem;
+            padding: 0.4rem 0.6rem;
+        }
+        
+        .btn-group-toggle .btn.active {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .student-name-mobile {
+                font-size: 1.5rem !important;
+                text-align: center !important;
+                width: 100%;
+                display: block;
+            }
+            .page-title {
+                font-size: 1.5rem;
+            }
+            .card-body {
+                padding: 1rem;
+            }
+            .student-card .row > div {
+                margin-bottom: 1rem;
+            }
+            .student-card .col-md-3:first-child {
+                text-align: center;
+                margin-bottom: 1.5rem;
+            }
+            .btn-group-toggle {
+                flex-direction: column;
+            }
+            .btn-group-toggle .btn {
+                width: 100%;
+                margin-bottom: 0.25rem;
+                border-radius: 0.5rem !important;
+            }
+            .btn-group-toggle .btn:first-child {
+                border-top-left-radius: 0.5rem !important;
+                border-top-right-radius: 0.5rem !important;
+                border-bottom-left-radius: 0.5rem !important;
+                border-bottom-right-radius: 0.5rem !important;
+            }
+            .btn-group-toggle .btn:last-child {
+                border-top-left-radius: 0.5rem !important;
+                border-top-right-radius: 0.5rem !important;
+                border-bottom-left-radius: 0.5rem !important;
+                border-bottom-right-radius: 0.5rem !important;
+            }
+        }
+    </style>
 {% endblock moreScript %}

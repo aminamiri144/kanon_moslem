@@ -1,39 +1,238 @@
+{% extends "base.html" %}
 {% load static %}
-<div class="row">
-    <div class="col-md-12">
-        <h4>{{ student }}</h4>
+{% block content %}
+    {% include 'base/navigator.html' %}
+    {% include 'base/aside.html' %}
+    <main role="main" class="main-content">
+        <div class="container-fluid">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show"
+                         role="alert">
+                        {{ message|safe }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
 
-        {% if payments %}
-        <table class="table table-hover">
-            <thead>
-            <tr>
-                <th>مبلغ پرداخت</th>
-                <th>نوع پرداخت</th>
-                <th>تاریخ پرداخت</th>
-                <th>توضیحات پرداخت</th>
-                <th>ترم</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for pay in payments %}
-            <tr>
-               <td>{{ pay.amount_view }}</td>
-               <td>{{ pay.get_pay_type_display }}</td>
-               <td>{{ pay.jd_pay_date }}</td>
-               <td>{{ pay.desc }}</td>
-               <td>{{ pay.term }}</td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                             متربی({{ student }}) تاکنون پرداختی نداشته است.
-                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                                <span aria-hidden="true">x</span>
-                                            </button>
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-11 col-xl-10">
+                    
+                    <!-- Top Bar -->
+                    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap">
+                        <div class="mb-3 mb-md-0">
+                            <h2 class="h3 mb-1 text-dark font-weight-bold">صورت‌حساب مالی</h2>
+                            <p class="text-muted mb-0">
+                                <i class="fe fe-user mr-1 text-primary"></i>
+                                {{ student }}
+                            </p>
+                        </div>
+                        <div class="d-flex">
+                            {% if previous_url %}
+                                <a href="{{ previous_url }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3 mr-2">
+                                    <i class="fe fe-arrow-right mr-1"></i> بازگشت
+                                </a>
+                            {% endif %}
+                            <a href="{% url 'add-payment' student_obj.id %}" 
+                               class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm"
+                               onclick="modal_url('{% url 'add-payment' student_obj.id %}', 'create'); return false;"
+                               data-toggle="modal"
+                               data-target="#create_modal">
+                                <i class="fe fe-plus mr-1"></i> ثبت تراکنش
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Summary Stats -->
+                    <div class="row mb-4">
+                        <div class="col-12 col-md-6 col-lg-4 mb-3">
+                            <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 16px;">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-soft-primary p-3 mr-3">
+                                            <i class="fe fe-credit-card fe-24 text-primary"></i>
                                         </div>
-    {% endif %}
-    </div>
-</div>
-<script src="{% static '/js/jquery.min.js' %}"></script>
+                                        <div class="flex-fill">
+                                            <small class="text-muted d-block mb-1">وضعیت حساب</small>
+                                            <h4 class="mb-0 font-weight-bold {% if student_obj.account_balance > 0 %}text-danger{% elif student_obj.account_balance < 0 %}text-success{% else %}text-muted{% endif %}">
+                                                {{ student_obj.account_balance_view }}
+                                            </h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-4 mb-3">
+                            <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 16px;">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-soft-info p-3 mr-3">
+                                            <i class="fe fe-layers fe-24 text-info"></i>
+                                        </div>
+                                        <div class="flex-fill">
+                                            <small class="text-muted d-block mb-1">گروه / کلاس</small>
+                                            <h5 class="mb-0 font-weight-bold">{{ student_obj.clas }}</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-12 col-lg-4 mb-3">
+                            <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 16px;">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-soft-warning p-3 mr-3">
+                                            <i class="fe fe-repeat fe-24 text-warning"></i>
+                                        </div>
+                                        <div class="flex-fill">
+                                            <small class="text-muted d-block mb-1">تعداد کل تراکنش‌ها</small>
+                                            <h5 class="mb-0 font-weight-bold">{{ payments.count }} مورد</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- List Header -->
+                    <div class="d-flex align-items-center justify-content-between mb-3 px-1">
+                        <h5 class="mb-0 font-weight-bold text-secondary">تاریخچه تراکنش‌ها</h5>
+                        <span class="badge badge-soft-secondary px-2 py-1 small">بر اساس جدیدترین</span>
+                    </div>
+
+                    <!-- Payments List -->
+                    {% if payments %}
+                        <div class="row">
+                            {% for pay in payments %}
+                                <div class="col-12 mb-3">
+                                    <div class="card border-0 shadow-sm transition-hover" style="border-radius: 12px; border-right: 4px solid {% if pay.is_debt %}#e63757{% else %}#00d97e{% endif %} !important;">
+                                        <div class="card-body p-3">
+                                            <div class="row align-items-center">
+                                                <!-- Amount & Type -->
+                                                <div class="col-12 col-md-4 mb-3 mb-md-0">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="rounded-circle {% if pay.is_debt %}bg-soft-danger{% else %}bg-soft-success{% endif %} p-2 mr-3 d-flex align-items-center justify-content-center" style="min-width: 40px; height: 40px;">
+                                                            <i class="fe fe-{% if pay.is_debt %}minus{% else %}plus{% endif %} text-{% if pay.is_debt %}danger{% else %}success{% endif %}"></i>
+                                                        </div>
+                                                        <div class="flex-fill">
+                                                            <h5 class="mb-0 font-weight-bold {% if pay.is_debt %}text-danger{% else %}text-success{% endif %}">
+                                                                {{ pay.amount_view }}
+                                                                <small class="text-muted font-weight-normal mr-1 small">تومان</small>
+                                                            </h5>
+                                                            <span class="badge badge-pill badge-light text-muted small px-2">
+                                                                {{ pay.get_pay_type_display }}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Date & Term -->
+                                                <div class="col-6 col-md-3">
+                                                    <div class="d-flex align-items-center text-muted mb-1">
+                                                        <i class="fe fe-calendar fe-14 mr-2 text-primary"></i>
+                                                        <small class="font-weight-medium">{{ pay.jd_pay_date }}</small>
+                                                    </div>
+                                                    <div class="d-flex align-items-center text-muted">
+                                                        <i class="fe fe-book-open fe-14 mr-2 text-info"></i>
+                                                        <small>{{ pay.term }}</small>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Description -->
+                                                <div class="col-6 col-md-3">
+                                                    {% if pay.desc and pay.desc != 'ندارد' %}
+                                                        <small class="text-muted d-block line-clamp-1" title="{{ pay.desc }}">
+                                                            <i class="fe fe-file-text fe-12 mr-1"></i>
+                                                            {{ pay.desc }}
+                                                        </small>
+                                                    {% else %}
+                                                        <small class="text-muted italic">- بدون توضیحات -</small>
+                                                    {% endif %}
+                                                </div>
+
+                                                <!-- Actions -->
+                                                <div class="col-12 col-md-2 text-md-right mt-3 mt-md-0">
+                                                    <div class="btn-group shadow-sm rounded-pill overflow-hidden bg-light p-1">
+                                                        <button class="btn btn-white btn-sm border-0 rounded-pill mr-1" 
+                                                                onclick="modal_url('{% url 'update-payment' pay.id %}', 'update');"
+                                                                data-toggle="modal"
+                                                                data-target="#update_modal"
+                                                                title="ویرایش">
+                                                            <i class="fe fe-edit-2 text-warning"></i>
+                                                        </button>
+                                                        <button class="btn btn-white btn-sm border-0 rounded-pill" 
+                                                                onclick="modal_url('{% url 'delete-payment' pay.id %}', 'delete');"
+                                                                data-toggle="modal"
+                                                                data-target="#delete_modal"
+                                                                title="حذف">
+                                                            <i class="fe fe-trash-2 text-danger"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="card border-0 shadow-sm text-center py-5" style="border-radius: 16px;">
+                            <div class="card-body py-5">
+                                <div class="mb-4">
+                                    <div class="rounded-circle bg-light p-4 d-inline-block">
+                                        <i class="fe fe-database fe-48 text-muted"></i>
+                                    </div>
+                                </div>
+                                <h5 class="font-weight-bold text-dark h4">هیچ تراکنشی یافت نشد</h5>
+                                <p class="text-muted mb-4">تاکنون هیچ پرداختی برای این متربی ثبت نشده است.</p>
+                                <a href="{% url 'add-payment' student_obj.id %}" 
+                                   class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm"
+                                   onclick="modal_url('{% url 'add-payment' student_obj.id %}', 'create'); return false;"
+                                   data-toggle="modal"
+                                   data-target="#create_modal">
+                                    <i class="fe fe-plus mr-2"></i> افزودن اولین تراکنش
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <style>
+        .bg-soft-primary { background-color: rgba(27, 132, 255, 0.1) !important; }
+        .bg-soft-success { background-color: rgba(0, 217, 126, 0.1) !important; }
+        .bg-soft-danger { background-color: rgba(230, 55, 87, 0.1) !important; }
+        .bg-soft-info { background-color: rgba(57, 175, 209, 0.1) !important; }
+        .bg-soft-warning { background-color: rgba(246, 153, 63, 0.1) !important; }
+        .bg-soft-secondary { background-color: rgba(108, 117, 125, 0.1) !important; }
+        
+        .transition-hover { transition: all 0.25s ease-in-out; }
+        .transition-hover:hover { transform: translateY(-4px); box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important; }
+        
+        .btn-white { background: #fff; border: 1px solid #f1f3f5; }
+        .btn-white:hover { background: #f8f9fa; }
+        
+        .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+        
+        .fe-12 { font-size: 12px; }
+        .fe-14 { font-size: 14px; }
+        .fe-48 { font-size: 48px; }
+
+        @media (max-width: 768px) {
+            .btn-group { width: 100%; display: flex; }
+            .btn-group button { flex: 1; padding: 10px; }
+            .card-body { padding: 1.25rem !important; }
+            .mb-md-0 { margin-bottom: 0 !important; }
+            .mr-3 { margin-right: 1rem !important; }
+        }
+    </style>
+
+    {% include 'base/createModal.html' %}
+    {% include 'base/updateModal.html' %}
+    {% include 'base/delete_modal.html' %}
+{% endblock %}

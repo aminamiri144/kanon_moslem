@@ -15,6 +15,18 @@ class PaymentCreateForm(BaseFormKanon):
         super(PaymentCreateForm, self).__init__(*args, **kwargs)
         self.fields['student'].disabled = True
         self.fields['term'].disabled = True
+        # اگر در حال ویرایش هستیم
+        if self.instance and self.instance.pk:
+            # اگر amount منفی است، is_debt را True می‌کنیم و amount را مثبت نمایش می‌دهیم
+            if self.instance.amount < 0:
+                self.initial['is_debt'] = True
+                self.initial['amount'] = abs(self.instance.amount)
+            else:
+                self.initial['is_debt'] = False
+                self.initial['amount'] = self.instance.amount
+            # تنظیم pay_date برای نمایش
+            if self.instance.pay_date:
+                self.initial['pay_date'] = str(self.instance.pay_date).replace('-', '/')
 
     class Meta:
         model = Payment
@@ -25,6 +37,7 @@ class PaymentCreateForm(BaseFormKanon):
             "pay_date",
             "pay_type",
             "desc",
+            "is_debt",
         ]
 
     def clean_pay_date(self):

@@ -1,0 +1,179 @@
+{% load static %}
+<div class="row">
+    <div class="col-md-12">
+        <form action="{% url 'sdg-add' student_id %}"
+              method="post"
+              autocomplete="off"
+              id="create-sdg-form"
+              novalidate>
+            {% csrf_token %}
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ error|escape }}</strong>
+                    </div>
+                {% endfor %}
+                {% if field.name == "grade" %}
+                    <div class="form-group row align-items-center mb-3">
+                        <label for="id_grade" class="col-lg-3 col-form-label text-end">{{ field.label_tag }}</label>
+                        <div class="col-lg-9">
+                            <div class="input-group">
+                                <button class="btn btn-outline-danger" type="button" onclick="changeGrade(-0.25)">
+                                    <i class="bi bi-dash"></i>
+                                </button>
+                                <input type="number" name="grade" value="{{ field.value }}" step="any"
+                                       class="form-control text-center" placeholder="نمره را وارد کنید ..."
+                                       required id="id_grade" readonly>
+                                <button class="btn btn-outline-success" type="button" onclick="changeGrade(0.25)">
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% elif field.name == "is_cal_in_average" %}
+                    <div class="form-group row align-items-center mb-3">
+                        <label class="col-form-label col-lg-3 col-sm-12">{{ field.label_tag }}</label>
+                        <div class="col-lg-9 col-md-9 col-sm-12">
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox" 
+                                       class="custom-control-input" 
+                                       id="id_is_cal_in_average" 
+                                       name="is_cal_in_average"
+                                       {% if field.value %}checked{% endif %}>
+                                <label class="custom-control-label" for="id_is_cal_in_average">
+                                    {% if field.value %}
+                                        <span class="text-success font-weight-bold">بله - در میانگین محاسبه می‌شود</span>
+                                    {% else %}
+                                        <span class="text-muted">خیر - در میانگین محاسبه نمی‌شود</span>
+                                    {% endif %}
+                                </label>
+                            </div>
+                            {% if field.help_text %}
+                                <small class="form-text text-muted">{{ field.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="form-group row">
+                        <label class="col-form-label col-lg-3 col-sm-12">{{ field.label_tag }}</label>
+                        <div class="col-lg-9 col-md-9 col-sm-12">
+                            {{ field }}
+                            <div class="invalid-feedback">مقدار مناسب را وارد کنید.</div>
+                            {% for error in field.errors %}
+                                <div class="feedbackinvalid">{{ error|escape }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-success mr-2">ثبت مورد انضباطی</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">بستن</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="{% static 'plugins/jalaliDatepicker/kamadatepicker.min.js' %}"></script>
+<script>
+    kamaDatepicker('id_created', {buttonsColor: "green", forceFarsiDigits: true, zIndex: 10000});
+    
+    function changeGrade(amount) {
+        const input = document.getElementById("id_grade");
+        let currentValue = parseFloat(input.value) || 0;
+        currentValue += amount;
+        input.value = currentValue.toFixed(2);
+    }
+    
+    // Form validation
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            var validation = Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+    
+    // Submit form via AJAX
+    function submitSdgForm(e) {
+        e.preventDefault();
+        var form = $('#create-sdg-form');
+        var formData = form.serialize();
+        var url = form.attr('action');
+        
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: function(response) {
+                if (typeof response === 'object' && response.success) {
+                    // Success response
+                    $('#create_modal').modal('hide');
+                    location.reload();
+                } else if (typeof response === 'string') {
+                    // Form with errors - re-render
+                    $('#create_modal_body').html(response);
+                    // Reinitialize datepicker and functions
+                    kamaDatepicker('id_created', {buttonsColor: "green", forceFarsiDigits: true, zIndex: 10000});
+                    // Re-bind form submit
+                    $('#create-sdg-form').off('submit').on('submit', submitSdgForm);
+                    // Re-bind switch label update
+                    bindSwitchLabelUpdate();
+                } else {
+                    // Assume success if no errors found
+                    $('#create_modal').modal('hide');
+                    location.reload();
+                }
+            },
+            error: function(xhr) {
+                if (xhr.status === 200 && xhr.responseText) {
+                    // Server returned HTML (form with errors)
+                    $('#create_modal_body').html(xhr.responseText);
+                    kamaDatepicker('id_created', {buttonsColor: "green", forceFarsiDigits: true, zIndex: 10000});
+                    $('#create-sdg-form').off('submit').on('submit', submitSdgForm);
+                    // Re-bind switch label update
+                    bindSwitchLabelUpdate();
+                } else {
+                    alert('خطا در ثبت مورد انضباطی');
+                }
+            }
+        });
+    }
+    
+    // تابع برای bind کردن به‌روزرسانی متن سوییچ
+    function bindSwitchLabelUpdate() {
+        const switchInput = document.getElementById('id_is_cal_in_average');
+        if (switchInput) {
+            switchInput.removeEventListener('change', updateSwitchLabel);
+            switchInput.addEventListener('change', updateSwitchLabel);
+            // به‌روزرسانی اولیه
+            updateSwitchLabel.call(switchInput);
+        }
+    }
+    
+    // تابع به‌روزرسانی متن سوییچ
+    function updateSwitchLabel() {
+        const label = this.nextElementSibling;
+        if (this.checked) {
+            label.innerHTML = '<span class="text-success font-weight-bold">بله - در میانگین محاسبه می‌شود</span>';
+        } else {
+            label.innerHTML = '<span class="text-muted">خیر - در میانگین محاسبه نمی‌شود</span>';
+        }
+    }
+    
+    $('#create-sdg-form').on('submit', submitSdgForm);
+    
+    // Bind اولیه
+    bindSwitchLabelUpdate();
+</script>
+

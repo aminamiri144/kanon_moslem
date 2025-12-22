@@ -192,7 +192,8 @@ class DisciplineGrade(models.Model):
     grade = models.FloatField(verbose_name="نمره")
     term = models.ForeignKey(Term, on_delete=models.CASCADE, verbose_name="ترم‌تحصیلی")
     description = models.TextField(blank=True, null=True, verbose_name="توضیح")
-
+    is_cal_in_average = models.BooleanField(default=True, verbose_name="محاسبه در میانگین نمرات")
+    
     @property
     def jd_created_date(self):
         created_date = str(self.created).replace('-', '/')

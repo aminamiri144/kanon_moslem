@@ -3,185 +3,204 @@
 {% block content %}
     {% include 'base/navigator.html' %}
     {% include 'base/aside.html' %}
-    <style>
-        th {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 30px;
-        }
-
-        @media only screen and (max-width: 600px) {
-            th {
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                max-width: 120px;
-                min-width: 120px;
-            }
-
-            .amin-th {
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                max-width: 120px;
-                min-width: 120px;
-            }
-        }
-        .amin-th {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 130px;
-        }
-    </style>
     <main role="main" class="main-content">
         <div class="container-fluid">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show"
+                         role="alert">
+                        {{ message|safe }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
             <div class="row justify-content-center">
                 <div class="col-12">
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-
-                                    {% if message.tag %}{{ message.tag }}{% endif %} alert-dismissible fade show"
-                                 role="alert">
-                                {{ message.message }}
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">x</span>
-                                </button>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                    <div class="row my-4">
-                        <div class="col-md-12">
-                            <!-- Small table -->
-                            <form class="needs-validation"
-                                  action="{% url 'group-term-karname' %}"
-                                  method="post"
-                                  autocomplete="off"
-                                  id="customer-form"
-                                  novalidate>
-                                {% csrf_token %}
-                                <div class="card shadow">
-                                    <div class="card-header">
-                                        <strong class="card-title">ثبت کارنامه گروه {{ group_name }}</strong>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                                            توجه : قبل از خروج از صفحه، نمرات وارد شده را ذخیره و ثبت کنید. توجه: نمره
-                                            انضباطی محاسبه شده، بدون احتساب نمرات مربوط به والدین می باشد. نمره انضباط و
-                                            و الدین از 20 می باشد.
-                                        </div>
-                                        <div class="table-responsive">
-                                            <table class="table table-hover text-nowrap">
-                                                <thead>
-                                                <tr>
-                                                    <th>نام و نام خانوادگی</th>
-                                                    {% for lesson in lessons %}
-                                                        <th title="{{ lesson }}">{{ lesson }}</th>
-                                                    {% endfor %}
-                                                    <th title="نمره انضباطی">نمره انضباطی</th>
-                                                    <th title="نمره خانواده">نمره خانواده</th>
-                                                    <th title="نمره فوق برنامه">نمره فوق برنامه</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                {% for sg in students_grades %}
-                                                    <tr>
-                                                        <td class="amin-th" title="{{ sg.student.last_name }} {{ sg.student.first_name }}">{{ sg.student.last_name }} {{ sg.student.first_name }}</td>
-                                                        {% for grade in sg.grades %}
-                                                            <td>
-                                                                <div class="form-row">
-                                                                    <div class="form_group">
-                                                                        <select class="form-control"
-                                                                                name="grade_{{ grade.id }}">
-                                                                            <option value="5"
-                                                                                    {% if grade.grade == '5' %}
-                                                                                    selected="" {% endif %}>عالی
-                                                                            </option>
-                                                                            <option value="4"
-                                                                                    {% if grade.grade == '4' %}
-                                                                                    selected="" {% endif %}>بسیارخوب
-                                                                            </option>
-                                                                            <option value="3"
-                                                                                    {% if grade.grade == '3' %}
-                                                                                    selected="" {% endif %}>خوب
-                                                                            </option>
-                                                                            <option value="2"
-                                                                                    {% if grade.grade == '2' %}
-                                                                                    selected="" {% endif %}>متوسط
-                                                                            </option>
-                                                                            <option value="1"
-                                                                                    {% if grade.grade == '1' %}
-                                                                                    selected="" {% endif %}>ضعیف
-                                                                            </option>
-                                                                            <option value="0"
-                                                                                    {% if grade.grade == '0' %}
-                                                                                    selected="" {% endif %}>بسیارضعیف
-                                                                            </option>
-                                                                            <option value="g"
-                                                                                    {% if grade.grade == 'g' %}
-                                                                                    selected="" {% endif %}>غایب
-                                                                            </option>
-                                                                            <option value="n"
-                                                                                    {% if grade.grade == 'n' %}
-                                                                                    selected="" {% endif %}>ثبت نشده
-                                                                            </option>
-                                                                        </select>
-                                                                    </div>
-
-                                                                </div>
-                                                            </td>
-                                                        {% endfor %}
-                                                        <td>
-                                                            {{ sg.nomre_enzebati }}
-                                                        </td>
-                                                        <td>
-                                                            {{ sg.nomre_family }}
-                                                        </td>
-                                                        <td>
-                                                            {{ sg.nomre_fogh }}
-                                                        </td>
-                                                    </tr>
-                                                {% endfor %}
-                                                </tbody>
-                                            </table>
-                                            <button type="submit" class="btn btn-success">ثبت کارنامه گروه</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
+                    <!-- Page Header -->
+                    <div class="mb-4">
+                        <h2 class="mb-1 page-title">
+                            <i class="fe fe-award text-primary"></i>
+                            ثبت کارنامه گروه {{ group_name }}
+                        </h2>
+                        <p class="text-muted mb-0">ترم: {{ term }}</p>
                     </div>
-                    <!-- simple table -->
+
+                    <!-- Alert -->
+                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                        <i class="fe fe-info"></i>
+                        <strong>توجه:</strong> قبل از خروج از صفحه، نمرات وارد شده را ذخیره و ثبت کنید. 
+                        نمره انضباطی محاسبه شده، بدون احتساب نمرات مربوط به والدین می‌باشد. 
+                        نمره انضباط و والدین از 20 می‌باشد.
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+
+                    <!-- کارنامه -->
+                    <form class="needs-validation"
+                          action="{% url 'group-term-karname' %}"
+                          method="post"
+                          autocomplete="off"
+                          id="karname-form"
+                          novalidate>
+                        {% csrf_token %}
+                        <div class="card shadow-sm border-0">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">
+                                    <i class="fe fe-users"></i>
+                                    کارنامه گروه {{ group_name }}
+                                </h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th class="sticky-col" style="position: sticky; right: 0; background: white; z-index: 10;">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fe fe-user mr-2"></i>
+                                                        نام و نام خانوادگی
+                                                    </div>
+                                                </th>
+                                                {% for lesson in lessons %}
+                                                    <th class="text-center" title="{{ lesson }}">
+                                                        <div class="d-flex flex-column align-items-center">
+                                                            <span class="small">{{ lesson }}</span>
+                                                        </div>
+                                                    </th>
+                                                {% endfor %}
+                                                <th class="text-center sticky-col-2" style="position: sticky; right: 0; background: white; z-index: 10;">
+                                                    <div class="d-flex flex-column align-items-center">
+                                                        <span>نمره انضباطی</span>
+                                                    </div>
+                                                </th>
+                                                <th class="text-center sticky-col-3" style="position: sticky; right: 0; background: white; z-index: 10;">
+                                                    <div class="d-flex flex-column align-items-center">
+                                                        <span>جلسات والدین</span>
+                                                    </div>
+                                                </th>
+                                                <th class="text-center sticky-col-4" style="position: sticky; right: 0; background: white; z-index: 10;">
+                                                    <div class="d-flex flex-column align-items-center">
+                                                        <span>فوق برنامه</span>
+                                                    </div>
+                                                </th>
+                                                <th class="text-center sticky-col-5" style="position: sticky; right: 0; background: white; z-index: 10;">
+                                                    <div class="d-flex flex-column align-items-center">
+                                                        <span>حضور غیاب گروه</span>
+                                                    </div>
+                                                </th>
+                                                <th class="text-center sticky-col-6" style="position: sticky; right: 0; background: white; z-index: 10;">
+                                                    <div class="d-flex flex-column align-items-center">
+                                                        <span>اردو</span>
+                                                    </div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for sg in students_grades %}
+                                                <tr>
+                                                    <td class="sticky-col font-weight-bold" style="position: sticky; right: 0; background: white; z-index: 9;">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="student-avatar-small mr-2">
+                                                                <i class="fe fe-user"></i>
+                                                            </div>
+                                                            <div>
+                                                                <div>{{ sg.student.get_full_name }}</div>
+                                                                <small class="text-muted">{{ sg.student.clas }}</small>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    {% for grade in sg.grades %}
+                                                        <td class="text-center">
+                                                            <select class="form-control form-control-sm grade-select" 
+                                                                    name="grade_{{ grade.id }}"
+                                                                    style="min-width: 100px;">
+                                                                <option value="5" {% if grade.grade == '5' %}selected{% endif %}>عالی</option>
+                                                                <option value="4" {% if grade.grade == '4' %}selected{% endif %}>بسیارخوب</option>
+                                                                <option value="3" {% if grade.grade == '3' %}selected{% endif %}>خوب</option>
+                                                                <option value="2" {% if grade.grade == '2' %}selected{% endif %}>متوسط</option>
+                                                                <option value="1" {% if grade.grade == '1' %}selected{% endif %}>ضعیف</option>
+                                                                <option value="0" {% if grade.grade == '0' %}selected{% endif %}>بسیارضعیف</option>
+                                                                <option value="g" {% if grade.grade == 'g' %}selected{% endif %}>غایب</option>
+                                                                <option value="n" {% if grade.grade == 'n' %}selected{% endif %}>ثبت نشده</option>
+                                                            </select>
+                                                        </td>
+                                                    {% endfor %}
+                                                    <td class="text-center sticky-col-2" style="position: sticky; right: 0; background: white; z-index: 9;">
+                                                        <div class="d-flex flex-column align-items-center">
+                                                            <span class="font-weight-bold text-primary" style="font-size: 0.9rem;">{{ sg.nomre_enzebati_sum|floatformat:"2" }}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center sticky-col-3" style="position: sticky; right: 0; background: white; z-index: 9;">
+                                                        <div class="d-flex flex-column align-items-center">
+                                                            <span class="badge badge-{% if sg.parent_meeting_attendance == sg.total_parent_meetings %}success{% elif sg.parent_meeting_attendance > 0 %}warning{% else %}danger{% endif %} p-2 font-weight-bold mb-1">
+                                                                {{ sg.parent_meeting_attendance }}/{{ sg.total_parent_meetings }}
+                                                            </span>
+                                                            <small class="text-muted" style="font-size: 0.65rem;">{{ sg.family_nomre_sum|floatformat:"2" }}</small>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center sticky-col-4" style="position: sticky; right: 0; background: white; z-index: 9;">
+                                                        <div class="d-flex flex-column align-items-center">
+                                                            <span class="badge badge-{% if sg.fogh_attendance == sg.total_fogh_meetings %}success{% elif sg.fogh_attendance > 0 %}warning{% else %}danger{% endif %} p-2 font-weight-bold mb-1">
+                                                                {{ sg.fogh_attendance }}/{{ sg.total_fogh_meetings }}
+                                                            </span>
+                                                            <small class="text-muted" style="font-size: 0.65rem;">{{ sg.fogh_nomre_sum|floatformat:"2" }}</small>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center sticky-col-5" style="position: sticky; right: 0; background: white; z-index: 9;">
+                                                        <div class="d-flex flex-column align-items-center">
+                                                            <span class="badge badge-{% if sg.group_attendance == sg.total_group_attendance_meetings %}success{% elif sg.group_attendance > 0 %}warning{% else %}danger{% endif %} p-2 font-weight-bold mb-1">
+                                                                {{ sg.group_attendance }}/{{ sg.total_group_attendance_meetings }}
+                                                            </span>
+                                                            <small class="text-muted" style="font-size: 0.65rem;">{{ sg.group_attendance_nomre_sum|floatformat:"2" }}</small>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center sticky-col-6" style="position: sticky; right: 0; background: white; z-index: 9;">
+                                                        <div class="d-flex flex-column align-items-center">
+                                                            <span class="badge badge-{% if sg.erdo_attendance == sg.total_erdo_meetings %}success{% elif sg.erdo_attendance > 0 %}warning{% else %}danger{% endif %} p-2 font-weight-bold mb-1">
+                                                                {{ sg.erdo_attendance }}/{{ sg.total_erdo_meetings }}
+                                                            </span>
+                                                            <small class="text-muted" style="font-size: 0.65rem;">{{ sg.erdo_nomre_sum|floatformat:"2" }}</small>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="text-muted small">
+                                        <i class="fe fe-info"></i>
+                                        تعداد کل متربیان: {{ students_grades|length }} نفر
+                                    </div>
+                                    <button type="submit" class="btn btn-success btn-lg">
+                                        <i class="fe fe-save"></i>
+                                        ثبت و ذخیره کارنامه گروه
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-                <!-- end section -->
             </div>
-            <!-- .col-12 -->
         </div>
-        <!-- .row -->
     </main>
 {% endblock content %}
+
 {% block moreScript %}
     <script>
-        kamaDatepicker('id_created', {buttonsColor: "green", forceFarsiDigits: true});
-
-        $('#id_customer').select2({
-            ajax: {
-                url: 'https://api.github.com/search/repositories',
-                dataType: 'json'
-            }
-        });
-
-
-        // Example starter JavaScript for disabling form submissions if there are invalid fields
-        (function () {
+        // Form validation
+        (function() {
             'use strict';
-            window.addEventListener('load', function () {
-                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            window.addEventListener('load', function() {
                 var forms = document.getElementsByClassName('needs-validation');
-                // Loop over them and prevent submission
-                var validation = Array.prototype.filter.call(forms, function (form) {
-                    form.addEventListener('submit', function (event) {
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
                         if (form.checkValidity() === false) {
                             event.preventDefault();
                             event.stopPropagation();
@@ -191,5 +210,139 @@
                 });
             }, false);
         })();
+        
+        // Auto-save warning
+        let formChanged = false;
+        document.querySelectorAll('.grade-select').forEach(function(select) {
+            select.addEventListener('change', function() {
+                formChanged = true;
+            });
+        });
+        
+        window.addEventListener('beforeunload', function(e) {
+            if (formChanged) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+        
+        document.getElementById('karname-form').addEventListener('submit', function() {
+            formChanged = false;
+        });
     </script>
+
+    <style>
+        .card {
+            transition: all 0.3s ease;
+            overflow: visible !important;
+        }
+        .card-header {
+            border-radius: 0.5rem 0.5rem 0 0 !important;
+            padding: 1rem 1.5rem;
+        }
+        
+        .table {
+            font-size: 0.9rem;
+        }
+        
+        .table thead th {
+            border-bottom: 2px solid #dee2e6;
+            font-weight: 600;
+            white-space: nowrap;
+            padding: 0.75rem 0.5rem;
+            vertical-align: middle;
+        }
+        
+        .table tbody td {
+            padding: 0.75rem 0.5rem;
+            vertical-align: middle;
+        }
+        
+        .sticky-col {
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+        
+        .sticky-col-2, .sticky-col-3, .sticky-col-4, .sticky-col-5, .sticky-col-6 {
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+        
+        .student-avatar-small {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        
+        .grade-select {
+            border-radius: 0.375rem;
+            transition: all 0.2s ease;
+        }
+        
+        .grade-select:focus {
+            border-color: #4e73df;
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        }
+        
+        .table tbody tr:hover {
+            background-color: #f8f9fc;
+        }
+        
+        @media (max-width: 768px) {
+            .table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .table {
+                font-size: 0.8rem;
+            }
+            
+            .table thead th,
+            .table tbody td {
+                padding: 0.5rem 0.25rem;
+            }
+            
+            .grade-select {
+                min-width: 80px !important;
+                font-size: 0.75rem;
+                padding: 0.25rem 0.5rem;
+            }
+            
+            .sticky-col,
+            .sticky-col-2,
+            .sticky-col-3,
+            .sticky-col-4,
+            .sticky-col-5,
+            .sticky-col-6 {
+                position: relative !important;
+                box-shadow: none !important;
+            }
+            
+            .card-footer {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .card-footer .btn {
+                width: 100%;
+            }
+        }
+        
+        @media print {
+            .sticky-col,
+            .sticky-col-2,
+            .sticky-col-3,
+            .sticky-col-4,
+            .sticky-col-5,
+            .sticky-col-6 {
+                position: relative !important;
+            }
+        }
+    </style>
 {% endblock moreScript %}

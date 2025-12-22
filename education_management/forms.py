@@ -49,6 +49,7 @@ class DisciplineGradeCreateForm(BaseFormKanon):
             "grade",
             "term",
             "description",
+            "is_cal_in_average",
         ]
 
     def clean_created(self):
@@ -76,6 +77,7 @@ class DisciplineGradeUpdateForm(BaseFormKanon):
             "grade",
             "description",
             "created",
+            "is_cal_in_average",
         ]
 
     def clean_created(self):

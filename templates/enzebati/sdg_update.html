@@ -33,6 +33,29 @@
                             </div>
                         </div>
                     </div>
+                {% elif field.name == "is_cal_in_average" %}
+                    <div class="form-group row align-items-center mb-3">
+                        <label class="col-form-label col-lg-3 col-sm-12">{{ field.label_tag }}</label>
+                        <div class="col-lg-9 col-md-9 col-sm-12">
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox" 
+                                       class="custom-control-input" 
+                                       id="id_is_cal_in_average" 
+                                       name="is_cal_in_average"
+                                       {% if field.value %}checked{% endif %}>
+                                <label class="custom-control-label" for="id_is_cal_in_average">
+                                    {% if field.value %}
+                                        <span class="text-success font-weight-bold">بله - در میانگین محاسبه می‌شود</span>
+                                    {% else %}
+                                        <span class="text-muted">خیر - در میانگین محاسبه نمی‌شود</span>
+                                    {% endif %}
+                                </label>
+                            </div>
+                            {% if field.help_text %}
+                                <small class="form-text text-muted">{{ field.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
                 {% else %}
                     <div class="form-group row">
                         <label class="col-form-label col-lg-3 col-sm-12">{{ field.label_tag }}</label>
@@ -55,4 +78,14 @@
         currentValue += amount;
         input.value = currentValue.toFixed(2);
     }
+    
+    // به‌روزرسانی متن سوییچ بر اساس وضعیت
+    document.getElementById('id_is_cal_in_average')?.addEventListener('change', function() {
+        const label = this.nextElementSibling;
+        if (this.checked) {
+            label.innerHTML = '<span class="text-success font-weight-bold">بله - در میانگین محاسبه می‌شود</span>';
+        } else {
+            label.innerHTML = '<span class="text-muted">خیر - در میانگین محاسبه نمی‌شود</span>';
+        }
+    });
 </script>

@@ -72,10 +72,17 @@ class Payment(models.Model):
     pay_date = jmodels.jDateField(verbose_name="زمان پرداخت", blank=True, null=True)
     pay_type = models.CharField(choices=PAY_TYPES, verbose_name="نوع پرداخت", default="2", max_length=20)
     desc = models.CharField(max_length=200, verbose_name="توضیحات", blank=True, null=True)
+    is_debt = models.BooleanField(default=False, verbose_name="بدهی")
 
     def save(self, *args, **kwargs):
         if self.desc is None:
             self.desc = 'ندارد'
+        # اگر بدهی بود، amount را منفی می‌کنیم
+        if self.is_debt:
+            self.amount = -abs(self.amount)
+        # اگر بستانکاری بود، amount را مثبت می‌کنیم
+        elif not self.is_debt:
+            self.amount = abs(self.amount)
         super(Payment, self).save(*args, **kwargs)
         from tuition.views import update_student_debt
         acc_balance = update_student_debt(self.student)
@@ -94,7 +101,7 @@ class Payment(models.Model):
 
     @property
     def amount_view(self):
-        return "{:,}".format(self.amount)
+        return "{:,}".format(abs(self.amount))
 
     def __str__(self):
         return f"{self.student} | {self.amount} | {self.get_pay_type_display()} | {self.jd_pay_date}"

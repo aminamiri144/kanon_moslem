@@ -100,7 +100,7 @@ def payday_reminder_sms():
         # مقدار بدهی
         debt = acc_balance - total_next_debts
         if debt > 0:
-            debt_value = "{:,}".format(debt)
+            debt_value = "{:,}تومان".format(debt)
             try:
                 send_sms_reminder(payday.tuition.student, debt_value, payday)
             except Exception as e:
