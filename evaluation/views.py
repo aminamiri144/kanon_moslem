@@ -2,6 +2,7 @@ from .forms import LessonClassSelectionForm
 from education_management.models import SelectedLesson, ControlSelection, DisciplineGrade, GroupReport
 from kanon_moslem.views import *
 from kanon_moslem.aminBaseViews import *
+from django.db.models import Q
 
 
 class SelectionLessonClass(View, NoStudent, LoginRequiredMixin):
@@ -143,7 +144,9 @@ class GroupTermGrades(AminView, LoginRequiredMixin, NoStudent):
             parent_meeting_reports = GroupReport.objects.filter(
                 clas=self.t_class,
                 term=term,
-                report_type__title__contains='والدین'
+            ).filter(
+                Q(report_type__title__contains='تشکل') |
+                Q(report_type__title__contains='والدین')
             )
             fogh_reports = GroupReport.objects.filter(
                 clas=self.t_class,
@@ -161,8 +164,11 @@ class GroupTermGrades(AminView, LoginRequiredMixin, NoStudent):
             ).exclude(
                 report_type__title__contains='اردو'
             ).exclude(
+                report_type__title__contains='برنامه'
+            ).exclude(
                 report_type__title__contains='خانواد'
             )
+
             erdo_reports = GroupReport.objects.filter(
                 clas=self.t_class,
                 term=term,
